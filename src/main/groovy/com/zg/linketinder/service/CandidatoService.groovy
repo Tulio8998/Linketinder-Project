@@ -19,7 +19,7 @@ class CandidatoService {
         candidatoRepository.adicionarCandidato(new Candidato(
                 cpf: "111.111.111-11",
                 idade: 21,
-                nome: "Vilela",
+                nome: "Kratos",
                 email: "teste@teste.com",
                 estado: "MG",
                 cep: "11111-111",
@@ -28,7 +28,7 @@ class CandidatoService {
         candidatoRepository.adicionarCandidato(new Candidato(
                 cpf: "222.222.222-22",
                 idade: 21,
-                nome: "Lopes",
+                nome: "Geraldao",
                 email: "teste@teste.com",
                 estado: "MG",
                 cep: "22222-222",
