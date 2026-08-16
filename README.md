@@ -10,6 +10,10 @@ O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) s
 
 * **Organização do projeto:** O código foi separado em camadas (Model, Service, Util e CLI), garantindo que cada pacote tenha uma responsabilidade única e facilitando a manutenção.
 * **Dados em Memória:** Para validar os dados do MVP rapidamente, os Services foram inicializados com 5 empresas e 5 candidatos pré-cadastrados, utilizando o construtor de mapas nativo do Groovy.
+### Versão 1.1.0
+* **Sistema de Vagas:** Implementação do cadastro e listagem de vagas vinculadas às empresas.
+* **Sistema de Curtidas:** Adição da lógica de relacionamento. Agora, candidatos podem curtir vagas, e empresas podem curtir candidatos. Quando o interesse é mútuo, o sistema registra o evento de Match.
+* **Refatoração Arquitetural:** O projeto ganhou uma nova camada de Repository para isolar a persistência separando da camada de Service.
 
 ## Execução pela IDE
 1. Abra o projeto no IntelliJ IDEA.

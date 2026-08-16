@@ -1,12 +1,13 @@
 package com.zg.linketinder.service
 
 import com.zg.linketinder.model.Empresa
+import com.zg.linketinder.repository.EmpresaRepository
 
 class EmpresaService {
-    List<Empresa> empresas = []
+    EmpresaRepository empresaRepository = new EmpresaRepository()
 
     EmpresaService() {
-        empresas.add(new Empresa(
+        empresaRepository.adicionarEmpresa( new Empresa(
                 cnpj: "00.000.000/0000-00",
                 pais: "Brasil",
                 nome: "ZG",
@@ -15,7 +16,7 @@ class EmpresaService {
                 cep: "00000-000",
                 descricao: "Zero Glosa",
         ))
-        empresas.add(new Empresa(
+        empresaRepository.adicionarEmpresa(new Empresa(
                 cnpj: "11.111.111/1111-11",
                 pais: "Brasil",
                 nome: "ZG",
@@ -24,7 +25,7 @@ class EmpresaService {
                 cep: "11111-111",
                 descricao: "Zero Glosa",
         ))
-        empresas.add(new Empresa(
+        empresaRepository.adicionarEmpresa(new Empresa(
                 cnpj: "22.222.222/2222-22",
                 pais: "Brasil",
                 nome: "ZG",
@@ -33,7 +34,7 @@ class EmpresaService {
                 cep: "22222-222",
                 descricao: "Zero Glosa",
         ))
-        empresas.add(new Empresa(
+        empresaRepository.adicionarEmpresa(new Empresa(
                 cnpj: "33.333.333/3333-33",
                 pais: "Brasil",
                 nome: "ZG",
@@ -42,7 +43,7 @@ class EmpresaService {
                 cep: "33333-333",
                 descricao: "Zero Glosa",
         ))
-        empresas.add(new Empresa(
+        empresaRepository.adicionarEmpresa(new Empresa(
                 cnpj: "44.444.444/4444-44",
                 pais: "Brasil",
                 nome: "ZG",
@@ -54,10 +55,10 @@ class EmpresaService {
     }
 
     def listarTodos(){
-        return empresas;
+        return empresaRepository.listarTodos();
     }
 
     def adicionarEmpresa(Empresa empresa) {
-        empresas.add(empresa)
+        empresaRepository.adicionarEmpresa(empresa)
     }
 }
