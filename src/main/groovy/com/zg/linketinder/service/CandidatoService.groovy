@@ -1,12 +1,13 @@
 package com.zg.linketinder.service
 
 import com.zg.linketinder.model.Candidato
+import com.zg.linketinder.repository.CandidatoRepository
 
 class CandidatoService {
-    List<Candidato> candidatos = []
+    CandidatoRepository candidatoRepository = new CandidatoRepository()
 
     CandidatoService() {
-        candidatos.add(new Candidato(
+        candidatoRepository.adicionarCandidato(new Candidato(
                 cpf: "000.000.000-00",
                 idade: 21,
                 nome: "Túlio",
@@ -15,25 +16,25 @@ class CandidatoService {
                 cep: "00000-000",
                 descricao: "Desenvolvedor",
         ))
-        candidatos.add(new Candidato(
+        candidatoRepository.adicionarCandidato(new Candidato(
                 cpf: "111.111.111-11",
                 idade: 21,
-                nome: "Vilela",
+                nome: "Kratos",
                 email: "teste@teste.com",
                 estado: "MG",
                 cep: "11111-111",
                 descricao: "Desenvolvedor",
         ))
-        candidatos.add(new Candidato(
+        candidatoRepository.adicionarCandidato(new Candidato(
                 cpf: "222.222.222-22",
                 idade: 21,
-                nome: "Lopes",
+                nome: "Geraldao",
                 email: "teste@teste.com",
                 estado: "MG",
                 cep: "22222-222",
                 descricao: "Desenvolvedor",
         ))
-        candidatos.add(new Candidato(
+        candidatoRepository.adicionarCandidato(new Candidato(
                 cpf: "333.333.333-33",
                 idade: 21,
                 nome: "Cristiano",
@@ -42,7 +43,7 @@ class CandidatoService {
                 cep: "33333-333",
                 descricao: "Desenvolvedor",
         ))
-        candidatos.add(new Candidato(
+        candidatoRepository.adicionarCandidato(new Candidato(
                 cpf: "444.444.444-44",
                 idade: 21,
                 nome: "Ronaldo",
@@ -54,10 +55,10 @@ class CandidatoService {
     }
 
     def listarTodos() {
-        return candidatos
+        return candidatoRepository.listarTodos()
     }
 
     def adicionarCandidato(Candidato candidato) {
-        candidatos.add(candidato)
+        candidatoRepository.adicionarCandidato(candidato)
     }
 }
