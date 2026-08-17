@@ -15,6 +15,13 @@ O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) s
 * **Sistema de Curtidas:** Adição da lógica de relacionamento. Agora, candidatos podem curtir vagas, e empresas podem curtir candidatos. Quando o interesse é mútuo, o sistema registra o evento de Match.
 * **Refatoração Arquitetural:** O projeto ganhou uma nova camada de Repository para isolar a persistência separando da camada de Service.
 
+### Versão 1.2.0 
+
+* **Cobertura de Testes Unitários:** Implementação de testes automatizados utilizando o Spock Framework para as camadas de Model, Repository e Service de Empresa e Candidato.
+* **TDD:** Desenvolvimento guiado por testes para garantir a confiabilidade da inserção de dados no sistema.
+* **Validações de Regras de Negócio:** Inclusão de proteção contra Edge Cases na camada de Service, bloqueando o cadastro de usuários nulos e prevenindo a duplicidade de CPFs, CNPJs e e-mails.
+* **Isolamento com Mocks:** Aplicação de Mocking nos testes de serviço para isolar a comunicação com a camada de persistência.
+
 ## Execução pela IDE
 1. Abra o projeto no IntelliJ IDEA.
 2. Aguarde o Gradle sincronizar o projeto.
