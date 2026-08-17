@@ -6,59 +6,38 @@ import com.zg.linketinder.repository.EmpresaRepository
 class EmpresaService {
     EmpresaRepository empresaRepository = new EmpresaRepository()
 
-    EmpresaService() {
-        empresaRepository.adicionarEmpresa( new Empresa(
-                cnpj: "00.000.000/0000-00",
-                pais: "Brasil",
-                nome: "ZG",
-                email: "teste@teste.com",
-                estado: "MG",
-                cep: "00000-000",
-                descricao: "Zero Glosa",
-        ))
-        empresaRepository.adicionarEmpresa(new Empresa(
-                cnpj: "11.111.111/1111-11",
-                pais: "Brasil",
-                nome: "ZG",
-                email: "teste@teste.com",
-                estado: "MG",
-                cep: "11111-111",
-                descricao: "Zero Glosa",
-        ))
-        empresaRepository.adicionarEmpresa(new Empresa(
-                cnpj: "22.222.222/2222-22",
-                pais: "Brasil",
-                nome: "ZG",
-                email: "teste@teste.com",
-                estado: "MG",
-                cep: "22222-222",
-                descricao: "Zero Glosa",
-        ))
-        empresaRepository.adicionarEmpresa(new Empresa(
-                cnpj: "33.333.333/3333-33",
-                pais: "Brasil",
-                nome: "ZG",
-                email: "teste@teste.com",
-                estado: "MG",
-                cep: "33333-333",
-                descricao: "Zero Glosa",
-        ))
-        empresaRepository.adicionarEmpresa(new Empresa(
-                cnpj: "44.444.444/4444-44",
-                pais: "Brasil",
-                nome: "ZG",
-                email: "teste@teste.com",
-                estado: "MG",
-                cep: "44444-444",
-                descricao: "Zero Glosa",
-        ))
-    }
-
     def listarTodos(){
         return empresaRepository.listarTodos();
     }
 
     def adicionarEmpresa(Empresa empresa) {
+        validarEmpresa(empresa)
         empresaRepository.adicionarEmpresa(empresa)
+    }
+
+    def validarEmpresa(Empresa empresa) {
+        if (empresa == null) {
+            throw new IllegalArgumentException("A empresa nao pode ser nulo")
+        }
+        validarCnpj(empresa)
+        validarEmail(empresa)
+    }
+
+    def validarCnpj(Empresa empresa) {
+        def cnpjExist = empresaRepository.listarTodos().find{
+            it.cnpj == empresa.cnpj
+        }
+        if (cnpjExist) {
+            throw new IllegalArgumentException("Cnpj ja cadastrado")
+        }
+    }
+
+    def validarEmail(Empresa empresa) {
+        def emailExist = empresaRepository.listarTodos().find {
+            it.email == empresa.email
+        }
+        if (emailExist) {
+            throw new IllegalArgumentException("Email ja cadastrado")
+        }
     }
 }
