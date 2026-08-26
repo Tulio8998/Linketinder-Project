@@ -1,7 +1,6 @@
 package com.zg.linketinder.service
 
 import com.zg.linketinder.model.Candidato
-import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.repository.CandidatoRepository
 
 class CandidatoService {

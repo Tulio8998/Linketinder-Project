@@ -3,7 +3,7 @@ package com.zg.linketinder.repository
 import com.zg.linketinder.model.Candidato
 import spock.lang.Specification
 
-class CandidatoRepositorySpec extends Specification {
+class CandidatoRepositorySpec extends Specification { //CandidatoRepositoryIspe
 
     def "deve adicionar um novo candidato ao array"() {
         given: "um repostory de candidatos"

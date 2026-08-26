@@ -1,6 +1,6 @@
 package com.zg.linketinder.service
 
-import com.zg.linketinder.model.Candidato
+
 import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.repository.VagaRepository
 

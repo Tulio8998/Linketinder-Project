@@ -1,0 +1,2 @@
+* * * * * echo $(date) >> /home/Teste/minuto.txt
+*/2 * * * * echo $(date) >> /home/Teste/dois-minuto.txt
