@@ -129,13 +129,14 @@ div {
 
 .info-professional .skills-class {
     display: grid;
-    grid-template-columns: auto auto auto auto auto;
+    grid-template-columns: auto auto auto auto;
     gap: 0.5rem;
 }
 
 .skills-class div{
     display: flex;
     flex-direction: row;
+    align-items: center;
     justify-content: center;
     color: #2563EB;
     font-size: 0.8rem;
@@ -143,6 +144,12 @@ div {
     border-radius: 8px;
     padding: 0.3rem;
     background: #DBEAFE;
+    width: 8rem;
+}
+
+.skills-class div .skill{
+    hyphens: auto;
+    text-align: center;
 }
 
 .skills-class div .remove-skill{

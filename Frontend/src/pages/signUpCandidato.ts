@@ -29,6 +29,20 @@ const estados = [
     'Tocantins'
 ]
 
+const paises = [
+    'Selecione o país',
+    'Argentina',
+    'Brasil',
+    'Canadá',
+    'China',
+    'Coreia do Sul',
+    'Cuba',
+    'EUA',
+    'Japão',
+    'Rússia',
+    'Suíça'
+]
+
 export function signUpCandidato(): string {
     return `
         <section class="signUp-class">
@@ -69,6 +83,12 @@ export function signUpCandidato(): string {
                             <div class="info-location">
                                 <p class="title-personal">LOCALIZAÇÃO</p>
                                 <div class="div-row">
+                                    <div>
+                                        <p class="input-name">País</p>
+                                        <select name="" id="">
+                                            ${paises.map(e => `<option value="${e}">${e}</option>`).join('')}
+                                        </select>
+                                    </div>
                                     <div>
                                         <p class="input-name">Estado</p>
                                         <select name="" id="">
