@@ -1,0 +1,191 @@
+.signUp-class {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    margin-top: 10rem;
+    margin-bottom: 10rem;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.signUpCandidato-content {
+    display: flex;
+    flex-direction: column;
+    background: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.158);
+    padding: 1rem;
+    width: 35rem;
+    gap: 1.5rem;
+}
+
+
+
+
+.signUp-content  .title-class {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin: 1rem 0;
+}
+
+.title-class .title{
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #0F172A;
+}
+
+.title-class .subtitle{
+    font-size: 0.8rem;
+    color: #64748B;
+}
+
+
+
+
+.input-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    height: 100%;
+    width: 100%;
+}
+
+.input-form .input-name {
+    color: #0F172A;
+    font-size: 0.8rem;
+}
+
+.input-form .input-data {
+    padding: 0.4rem 0.5rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.input-form .input-data::placeholder {
+    color: #9CA3AF;
+    font-size: 0.8rem;
+}
+
+
+
+
+
+.input-form .info-personal,.info-location,.info-professional {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.div-row {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    width: 100%;
+}
+
+.div-row > div {
+    flex: 1;
+}
+
+.title-personal {
+    color: #0F172A;
+    font-size: 0.9rem;
+}
+
+
+
+.info-location select{
+    padding: 0.4rem 0.5rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.info-professional textarea {
+    padding: 0.4rem 0.5rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 5px;
+    width: 100%;
+    height: 10rem;
+    resize: none;
+
+}
+
+.info-professional textarea::placeholder {
+    font-family: var(--font-fallback);
+}
+
+.info-professional .skills-class {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
+    gap: 0.5rem;
+}
+
+.skills-class div{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    color: #2563EB;
+    font-size: 0.8rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 0.3rem;
+    background: #DBEAFE;
+}
+
+.skills-class div .remove-skill{
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
+
+
+.input-form .button-class {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: end;
+}
+
+.input-form .cancel, .create {
+    padding: 0.3rem;
+    width: 20%;
+    font-size: 0.8rem;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.input-form .cancel {
+    color: #0F172A;
+    border: 1px solid #E2E8F0;
+    background: #FFFFFF;
+}
+
+.input-form .cancel:hover {
+    color: #FFFFFF;
+    background: #FF6B6B;
+}
+
+.input-form .create {
+    color: #0F172A;
+    border: 1px solid #E2E8F0;
+    background: #FFFFFF;
+}
+
+.input-form .create:hover {
+    color: #FFFFFF;
+    background: #0F172A;
+}
