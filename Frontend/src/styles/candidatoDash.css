@@ -1,0 +1,131 @@
+.candidatoDash-class{
+    display: grid;
+    grid-template-columns: 23rem auto;
+    width: 100%;
+    height: 100vh;
+    color: #0F172A;
+}
+
+
+
+
+.candidato-profile {
+    display: flex;
+    flex-direction: column;
+    color: #0F172A;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    padding: 3rem 0;
+}
+
+.candidato-profile h2{
+    font-weight: bold;
+    padding: 0 2rem 2rem 2rem;
+    color: #0F172A;
+}
+
+.candidato-profile .profile-content,
+.about, .skills {
+    padding: 0 2rem;
+}
+
+.profile {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    height: 100%;
+}
+
+.profile-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-content .name {
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+.profile-content div{
+    display: flex;
+    flex-direction: row;
+}
+
+.profile .line{
+    width: 100%;
+    height: 1px;
+    background: #E2E8F0;
+}
+
+.about {
+    
+}
+
+.about .about-title,.skill-title{
+    color: #64748B;
+    font-weight: bold;
+}
+
+.skills div{
+    display: grid;
+    grid-template-columns: auto auto auto;
+}
+
+.skill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2563EB;
+    background: #EFF6FF;
+    font-size: 0.8rem;
+    border: 1px solid #DBEAFE;
+    border-radius: 8px;
+    padding: 0.3rem;
+    hyphens: auto;
+    word-break: break-all;
+    text-align: center;
+    width: 6rem;
+}
+
+.log-out {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+}
+
+.log-out .btn-out{
+    padding: 0.5rem 1.5rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    color: #64748B;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.log-out .btn-out:hover{
+    font-weight: bold;
+    background: #FF6B6B;
+    color: #FFFFFF;
+}
+
+
+
+
+.dash-content {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    gap: 5rem;
+}
+
+.top-bar {
+    padding: 2rem;
+    background: #FFFFFF;
+    width: 100%;
+    border: 1px solid #E2E8F0;
+    border-left: none;
+}
