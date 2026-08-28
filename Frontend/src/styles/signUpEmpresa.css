@@ -155,6 +155,7 @@ div {
 
 .skills-class div .skill{
     hyphens: auto;
+    word-break: break-all;
     text-align: center;
 }
 

@@ -55,7 +55,7 @@ export function signUpEmpresa(): string {
                     <form>
                         <div class="input-form">
                             <div class="info-personal">
-                                <p class="title-personal">INFORMAÇÃO PESSOAL</p>
+                                <p class="title-personal">INFORMAÇÃO EMPRESARIAL</p>
                                 <div>
                                     <p class="input-name">Nome da empresa</p>
                                     <input class="input-data" type="text" placeholder="nome">
