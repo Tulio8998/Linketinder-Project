@@ -40,7 +40,7 @@ export function configSkills(): void {
 }
 
 
-export function editPanel(): void {
+export function editCandPanel(): void {
     const editButton = document.querySelector('.btn-edit')
     editButton?.addEventListener('click', () => {
         const panel = document.createElement('div')
