@@ -94,13 +94,13 @@
     gap: 0.5rem;
 }
 
-.nav-dash .find-cand,.match-cand, .add-vaga{
+.nav-dash .find-cand,.match-cand, .add-vaga, .view-vaga{
     color: #64748B;
     cursor: pointer;
     padding: 0.5rem 0.5rem;
 }
 
-.nav-dash .find-cand:hover, .match-cand:hover, .add-vaga:hover {
+.nav-dash .find-cand:hover, .match-cand:hover, .add-vaga:hover, .view-vaga:hover{
     background: #2564eb11;
     font-weight: bold;
     color: #2563EB;
@@ -159,7 +159,6 @@
 
 .dash-content {
     display: flex;
-    align-items: center;
     flex-direction: column;
     width: 100%;
     height: 100%;
@@ -231,6 +230,12 @@
     overflow-y: auto;
 }
 
+.card-panel .match-cards {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    padding: 1.5rem;
+}
+
 .card-panel div .close-card{
     margin-left: auto;
     font-weight: bold;
@@ -270,6 +275,7 @@
     box-shadow: none;
 }
 
+
 .info-job .porcent-match {
     margin-left: auto;
     width: 7rem;
@@ -282,6 +288,8 @@
 
 
 .info-job .name {
+    margin-right: auto;
+    color: #0F172A;
     font-weight: bold;
     font-size: 1.2rem;
 }
@@ -449,7 +457,7 @@
     overflow-y: auto;
 }
 
-.add-class {
+.add-class, .edit-class  {
     display: flex;
     width: 100;
     min-height: 100%;
@@ -457,7 +465,7 @@
     justify-content: center;
 }
 
-.addVaga-content {
+.addVaga-content, .editVaga-content {
     display: flex;
     flex-direction: column;
     background: #FFFFFF;
@@ -468,7 +476,7 @@
     gap: 1.5rem;
 }
 
-.addVaga-content  .title-class {
+.addVaga-content,.editVaga-content   .title-class {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
@@ -657,7 +665,7 @@ div {
     justify-content: end;
 }
 
-.input-form .cancel, .create {
+.input-form .cancel, .create, .delete {
     padding: 0.3rem;
     width: 20%;
     font-size: 0.8rem;
@@ -665,7 +673,7 @@ div {
     font-weight: bold;
 }
 
-.input-form .cancel {
+.input-form .create, .cancel, .delete {
     color: #0F172A;
     border: 1px solid #E2E8F0;
     background: #FFFFFF;
@@ -676,10 +684,9 @@ div {
     background: #FF6B6B;
 }
 
-.input-form .create {
-    color: #0F172A;
-    border: 1px solid #E2E8F0;
-    background: #FFFFFF;
+.input-form .delete:hover {
+    color: #FFFFFF;
+    background: #9b0404;
 }
 
 .input-form .create:hover {

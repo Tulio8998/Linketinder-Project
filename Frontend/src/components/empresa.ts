@@ -1,5 +1,5 @@
 import ApexCharts from 'apexcharts'
-import { addVaga, editEmpProfile, viewCandidato } from "../pages/empresaDash"
+import { addVaga, editEmpProfile, editVaga, viewCandidatoPanel, viewMatch, viewVagaEmp } from "../pages/empresaDash"
 
 export function configSkills(): void {
     const novaSkill = document.getElementById('input-skill') as HTMLInputElement
@@ -88,6 +88,30 @@ export function addVagaPanel(): void {
     })
 }
 
+export function editVagaPanel(): void {
+    const cardVaga = document.querySelectorAll('.card')
+    cardVaga.forEach((card) => {
+        card.addEventListener('click', () => {
+        const panel = document.createElement('div')
+        panel.className = 'edit-panel'
+        panel.innerHTML = editVaga()
+        document.body.appendChild(panel)
+        configSkills()
+
+        const closeButton = panel.querySelector('.cancel')
+        closeButton?.addEventListener('click', (e) => {
+            e.preventDefault()
+            panel.remove()
+        })
+
+        const form = panel.querySelector('form')
+        form?.addEventListener('submit', (e) => {
+            e.preventDefault()
+            panel.remove()
+        })
+    })
+    })
+}
 
 export function cadidatoPanel(): void {
     const cards = document.querySelectorAll('.card')
@@ -100,7 +124,7 @@ export function cadidatoPanel(): void {
             const skills = Array.from(card.querySelectorAll('.skill')).map(e => e.textContent ?? '')
             const panel = document.createElement('div')
             panel.className = 'card-panel'
-            panel.innerHTML = viewCandidato(
+            panel.innerHTML = viewCandidatoPanel(
                 name,
                 address,
                 description,
@@ -226,9 +250,56 @@ export function graphCand(): void {
             }
         }
     }
-    const graph = document.querySelector('#graph')
+    const graph = document.querySelector('#graph') as HTMLElement
     if (graph) {
         const chart = new ApexCharts(graph, options)
         chart.render()
     }
+}
+
+let candidatosCards: string = ''
+
+export function findCand(): void {
+    const findCandBtn = document.querySelector('.find-cand')
+    const dash = document.querySelector('.match-cards') as HTMLElement
+    const graphDash = document.querySelector('.graph-class') as HTMLElement
+    candidatosCards = dash.innerHTML
+
+    findCandBtn?.addEventListener('click', () => {
+        dash.style.display = 'grid'
+        graphDash.style.display = 'flex'    
+        dash.innerHTML = candidatosCards
+        cadidatoPanel()
+        pointSkills()
+    })
+}
+
+export function findMatch(): void {
+    const matchCandBtn = document.querySelector('.match-cand') 
+    const dash = document.querySelector('.match-cards') as HTMLElement
+    const graphDash = document.querySelector('.graph-class') as HTMLElement
+    candidatosCards = dash.innerHTML
+
+    matchCandBtn?.addEventListener('click', () => {
+        dash.style.display = 'grid'
+        graphDash.style.display = 'none'
+        dash.innerHTML = viewMatch() 
+        cadidatoPanel()
+        pointSkills()
+    })
+}
+
+export function findVaga(): void {
+    const viewVagaBtn = document.querySelector('.view-vaga') 
+    const dash = document.querySelector('.match-cards') as HTMLElement
+    const graphDash = document.querySelector('.graph-class') as HTMLElement
+    candidatosCards = dash.innerHTML
+
+    viewVagaBtn?.addEventListener('click', () => {
+        dash.style.display = 'grid'
+        graphDash.style.display = 'none'
+        dash.innerHTML = viewVagaEmp()
+        editVagaPanel()
+        pointSkills()
+    })
 }
