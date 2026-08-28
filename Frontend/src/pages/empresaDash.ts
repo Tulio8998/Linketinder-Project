@@ -1,3 +1,5 @@
+import ApexCharts from 'apexcharts'
+
 const estados = [
     'Selecione o estado',
     'Acre',
@@ -259,10 +261,9 @@ export function empresaDash(): string {
                     </div>
                 </div>
                 <div class="graph-class">
-                    <p class="graph-title"></p>
-                    <div class="graph">
-                        
-                    </div>
+                    <p class="graph-title">Candidatos por competência</p>
+
+                    <div class="graph" id="graph"></div>
                 </div>
                 <div>
                     <p>Filtro aqui</p>
@@ -274,13 +275,26 @@ export function empresaDash(): string {
                             <p class="name">Senior UI/UX</p>
                             <p class="address">Belo horizonte, Minas Gerais</p>
                             <p class="description">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam, architecto aperiam? Illo rem vero libero facilis repudiandae doloremque nulla, sequi consectetur nobis nihil veritatis laudantium! Voluptatum cum fugiat iste tenetur.</p>
-                            <div>
+                            <div class="skills-class">
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
                                 <p class="skill">Java</p>
                                 <p class="skill">Java</p>
                                 <p class="skill">Java</p>
                                 <p class="skill">Java</p>
                                 <p class="skill">Java</p>
                             </div>
+                        </div>
+                        <div class="pointers">
+                            
                         </div>
                         <div class="choice">
                             <button class="pass">Passar</button>

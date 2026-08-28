@@ -1,3 +1,4 @@
+import ApexCharts from 'apexcharts'
 import { addVaga, editEmpProfile, viewCandidato } from "../pages/empresaDash"
 
 export function configSkills(): void {
@@ -40,7 +41,7 @@ export function configSkills(): void {
 }
 
 
-export function editCandPanel(): void {
+export function editEmpPanel(): void {
     const editButton = document.querySelector('.btn-edit')
     editButton?.addEventListener('click', () => {
         const panel = document.createElement('div')
@@ -115,4 +116,119 @@ export function cadidatoPanel(): void {
             })
         })
     })
+}
+
+export function pointSkills(): void {
+    const cards = document.querySelectorAll('.card')
+    cards.forEach((card) => {
+        const pointers = card.querySelector('.pointers')
+        const skills = card.querySelectorAll('.skill')
+
+        if (skills.length > 6 && pointers) {
+            const pointer = document.createElement('p')
+            pointer.className = 'pointer'
+            pointer.textContent = '...'
+
+            pointers.appendChild(pointer)
+        }
+    })
+}
+
+const pessoaMock = {
+    competencia: []
+}
+
+const p1 = {
+    ...pessoaMock,
+    competencia: ['Java', 'Python', 'SQL', 'Groovy', 'JavaScripy']
+}
+
+const p2 = {
+    ...pessoaMock,
+    competencia: ['Java', 'Python', 'SQL', 'TypeScripy', 'JavaScripy']
+}
+
+const p3 = {
+    ...pessoaMock,
+    competencia: ['Java', 'Python', 'C#', 'Groovy', 'JavaScripy']
+}
+
+const p4 = {
+    ...pessoaMock,
+    competencia: ['C#', 'C++', 'SQL', 'Java', 'C++']
+}
+
+const p5 = {
+    ...pessoaMock,
+    competencia: ['Java', 'SQL', 'Groovy', 'Java']
+}
+
+const p6 = {
+    ...pessoaMock,
+    competencia: ['Java', 'SQL', 'Groovy', 'Java']
+}
+
+const p7 = {
+    ...pessoaMock,
+    competencia: ['Java', 'SQL', 'Groovy', 'Java']
+}
+const pessoas = [p1, p2, p3, p4, p5, p6, p7]
+
+
+export function graphCand(): void {
+    const competencias = new Map<string, number>()
+    pessoas.forEach((pessoa) => {
+        const competenciasUn = new Set(pessoa.competencia)
+        competenciasUn.forEach((competencia) => {
+            competencias.set(competencia,(competencias.get(competencia) ?? 0) + 1
+            )
+        })
+    })
+
+    const categorias = Array.from(competencias.keys())
+    const valores = Array.from(competencias.values())
+    const options: ApexCharts.ApexOptions = {
+        chart: {
+            type: 'bar',
+            height: 400,
+            toolbar: {
+                show: false
+            }
+        },
+        colors: ['#22C55E'],
+        grid: {
+            padding: {
+                bottom: 20
+            }
+        },
+        series: [
+            {
+                name: 'Quantidade de candidatos',
+                data: valores
+            }
+        ],
+        xaxis: {
+            categories: categorias,
+            title: {
+                text: 'Competências',
+            }
+        },
+        yaxis: {
+            min: 0,
+            tickAmount: 5,
+            title: {
+                text: 'Número de candidatos'
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: (value) => `${value} candidatos`
+            }
+        }
+    }
+    const graph = document.querySelector('#graph')
+    if (graph) {
+        const chart = new ApexCharts(graph, options)
+        chart.render()
+    }
 }

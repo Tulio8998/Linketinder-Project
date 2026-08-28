@@ -2,15 +2,15 @@ import './styles/global.css'
 import './styles/signIn.css'
 import './styles/signUpCandidato.css'
 import './styles/signUpEmpresa.css'
-// import './styles/candidatoDash.css'
+import './styles/candidatoDash.css'
 import './styles/empresaDash.css'
-// import { configSkills, editCandPanel, vagaPanel } from './components/candidato'
+import { configSkills, editCandPanel, vagaPanel } from './components/candidato'
 import { signIn } from './pages/signIn'
 import { signUpCandidato } from './pages/signUpCandidato'
 import { signUpEmpresa } from './pages/signUpEmpresa'
 import { candidatoDash } from './pages/candidatoDash'
 import { editEmpProfile, empresaDash } from './pages/empresaDash'
-import { addVagaPanel, cadidatoPanel, editCandPanel } from './components/empresa'
+import { addVagaPanel, cadidatoPanel, editEmpPanel, graphCand, pointSkills } from './components/empresa'
 
 const app = document.querySelector<HTMLDivElement>('#app')!
 
@@ -51,9 +51,11 @@ function empresaDashPage(): void {
 // candidatoDashPage()
 // editCandPanel()
 // vagaPanel()
-
+// pointSkills()
 
 empresaDashPage()
-editCandPanel()
+editEmpPanel()
 addVagaPanel()
 cadidatoPanel()
+pointSkills()
+graphCand()
