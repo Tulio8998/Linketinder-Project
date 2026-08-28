@@ -30,17 +30,8 @@ const estados = [
 ]
 
 const paises = [
-    'Selecione o país',
-    'Argentina',
-    'Brasil',
-    'Canadá',
-    'China',
-    'Coreia do Sul',
-    'Cuba',
-    'EUA',
-    'Japão',
-    'Rússia',
-    'Suíça'
+    'Selecione o estado',
+    'Brasil'
 ]
 
 export function signUpCandidato(): string {
