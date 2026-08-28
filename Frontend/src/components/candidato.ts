@@ -92,3 +92,19 @@ export function vagaPanel(): void {
         })
     })
 }
+
+export function pointSkills(): void {
+    const cards = document.querySelectorAll('.card')
+    cards.forEach((card) => {
+        const pointers = card.querySelector('.pointers')
+        const skills = card.querySelectorAll('.skill')
+
+        if (skills.length > 6 && pointers) {
+            const pointer = document.createElement('p')
+            pointer.className = 'pointer'
+            pointer.textContent = '...'
+
+            pointers.appendChild(pointer)
+        }
+    })
+}

@@ -220,7 +220,29 @@ export function candidatoDash(): string {
                                 <p class="skill">Java</p>
                                 <p class="skill">Java</p>
                                 <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
+                                <p class="skill">Java</p>
                             </div>
+                        </div>
+                        <div class="pointers">
+                            
                         </div>
                         <div class="choice">
                             <button class="pass">Passar</button>
