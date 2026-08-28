@@ -133,7 +133,7 @@ export function editProfile(): string {
                             </div>
                             <div class="button-class">
                                 <button class="cancel" type="submit">Cancelar</button>
-                                <button class="create" type="submit">Criar</button>
+                                <button class="create" type="submit">Salvar</button>
                             </div>
                         </div>
                     </form>
@@ -183,8 +183,10 @@ export function candidatoDash(): string {
             </div>
 
             <div class="dash-content">
-                <div class="top-bar">
-                    <h2>ALGO AQUI</h2>
+                <div class="search-bar">
+                    <div>
+                        <input class="input-search" type="text" placeholder="Pesquise vagas">
+                    </div>
                 </div>
                 <div class="match-cards">
                     <div class="card">
