@@ -38,7 +38,7 @@ const paises = [
 
 
 
-export function viewCandidatoPanel(name: string, address: string, description: string,
+export function viewPanel(name: string, address: string, description: string,
     match: string, skills: string[]): string {
     return `
         <div>

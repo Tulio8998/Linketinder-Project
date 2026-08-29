@@ -1,5 +1,5 @@
 import ApexCharts from 'apexcharts'
-import { addVaga, editEmpProfile, editVaga, viewCandidatoPanel, viewMatch, viewVagaEmp } from "../pages/empresaDash"
+import { addVaga, editEmpProfile, editVaga, viewPanel, viewMatch, viewVagaEmp } from "../pages/empresaDash"
 
 export function configSkills(): void {
     const novaSkill = document.getElementById('input-skill') as HTMLInputElement
@@ -124,7 +124,7 @@ export function cadidatoPanel(): void {
             const skills = Array.from(card.querySelectorAll('.skill')).map(e => e.textContent ?? '')
             const panel = document.createElement('div')
             panel.className = 'card-panel'
-            panel.innerHTML = viewCandidatoPanel(
+            panel.innerHTML = viewPanel(
                 name,
                 address,
                 description,
