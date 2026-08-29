@@ -4,6 +4,11 @@ Desenvolvido por Túlio
 ## Tecnologias Utilizadas
 * **Groovy:** Linguagem principal do projeto (Lógica, Orientação a Objetos, GroovyBeans, Tipagem Dinâmica)
 * **Gradle:** Ferramenta de build e automação
+* **Spock Framework:** Utilizado para a cobertura de testes unitários e desenvolvimento orientado a testes (TDD).
+* **TypeScript:** Linguagem principal do frontend, garantindo tipagem estática, contratos de dados (Models) e regras de manipulação na interface.
+* **Vite:** Ferramenta de build e servidor frontend.
+* **ApexCharts:** Biblioteca de visualização de dados utilizada para a plotagem dos gráficos interativos de competências.
+
 
 ## Comentários
 O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) solicitado, priorizando a organização estrutural, aplicação de conceitos de Orientação a Objetos e tratamento de erros de interação. Algumas decisões da implementação foram:
@@ -21,6 +26,13 @@ O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) s
 * **TDD:** Desenvolvimento guiado por testes para garantir a confiabilidade da inserção de dados no sistema.
 * **Validações de Regras de Negócio:** Inclusão de proteção contra Edge Cases na camada de Service, bloqueando o cadastro de usuários nulos e prevenindo a duplicidade de CPFs, CNPJs e e-mails.
 * **Isolamento com Mocks:** Aplicação de Mocking nos testes de serviço para isolar a comunicação com a camada de persistência.
+
+### Versão 1.3.0
+
+* **Interface Frontend:** Construção da interface visual do sistema utilizando manipulação direta do DOM com Vanilla TypeScript, focada na experiência do usuário
+* **Telas e Dashboards Dinâmicos:** Criação dos fluxos de Login, Cadastro (Candidato e Empresa) e Dashboards interativos para o gerenciamento de perfis e de vagas.
+* **Regra de Negócio Visual:** Implementação do bloqueio de identidade, candidatos e vagas são exibidos de forma anônima e os nomes reais só são revelados após a interação e confirmação na aba de Matches.
+* **Visualização de Dados Gráfica:** Integração para renderização de gráficos de barras interativos exibindo a métrica e contagem de candidatos separados por competência.
 
 ## Execução pela IDE
 1. Abra o projeto no IntelliJ IDEA.

@@ -1,0 +1,710 @@
+.candidatoDash-class{
+    display: grid;
+    grid-template-columns: 23rem auto;
+    width: 100%;
+    height: 100vh;
+    color: #0F172A;
+}
+
+
+
+
+.candidato-profile {
+    display: flex;
+    flex-direction: column;
+    color: #0F172A;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    padding: 3rem 0;
+}
+
+.candidato-profile h2{
+    font-weight: bold;
+    padding: 0 2rem 2rem 2rem;
+    color: #0F172A;
+}
+
+.candidato-profile .profile-content,
+.about, .skills, .nav-dash {
+    padding: 0 2rem;
+}
+
+.profile {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    height: 100%;
+}
+
+.profile-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-content .name {
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+.profile-content div{
+    display: flex;
+    flex-direction: row;
+}
+
+.profile .line{
+    width: 100%;
+    height: 1px;
+    background: #E2E8F0;
+}
+
+.about {
+    
+}
+
+.about .about-title,.skill-title, .nav-title{
+    color: #64748B;
+    font-weight: bold;
+}
+
+.about p:last-child{
+    color: #64748B;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.skills div{
+    display: grid;
+    grid-template-columns: auto auto auto;
+}
+
+.skills .skill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2563EB;
+    background: #EFF6FF;
+    font-size: 0.8rem;
+    border: 1px solid #DBEAFE;
+    border-radius: 8px;
+    padding: 0.3rem;
+    hyphens: auto;
+    word-break: break-all;
+    text-align: center;
+    width: 6rem;
+}
+
+.nav-dash {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-dash .match-cand, .find-vaga{
+    color: #64748B;
+    cursor: pointer;
+    padding: 0.5rem 0.5rem;
+}
+
+.nav-dash .match-cand:hover, .find-vaga:hover {
+    background: #2564eb11;
+    font-weight: bold;
+    color: #2563EB;
+    border-radius: 5px;
+}
+
+.log-out {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+}
+
+.log-out div{
+    flex-direction: row;
+    gap: 2rem;
+}
+
+
+.log-out .btn-out{
+    padding: 0.5rem 1.5rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    color: #64748B;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.log-out .btn-out:hover{
+    font-weight: bold;
+    background: #FF6B6B;
+    color: #FFFFFF;
+}
+
+.log-out .btn-edit{
+    padding: 0.5rem 1.5rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    color: #64748B;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.log-out .btn-edit:hover{
+    font-weight: bold;
+    background: #64748B;
+    color: #FFFFFF;
+}
+
+
+
+
+
+
+
+.dash-content {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    gap: 1rem;
+    overflow-x: hidden;
+}
+
+.search-bar {
+    padding: 2rem;
+    background: #FFFFFF;
+    width: 100%;
+    border: 1px solid #E2E8F0;
+}
+
+
+.search-bar div{
+    padding: 0.5rem;
+    background: #f8fafc1f;
+    width: 50%;
+    border: 1px solid #E2E8F0;
+    border-radius: 15px;
+}
+
+.search-bar div .input-search{
+    padding: 1rem;
+    background: #e2e8f042;
+    border-radius: 10px;
+}
+
+.search-bar div .input-search::placeholder{
+    font-style: italic;
+}
+
+
+
+.match-cards {
+    display: grid;
+    grid-template-columns: auto auto auto; 
+    padding: 1.5rem;
+    gap: 1.5rem;
+    justify-content: start;
+}
+
+.card-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: rgba(15, 23, 42, 0.5);
+    overflow-y: auto;
+}
+
+
+
+.card-panel div .close-card{
+    margin-left: auto;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1.5rem;
+    background: #F0FDF4;
+    padding: 0.5rem 1rem;
+    border-radius: 100px;
+}
+
+.card-panel div .close-card:hover{
+    background: #FF5252;
+    color: #FFFFFF;
+}
+
+.card{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 2rem;
+    border: 1px solid #E2E8F0;
+    background: #FFFFFF;
+    border-radius: 10px;
+    gap: 1rem;
+    cursor: pointer;
+}
+
+.card:hover{
+    transition: 0.3s;
+    transform: scale(1.02);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.158);
+}
+
+.card-panel .card:hover{
+    transition: none;
+    transform: none;
+    box-shadow: none;
+}
+
+.info-job .porcent-match {
+    margin-left: auto;
+    width: 7.5rem;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #16A34A;
+    padding: 0.5rem 1rem;
+    background: #F0FDF4;
+}
+
+
+.info-job .name {
+    margin-right: auto;
+    color: #0F172A;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.info-job .address {
+    font-weight: bold;
+    color: #b2b6bb;
+    font-size: 0.8rem;
+}
+
+.card-panel .info-job  {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-panel .info-job div{
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: center;
+    column-gap: 1rem;
+    padding: 0.5rem 0;
+}
+
+.card-panel .info-job .skill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748B;
+    background: #F1F5F9;
+    font-size: 0.8rem;
+    border: 1px solid #DBEAFE;
+    border-radius: 8px;
+    padding: 0.3rem;
+    hyphens: auto;
+    word-break: break-all;
+    text-align: center;
+    width: 6rem;
+}
+
+.card-panel .info-job .skill:nth-child(n+7) {
+    display: flex;
+}
+
+.card-panel .info-job .address {
+    margin-right: auto;
+}
+
+.card-panel .info-job .description {
+    text-align: justify;
+    color: #64748B;
+    width: 30rem;
+    -webkit-line-clamp: none;
+    -webkit-box-orient: none;
+    overflow: none;
+}
+
+.info-job .description {
+    text-align: justify;
+    color: #64748B;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-panel .info-job div{
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    gap: 0.5rem;
+    width: 100%;
+    column-gap: 1rem;
+    justify-content: center;
+    padding: 0.5rem 0;
+}
+
+.info-job div{
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: center;
+    column-gap: 1rem;
+    padding: 0.5rem 0;
+}
+
+.info-job .skill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748B;
+    background: #F1F5F9;
+    font-size: 0.8rem;
+    border: 1px solid #DBEAFE;
+    border-radius: 8px;
+    padding: 0.3rem;
+    hyphens: auto;
+    word-break: break-all;
+    text-align: center;
+    width: 6rem;
+}
+
+.pointers .pointer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #64748B;
+    font-size: 1.5rem;
+}
+
+
+.info-job .skill:nth-child(n+7) {
+    display: none;
+}
+
+.choice {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: row;
+}
+
+.choice .pass{
+    color: #64748B;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 1rem 2rem;
+    border: 1px solid #F1F5F9;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.choice .pass:hover{
+    color: #FFFFFF;
+    border: 1px solid #a4b1c2;
+    background: #a4b1c2;
+}
+
+.choice .like{
+    font-weight: bold;
+    font-size: 1rem;
+    color: #FFFFFF;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    background: #FF5252;
+    cursor: pointer;
+}
+
+.choice .like:hover{
+    background: #f3724b;
+}
+
+
+
+
+.delete-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.5);
+    overflow-y: auto;
+}
+
+.delete-class {
+    display: flex;
+    width: 100%;
+    min-height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.deleteCandidato-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.158);
+    padding: 2rem;
+    width: 30rem;
+    gap: 1.5rem;
+}
+
+.deleteCandidato-content .delete-title {
+    color: #0F172A;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.deleteCandidato-content form {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.deleteCandidato-content .cancel-delete,.confirm-delete {
+    padding: 0.3rem;
+    width: 20%;
+    font-size: 0.8rem;
+    border-radius: 20px;
+    color: #0F172A;
+    border: 1px solid #E2E8F0;
+    background: #FFFFFF;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.deleteCandidato-content .confirm-delete:hover {
+    color: #FFFFFF;
+    background: #9b0404;
+}
+
+.deleteCandidato-content .cancel-delete:hover {
+    color: #FFFFFF;
+    background: #0F172A;
+}
+
+.edit-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.5);
+    overflow-y: auto;
+}
+
+.edit-class {
+    display: flex;
+    width: 100%;
+    min-height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.editCandidato-content {
+    display: flex;
+    flex-direction: column;
+    background: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.158);
+    padding: 2rem;
+    width: 40rem;
+    gap: 1.5rem;
+}
+
+
+
+
+.edit-content  .title-class {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin: 1rem 0;
+}
+
+.title-class .title{
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #0F172A;
+}
+
+.title-class .subtitle{
+    font-size: 0.8rem;
+    color: #64748B;
+}
+
+
+
+
+.input-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    height: 100%;
+    width: 100%;
+}
+
+.input-form .input-name {
+    color: #0F172A;
+    font-size: 0.8rem;
+}
+
+.input-form .input-data {
+    padding: 0.4rem 0.5rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.input-form .input-data::placeholder {
+    color: #9CA3AF;
+    font-size: 0.8rem;
+}
+
+
+
+
+
+.input-form .info-personal,.info-location,.info-professional {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.div-row {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    width: 100%;
+}
+
+.div-row > div {
+    flex: 1;
+}
+
+.title-personal {
+    color: #0F172A;
+    font-size: 0.9rem;
+}
+
+
+
+.info-location select{
+    padding: 0.4rem 0.5rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.info-professional textarea {
+    padding: 0.4rem 0.5rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 5px;
+    width: 100%;
+    height: 10rem;
+    resize: none;
+
+}
+
+.info-professional textarea::placeholder {
+    font-family: var(--font-fallback);
+}
+
+.info-professional .skills-class {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+
+}
+
+.skills-class div{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    color: #2563EB;
+    font-size: 0.8rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 0.3rem;
+    background: #DBEAFE;
+    width: 8rem;
+}
+
+.skills-class div .skill{
+    hyphens: auto;
+    word-break: break-all;
+    text-align: center;
+}
+
+.skills-class div .remove-skill{
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
+
+
+.input-form .button-class {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: end;
+}
+
+.input-form .btn-cancel, .btn-create, .btn-delete {
+    padding: 0.3rem;
+    width: 20%;
+    font-size: 0.8rem;
+    border-radius: 20px;
+    font-weight: bold;
+    color: #0F172A;
+    border: 1px solid #E2E8F0;
+    background: #FFFFFF;
+    cursor: pointer;
+}
+
+.input-form .btn-cancel:hover {
+    color: #FFFFFF;
+    background: #FF6B6B;
+}
+
+.input-form .btn-delete:hover {
+    color: #FFFFFF;
+    background: #9b0404;
+}
+
+.input-form .btn-create:hover {
+    color: #FFFFFF;
+    background: #0F172A;
+}
