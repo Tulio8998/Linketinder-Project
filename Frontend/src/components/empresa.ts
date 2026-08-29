@@ -147,8 +147,9 @@ export function pointSkills(): void {
     cards.forEach((card) => {
         const pointers = card.querySelector('.pointers')
         const skills = card.querySelectorAll('.skill')
+        const pointerExis = pointers?.querySelector('.pointer')
 
-        if (skills.length > 6 && pointers) {
+        if (skills.length > 6 && pointers && !pointerExis) {
             const pointer = document.createElement('p')
             pointer.className = 'pointer'
             pointer.textContent = '...'

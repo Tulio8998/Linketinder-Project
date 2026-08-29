@@ -126,12 +126,12 @@ export function pointSkills(): void {
     cards.forEach((card) => {
         const pointers = card.querySelector('.pointers')
         const skills = card.querySelectorAll('.skill')
+        const pointerExis = pointers?.querySelector('.pointer')
 
-        if (skills.length > 6 && pointers) {
+        if (skills.length > 6 && pointers && !pointerExis) {
             const pointer = document.createElement('p')
             pointer.className = 'pointer'
             pointer.textContent = '...'
-
             pointers.appendChild(pointer)
         }
     })
@@ -147,6 +147,19 @@ export function findMatch(): void {
     matchCandBtn?.addEventListener('click', () => {
         dash.style.display = 'grid'
         dash.innerHTML = viewMatch() 
+        cadidatoPanel()
+        pointSkills()
+    })
+}
+
+export function findVaga(): void {
+    const findVagaBtn = document.querySelector('.find-vaga')
+    const dash = document.querySelector('.match-cards') as HTMLElement
+    candidatosCards = dash.innerHTML
+
+    findVagaBtn?.addEventListener('click', () => {
+        dash.style.display = 'grid'  
+        dash.innerHTML = candidatosCards
         cadidatoPanel()
         pointSkills()
     })
