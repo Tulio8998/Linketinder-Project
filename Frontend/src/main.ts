@@ -2,15 +2,15 @@ import './styles/global.css'
 import './styles/signIn.css'
 import './styles/signUpCandidato.css'
 import './styles/signUpEmpresa.css'
-import './styles/candidatoDash.css'
-// import './styles/empresaDash.css'
-import { configSkills, editCandPanel, findMatch, pointSkills, vagaPanel } from './components/candidato'
+//import './styles/candidatoDash.css'
+import './styles/empresaDash.css'
+//import { configSkills, deleteCandidato, editCandPanel, findMatch, findVaga, pointSkills, vagaPanel } from './components/candidato'
 import { signIn } from './pages/signIn'
 import { signUpCandidato } from './pages/signUpCandidato'
 import { signUpEmpresa } from './pages/signUpEmpresa'
 import { candidatoDash, viewVagaCand } from './pages/candidatoDash'
 import { editEmpProfile, empresaDash } from './pages/empresaDash'
-// import { addVagaPanel, cadidatoPanel, editEmpPanel, editVagaPanel, findCand, findMatch, findVaga, graphCand, pointSkills } from './components/empresa'
+import { addVagaPanel, cadidatoPanel, editEmpPanel, editVagaPanel, findCand, findMatch, findVaga, graphCand, pointSkills } from './components/empresa'
 
 const app = document.querySelector<HTMLDivElement>('#app')!
 
@@ -48,18 +48,19 @@ function empresaDashPage(): void {
 // signUpPageCandidato()
 // configSkills()
 
-candidatoDashPage()
-editCandPanel()
-vagaPanel()
-pointSkills()
-findMatch()
-
-// empresaDashPage()
-// editEmpPanel()
-// addVagaPanel()
-// cadidatoPanel()
+// candidatoDashPage()
+// editCandPanel()
+// vagaPanel()
 // pointSkills()
-// graphCand()
-// findCand()
-// findMatch()
 // findVaga()
+// findMatch()
+
+empresaDashPage()
+editEmpPanel()
+addVagaPanel()
+cadidatoPanel()
+pointSkills()
+graphCand()
+findCand()
+findMatch()
+findVaga()

@@ -421,7 +421,74 @@
 
 
 
+.delete-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.5);
+    overflow-y: auto;
+}
 
+.delete-class {
+    display: flex;
+    width: 100%;
+    min-height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.deleteCandidato-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.158);
+    padding: 2rem;
+    width: 30rem;
+    gap: 1.5rem;
+}
+
+.deleteCandidato-content .delete-title {
+    color: #0F172A;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.deleteCandidato-content form {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.deleteCandidato-content .cancel-delete,.confirm-delete {
+    padding: 0.3rem;
+    width: 20%;
+    font-size: 0.8rem;
+    border-radius: 20px;
+    color: #0F172A;
+    border: 1px solid #E2E8F0;
+    background: #FFFFFF;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.deleteCandidato-content .confirm-delete:hover {
+    color: #FFFFFF;
+    background: #9b0404;
+}
+
+.deleteCandidato-content .cancel-delete:hover {
+    color: #FFFFFF;
+    background: #0F172A;
+}
 
 .edit-panel {
     position: fixed;
@@ -604,31 +671,29 @@ div {
     justify-content: end;
 }
 
-.input-form .cancel, .create, .delete {
+.input-form .btn-cancel, .btn-create, .btn-delete {
     padding: 0.3rem;
     width: 20%;
     font-size: 0.8rem;
     border-radius: 20px;
     font-weight: bold;
-}
-
-.input-form .create, .cancel, .delete {
     color: #0F172A;
     border: 1px solid #E2E8F0;
     background: #FFFFFF;
+    cursor: pointer;
 }
 
-.input-form .cancel:hover {
+.input-form .btn-cancel:hover {
     color: #FFFFFF;
     background: #FF6B6B;
 }
 
-.input-form .delete:hover {
+.input-form .btn-delete:hover {
     color: #FFFFFF;
     background: #9b0404;
 }
 
-.input-form .create:hover {
+.input-form .btn-create:hover {
     color: #FFFFFF;
     background: #0F172A;
 }

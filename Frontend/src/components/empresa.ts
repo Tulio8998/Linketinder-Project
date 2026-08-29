@@ -1,5 +1,5 @@
 import ApexCharts from 'apexcharts'
-import { addVaga, editEmpProfile, editVaga, viewPanel, viewMatch, viewVagaEmp } from "../pages/empresaDash"
+import { addVaga, editEmpProfile, editVaga, viewPanel, viewMatch, viewVagaEmp, deleteEmpresaProfile } from "../pages/empresaDash"
 
 export function configSkills(): void {
     const novaSkill = document.getElementById('input-skill') as HTMLInputElement
@@ -50,10 +50,16 @@ export function editEmpPanel(): void {
         document.body.appendChild(panel)
         configSkills()
 
-        const closeButton = panel.querySelector('.cancel')
+        const closeButton = panel.querySelector('.btn-cancel')
         closeButton?.addEventListener('click', (e) => {
             e.preventDefault()
             panel.remove()
+        })
+
+        const deleteButton = panel.querySelector('.btn-delete')
+        deleteButton?.addEventListener('click', (e) => {
+            e.preventDefault()
+            deleteEmpresa()
         })
 
         const form = panel.querySelector('form')
@@ -64,6 +70,24 @@ export function editEmpPanel(): void {
     })
 }
 
+export function deleteEmpresa(): void {
+    const panel = document.createElement('div')
+    panel.className = 'delete-panel'
+    panel.innerHTML = deleteEmpresaProfile()
+    document.body.appendChild(panel)
+
+    const closePanel = panel.querySelector('.cancel-delete')
+    closePanel?.addEventListener('click', (e) => {
+        e.preventDefault()
+        panel.remove()
+    })
+
+    const deleteAccount = panel.querySelector('.confirm-delete')
+    deleteAccount?.addEventListener('click', (e) => {
+        e.preventDefault()
+        panel.remove()
+    })
+}
 
 export function addVagaPanel(): void {
     const addNav = document.querySelector('.add-vaga')

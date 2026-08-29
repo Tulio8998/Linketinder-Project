@@ -128,9 +128,9 @@ export function editEmpProfile(): string {
                                 </div>
                             </div>
                             <div class="button-class">
-                                <button class="cancel" type="submit">Cancelar</button>
-                                <button class="delete" type="submit">Excluir</button>
-                                <button class="create" type="submit">Salvar</button>
+                                <button class="btn-cancel" type="submit">Cancelar</button>
+                                <button class="btn-delete" type="submit">Excluir</button>
+                                <button class="btn-create" type="submit">Salvar</button>
                             </div>
                         </div>
                     </form>
@@ -702,6 +702,21 @@ export function viewVagaEmp():string {
     `
 }
 
+export function deleteEmpresaProfile(): string {
+    return `
+        <section class="delete-class">
+            <div class="container">
+                <div class="deleteEmpresa-content">
+                    <p class="delete-title">Deseja deletar a conta?</p>
+                    <form>
+                        <button class="cancel-delete">Não</button>
+                        <button class="confirm-delete">Sim</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    `
+}
 
 
 export function empresaDash(): string {

@@ -1,4 +1,4 @@
-import { editProfile, viewMatch, viewPanel, viewVagaCand } from "../pages/candidatoDash"
+import { deleteCandidatoProfile, editProfile, viewMatch, viewPanel, viewVagaCand } from "../pages/candidatoDash"
 
 export function configSkills(): void {
     const novaSkill = document.getElementById('input-skill') as HTMLInputElement
@@ -77,10 +77,16 @@ export function editCandPanel(): void {
         document.body.appendChild(panel)
         configSkills()
 
-        const closeButton = panel.querySelector('.cancel')
+        const closeButton = panel.querySelector('.btn-cancel')
         closeButton?.addEventListener('click', (e) => {
             e.preventDefault()
             panel.remove()
+        })
+
+        const deleteButton = panel.querySelector('.btn-delete')
+        deleteButton?.addEventListener('click', (e) => {
+            e.preventDefault()
+            deleteCandidato()
         })
 
         const form = panel.querySelector('form')
@@ -88,6 +94,25 @@ export function editCandPanel(): void {
             e.preventDefault()
             panel.remove()
         })
+    })
+}
+
+export function deleteCandidato(): void {
+    const panel = document.createElement('div')
+    panel.className = 'delete-panel'
+    panel.innerHTML = deleteCandidatoProfile()
+    document.body.appendChild(panel)
+
+    const closePanel = panel.querySelector('.cancel-delete')
+    closePanel?.addEventListener('click', (e) => {
+        e.preventDefault()
+        panel.remove()
+    })
+
+    const deleteAccount = panel.querySelector('.confirm-delete')
+    deleteAccount?.addEventListener('click', (e) => {
+        e.preventDefault()
+        panel.remove()
     })
 }
 
