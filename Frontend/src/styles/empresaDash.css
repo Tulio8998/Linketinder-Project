@@ -67,6 +67,13 @@
     font-weight: bold;
 }
 
+.about p:last-child{
+    color: #64748B;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+
 .skills div{
     display: grid;
     grid-template-columns: auto auto auto;
@@ -86,6 +93,11 @@
     word-break: break-all;
     text-align: center;
     width: 6rem;
+}
+
+.none-vaga {
+    padding: 2rem; 
+    color: #64748B;
 }
 
 .nav-dash {
@@ -159,10 +171,12 @@
 
 .dash-content {
     display: flex;
+    align-items: flex-start;
     flex-direction: column;
     width: 100%;
     height: 100%;
     gap: 1rem;
+    overflow-x: hidden;
 }
 
 .search-bar {
@@ -214,8 +228,10 @@
 
 .match-cards {
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto auto auto; 
     padding: 1.5rem;
+    gap: 1.5rem;
+    justify-content: start;
 }
 
 .card-panel {
@@ -230,11 +246,7 @@
     overflow-y: auto;
 }
 
-.card-panel .match-cards {
-    display: grid;
-    grid-template-columns: auto auto auto;
-    padding: 1.5rem;
-}
+
 
 .card-panel div .close-card{
     margin-left: auto;
@@ -278,7 +290,7 @@
 
 .info-job .porcent-match {
     margin-left: auto;
-    width: 7rem;
+    width: 7.5rem;
     font-size: 0.8rem;
     font-weight: bold;
     color: #16A34A;
