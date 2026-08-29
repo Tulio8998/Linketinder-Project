@@ -1,18 +1,23 @@
 import type { Vaga } from "../models/Vaga"
 
-export const VagaService = { 
+export const VagaService = {
     listarVagas(): Vaga[] {
         const vagasJSON = localStorage.getItem('vagas')
         return vagasJSON ? JSON.parse(vagasJSON) : []
     },
-    excluirVaga(vaga: Vaga): void {
+    excluirVaga(index: number): void {
         const vagas = this.listarVagas()
-        const novasVagas = vagas.filter(v => v.nome !== vaga.nome || v.descricao !== vaga.descricao)
-        localStorage.setItem('vagas', JSON.stringify(novasVagas))
+        vagas.splice(index, 1)
+        localStorage.setItem('vagas', JSON.stringify(vagas))
     },
     salvarVaga(vaga: Vaga): void {
         const vagas = this.listarVagas()
         vagas.push(vaga)
+        localStorage.setItem('vagas', JSON.stringify(vagas))
+    },
+    atualizarVaga(index: number, vagaAtualizada: Vaga): void {
+        const vagas = this.listarVagas()
+        vagas[index] = vagaAtualizada
         localStorage.setItem('vagas', JSON.stringify(vagas))
     }
 }

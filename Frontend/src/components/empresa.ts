@@ -159,7 +159,10 @@ export function addVagaPanel(): void {
     })
 }
 
-export function editVagaPanel(vagaAtual: Vaga): void {
+export function editVagaPanel(index: number): void {
+    const vagaAtual = VagaService.listarVagas()[index]
+    if (!vagaAtual) return
+
     const panel = document.createElement('div')
     panel.className = 'edit-panel'
     panel.innerHTML = editVaga()
@@ -191,7 +194,7 @@ export function editVagaPanel(vagaAtual: Vaga): void {
 
     panel.querySelector('.btn-delete')?.addEventListener('click', (e) => {
         e.preventDefault()
-        VagaService.excluirVaga(vagaAtual)
+        VagaService.excluirVaga(index)
         panel.remove()
         document.querySelector<HTMLElement>('.view-vaga')?.click()
     })
@@ -199,8 +202,6 @@ export function editVagaPanel(vagaAtual: Vaga): void {
     const form = panel.querySelector('form')
     form?.addEventListener('submit', (e) => {
         e.preventDefault()
-        
-        VagaService.excluirVaga(vagaAtual)
         
         const skillsElements = panel.querySelectorAll('.info-professional .skill')
         const vagaAtualizada: Vaga = {
@@ -213,7 +214,7 @@ export function editVagaPanel(vagaAtual: Vaga): void {
             competencias: Array.from(skillsElements).map(s => s.textContent || '')
         }
 
-        VagaService.salvarVaga(vagaAtualizada)
+        VagaService.atualizarVaga(index, vagaAtualizada)
         panel.remove()
         document.querySelector<HTMLElement>('.view-vaga')?.click()
     })
@@ -403,7 +404,7 @@ export function findVaga(): void {
                     if ((e.target as HTMLElement).tagName === 'BUTTON'){
                         return
                     }
-                    editVagaPanel(vagas[index])
+                    editVagaPanel(index)
                 })
             })
         }

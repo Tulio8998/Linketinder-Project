@@ -163,7 +163,7 @@ export function candidatoDash(): string {
                 <h2>Linketinder</h2>
                 <div class="profile">
                     <div class="profile-content">
-                        <p class="name">Carregando...</p>
+                        <p class="name"></p>
                         <div>
                             <p>Estado</p>
                             <p>-</p>

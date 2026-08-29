@@ -93,10 +93,12 @@ export function editCandPanel(): void {
         }
 
         panel.querySelector('.btn-cancel')?.addEventListener('click', (e) => {
-            e.preventDefault(); panel.remove()
+            e.preventDefault(); 
+            panel.remove()
         })
         panel.querySelector('.btn-delete')?.addEventListener('click', (e) => {
-            e.preventDefault(); deleteCandidato()
+            e.preventDefault(); 
+            deleteCandidato()
         })
 
         panel.querySelector('form')?.addEventListener('submit', (e) => {

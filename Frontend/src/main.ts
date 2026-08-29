@@ -50,11 +50,11 @@ function signInPage(): void {
 
         const empresa = EmpresaService.listarEmpresas().find(emp => emp.email === email)
         if (empresa) {
-            localStorage.setItem('empresa_atual', JSON.stringify(candidato))
+            localStorage.setItem('empresa_atual', JSON.stringify(empresa))
             empresaDashPage()
             return
         }
-        alert('Usuário nao encontrado! Verifique o e-mail ou cadastre-se')
+        alert('Usuário nao encontrado! Verifique o e-mail ou cadastre-se.')
     })
 }
 
@@ -74,12 +74,36 @@ function signUpPageCandidato(): void {
         const textarea = form.querySelector('textarea')
         const skillsElements = form.querySelectorAll('.info-professional .skill')
 
+        const nome = inputs[0].value.trim()
+        const cpf = inputs[1].value.trim()
+        const idade = Number(inputs[2].value)
+        const email = inputs[3].value.trim()
+        const cep = inputs[5].value.trim()
+
+        if (!nome || !cpf || !email) {
+            alert("Preencha os campos obrigatórios!")
+            return
+        }
+
+        const emailExisteCand = CandidatoService.listarCandidatos().some(c => c.email === email)
+        const emailExisteEmp = EmpresaService.listarEmpresas().some(e => e.email === email)
+        if (emailExisteCand || emailExisteEmp) {
+            alert("Este E-mail já está em uso!")
+            return
+        }
+
+        const cpfExiste = CandidatoService.listarCandidatos().some(c => c.cpf === cpf)
+        if (cpfExiste) {
+            alert("Este CPF já está cadastrado!")
+            return
+        }
+
         const novoCandidato: Candidato = {
-            nome: inputs[0].value,
-            cpf: inputs[1].value,
-            idade: Number(inputs[2].value),
-            email: inputs[3].value, 
-            cep: inputs[5].value,
+            nome,
+            cpf,
+            idade,
+            email, 
+            cep,
             pais: selects[0].value,
             estado: selects[1].value,
             descricao: textarea?.value || '',
@@ -108,11 +132,34 @@ function signUpPageEmpresa(): void {
         const textarea = form.querySelector('textarea')
         const skillsElements = form.querySelectorAll('.info-professional .skill')
 
+        const nome = inputs[0].value.trim()
+        const cpnj = inputs[1].value.trim()
+        const email = inputs[2].value.trim()
+        const cep = inputs[4].value.trim()
+
+        if (!nome || !cpnj || !email) {
+            alert("Preencha os campos obrigatórios!")
+            return
+        }
+
+        const emailExisteCand = CandidatoService.listarCandidatos().some(c => c.email === email)
+        const emailExisteEmp = EmpresaService.listarEmpresas().some(e => e.email === email)
+        if (emailExisteCand || emailExisteEmp) {
+            alert("Este E-mail já está em uso!")
+            return
+        }
+
+        const cnpjExiste = EmpresaService.listarEmpresas().some(e => e.cpnj === cpnj)
+        if (cnpjExiste) {
+            alert("Este CNPJ já está cadastrado!")
+            return
+        }
+
         const novaEmpresa: Empresa = {
-            nome: inputs[0].value,
-            cpnj: inputs[1].value, 
-            email: inputs[2].value, 
-            cep: inputs[4].value, 
+            nome,
+            cpnj, 
+            email, 
+            cep, 
             pais: selects[0].value,
             estado: selects[1].value,
             descricao: textarea?.value || '',
@@ -187,7 +234,7 @@ function empresaDashPage(): void {
     document.querySelector<HTMLElement>('.find-cand')?.click()
 
     document.querySelector('.btn-out')?.addEventListener('click', () => {
-        EmpresaService.excluirEmpresa()
+        localStorage.removeItem('empresa_atual')
         signInPage()
     })
 }
