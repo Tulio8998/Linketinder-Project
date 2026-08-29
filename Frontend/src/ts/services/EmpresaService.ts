@@ -7,7 +7,7 @@ export const EmpresaService = {
     },
     salvarEmpresa(empresa: Empresa): void {
         const empresas = this.listarEmpresas()
-        const index = empresas.findIndex(e => e.email === empresa.email)
+        const index = empresas.findIndex(e => e.cpnj === empresa.cpnj)
         if (index > -1) {
             empresas[index] = empresa
         } else {
@@ -19,11 +19,8 @@ export const EmpresaService = {
         const dados = localStorage.getItem('empresa_atual')
         return dados ? JSON.parse(dados) : null
     },
-    salvarEmpresaAtual(empresa: Empresa): void {
-        localStorage.setItem('empresa_atual', JSON.stringify(empresa))
-        this.salvarEmpresa(empresa)
-    },
-    excluirEmpresa(): void {
-        localStorage.removeItem('empresa_atual')
+    excluirEmpresa(cpnj: string): void {
+        const empresas = this.listarEmpresas().filter(e => e.cpnj !== cpnj)
+        localStorage.setItem('empresas_db', JSON.stringify(empresas))
     }
 }

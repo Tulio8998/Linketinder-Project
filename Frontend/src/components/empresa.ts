@@ -85,7 +85,8 @@ export function editEmpPanel(): void {
                 empresa.cep = inputs[2].value
                 empresa.descricao = textarea?.value || ''
                 empresa.competencias = Array.from(skillsElements).map(s => s.textContent || '')
-                EmpresaService.salvarEmpresaAtual(empresa)
+                EmpresaService.salvarEmpresa(empresa)
+                localStorage.setItem('empresa_atual', JSON.stringify(empresa))
                 
                 atualizaSidebarEmpresa()
             }
@@ -105,7 +106,11 @@ export function deleteEmpresa(): void {
     })
     panel.querySelector('.confirm-delete')?.addEventListener('click', (e) => {
         e.preventDefault()
-        EmpresaService.excluirEmpresa()
+        const empLogada = EmpresaService.empresaAtual()
+        if (empLogada) {
+            EmpresaService.excluirEmpresa(empLogada.cpnj)
+        }
+        localStorage.removeItem('empresa_atual')
         window.location.reload()
     })
 }
