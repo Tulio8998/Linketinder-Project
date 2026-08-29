@@ -18,8 +18,11 @@ export function signIn(): string {
                             </div>
                             <button>Entrar</button>
                         </form>
-                        <a class="signUp-link" href="./signUp.html">
-                            Cadastre-se aqui
+                        <a class="signUp-link link-cand" href="./signUp.html">
+                            Cadastre-se aqui (Candidato)
+                        </a>
+                        <a class="signUp-link link-emp" href="./signUp.html">
+                            Cadastre-se aqui (Empresa)
                         </a>
                     </div>
                 </div>
