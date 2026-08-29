@@ -42,7 +42,13 @@ O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) s
 5. Siga as instruções do menu interativo no terminal.
 
 ## Execução via Gradle
-1. Abra o terminal na pasta raiz do projeto.
+1. Abra o terminal na pasta Backend.
 2. Execute o comando correspondente ao seu sistema: ./gradlew run
+
+## Execução de Interface
+1. Abra o terminal na pasta Frontend.
+2. Execute o comando: npm i
+3. E depois execute o comando: npm run dev
+4. Entre no link para ver a interface: `http://localhost:5173/`
 
 Observação: O projeto utiliza **Groovy 5.0.8** e a ferramenta de build Gradle **9.7.0**.
