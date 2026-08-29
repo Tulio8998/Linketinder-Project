@@ -134,8 +134,13 @@ export function deleteCandidato(): void {
     panel.querySelector('.cancel-delete')?.addEventListener('click', (e) => {
         e.preventDefault(); panel.remove()
     })
+
     panel.querySelector('.confirm-delete')?.addEventListener('click', (e) => {
         e.preventDefault()
+        const candLogado = CandidatoService.candidatoAtual()
+        if(candLogado) {
+            CandidatoService.excluirCandidato(candLogado.cpf)
+        }
         localStorage.removeItem('candidato_atual')
         window.location.reload()
     })
@@ -235,7 +240,6 @@ export function findMatch(): void {
             dash.innerHTML = vagas.map(vaga => `
                 <div class="card">
                     <div class="info-job">
-                        <p class="name">Nome da empresa</p>
                         <p class="name">${vaga.nome} na ${vaga.empresa?.nome || 'Empresa Confidencial'}</p>
                         <p class="address">${vaga.cidade}, ${vaga.estado} - ${vaga.pais}</p>
                         <p class="description">${vaga.descricao}</p>

@@ -29,7 +29,7 @@ export const estados = [
     'Tocantins'
 ]
 
-const paises = [
+export const paises = [
     'Selecione o país',
     'Argentina',
     'Brasil',
