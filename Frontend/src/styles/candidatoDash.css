@@ -94,13 +94,13 @@
     gap: 0.5rem;
 }
 
-.nav-dash .match-cand{
+.nav-dash .match-cand, .find-vaga{
     color: #64748B;
     cursor: pointer;
     padding: 0.5rem 0.5rem;
 }
 
-.nav-dash .match-cand:hover {
+.nav-dash .match-cand:hover, .find-vaga:hover {
     background: #2564eb11;
     font-weight: bold;
     color: #2563EB;
