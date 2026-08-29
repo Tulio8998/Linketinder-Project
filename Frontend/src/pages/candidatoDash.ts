@@ -34,9 +34,34 @@ const paises = [
     'Brasil'
 ]
 
+export function viewPanel(name: string, address: string, description: string,
+    match: string, skills: string[]): string {
+    return `
+        <div>
+            <button class="close-card">x</button>
+            <div class="match-cards">
+                <div class="card">
+                    <div class="info-job">
+                        ${match ? `<p class="porcent-match">${match}</p>` : ''}
+                        ${name ? `<p class="name">${name}</p>` : ''}
+                        <p class="address">${address}</p>
+                        <p class="description">${description}</p>
+                        <div>
+                            ${skills.map(e => `<p class="skill">${e}</p>`).join('')}
+                        </div>
+                    </div>
 
+                    <div class="choice">
+                        <button class="pass">Passar</button>
+                        <button class="like">Curtir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+}
 
-export function viewVaga(name: string, address: string, description: string,
+export function viewVagaCand(name: string, address: string, description: string,
     match: string, skills: string[]): string {
     return `
         <div>
@@ -133,6 +158,7 @@ export function editProfile(): string {
                             </div>
                             <div class="button-class">
                                 <button class="cancel" type="submit">Cancelar</button>
+                                <button class="delete" type="submit">Excluir</button>
                                 <button class="create" type="submit">Salvar</button>
                             </div>
                         </div>
@@ -140,6 +166,224 @@ export function editProfile(): string {
                 </div>
             </div>
         </section>
+    `
+}
+
+export function viewMatch():string {
+    return `
+        <div class="match-cards">
+            <div class="card">
+                <div class="info-job">
+                    <p class="name">Túlio</p>
+                    <p class="address">Belo horizonte, Minas Gerais</p>
+                    <p class="description">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam, architecto aperiam? Illo rem vero libero facilis repudiandae doloremque nulla, sequi consectetur nobis nihil veritatis laudantium! Voluptatum cum fugiat iste tenetur.</p>
+                    <div class="skills-class">
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                    </div>
+                </div>
+                <div class="pointers">
+                    
+                </div>
+                <div class="choice">
+                    <button class="pass">Passar</button>
+                    <button class="like">Curtir</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="info-job">
+                    <p class="name">Túlio</p>
+                    <p class="address">Belo horizonte, Minas Gerais</p>
+                    <p class="description">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam, architecto aperiam? Illo rem vero libero facilis repudiandae doloremque nulla, sequi consectetur nobis nihil veritatis laudantium! Voluptatum cum fugiat iste tenetur.</p>
+                    <div>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                    </div>
+                </div>
+                <div class="choice">
+                    <button class="pass">Passar</button>
+                    <button class="like">Curtir</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="info-job">
+                    <p class="name">Túlio</p>
+                    <p class="address">Belo horizonte, Minas Gerais</p>
+                    <p class="description">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam, architecto aperiam? Illo rem vero libero facilis repudiandae doloremque nulla, sequi consectetur nobis nihil veritatis laudantium! Voluptatum cum fugiat iste tenetur.</p>
+                    <div>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                    </div>
+                </div>
+                <div class="choice">
+                    <button class="pass">Passar</button>
+                    <button class="like">Curtir</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="info-job">
+                    <p class="name">Túlio</p>
+                    <p class="address">Belo horizonte, Minas Gerais</p>
+                    <p class="description">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam, architecto aperiam? Illo rem vero libero facilis repudiandae doloremque nulla, sequi consectetur nobis nihil veritatis laudantium! Voluptatum cum fugiat iste tenetur.</p>
+                    <div>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                    </div>
+                </div>
+                <div class="choice">
+                    <button class="pass">Passar</button>
+                    <button class="like">Curtir</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="info-job">
+                    <p class="name">Túlio</p>
+                    <p class="address">Belo horizonte, Minas Gerais</p>
+                    <p class="description">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam, architecto aperiam? Illo rem vero libero facilis repudiandae doloremque nulla, sequi consectetur nobis nihil veritatis laudantium! Voluptatum cum fugiat iste tenetur.</p>
+                    <div>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                    </div>
+                </div>
+                <div class="choice">
+                    <button class="pass">Passar</button>
+                    <button class="like">Curtir</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="info-job">
+                    <p class="name">Túlio</p>
+                    <p class="address">Belo horizonte, Minas Gerais</p>
+                    <p class="description">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam, architecto aperiam? Illo rem vero libero facilis repudiandae doloremque nulla, sequi consectetur nobis nihil veritatis laudantium! Voluptatum cum fugiat iste tenetur.</p>
+                    <div>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                    </div>
+                </div>
+                <div class="choice">
+                    <button class="pass">Passar</button>
+                    <button class="like">Curtir</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="info-job">
+                    <p class="name">Túlio</p>
+                    <p class="address">Belo horizonte, Minas Gerais</p>
+                    <p class="description">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam, architecto aperiam? Illo rem vero libero facilis repudiandae doloremque nulla, sequi consectetur nobis nihil veritatis laudantium! Voluptatum cum fugiat iste tenetur.</p>
+                    <div>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                    </div>
+                </div>
+                <div class="choice">
+                    <button class="pass">Passar</button>
+                    <button class="like">Curtir</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="info-job">
+                    <p class="name">Túlio</p>
+                    <p class="address">Belo horizonte, Minas Gerais</p>
+                    <p class="description">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam, architecto aperiam? Illo rem vero libero facilis repudiandae doloremque nulla, sequi consectetur nobis nihil veritatis laudantium! Voluptatum cum fugiat iste tenetur.</p>
+                    <div>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                    </div>
+                </div>
+                <div class="choice">
+                    <button class="pass">Passar</button>
+                    <button class="like">Curtir</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="info-job">
+                    <p class="name">Túlio</p>
+                    <p class="address">Belo horizonte, Minas Gerais</p>
+                    <p class="description">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam, architecto aperiam? Illo rem vero libero facilis repudiandae doloremque nulla, sequi consectetur nobis nihil veritatis laudantium! Voluptatum cum fugiat iste tenetur.</p>
+                    <div>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                    </div>
+                </div>
+                <div class="choice">
+                    <button class="pass">Passar</button>
+                    <button class="like">Curtir</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="info-job">
+                    <p class="name">Túlio</p>
+                    <p class="address">Belo horizonte, Minas Gerais</p>
+                    <p class="description">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fugit nulla beatae deleniti tempora qui! Ex, enim nesciunt magnam alias omnis assumenda incidunt praesentium non magni eius pariatur nostrum? Minus, obcaecati.Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo vitae labore velit nisi voluptatibus, officiis earum voluptas autem in temporibus modi, quo assumenda quidem dolorem dolore, similique necessitatibus iste consequuntur. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam, architecto aperiam? Illo rem vero libero facilis repudiandae doloremque nulla, sequi consectetur nobis nihil veritatis laudantium! Voluptatum cum fugiat iste tenetur. Túlio</p>
+                    <div>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                    </div>
+                </div>
+                <div class="choice">
+                    <button class="pass">Passar</button>
+                    <button class="like">Curtir</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="info-job">
+                    <p class="name">Túlio</p>
+                    <p class="address">Belo horizonte, Minas Gerais</p>
+                    <p class="description">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam, architecto aperiam? Illo rem vero libero facilis repudiandae doloremque nulla, sequi consectetur nobis nihil veritatis laudantium! Voluptatum cum fugiat iste tenetur.</p>
+                    <div>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                        <p class="skill">Java</p>
+                    </div>
+                </div>
+                <div class="choice">
+                    <button class="pass">Passar</button>
+                    <button class="like">Curtir</button>
+                </div>
+            </div>
+        </div>
     `
 }
 
@@ -171,6 +415,12 @@ export function candidatoDash(): string {
                             <p class="skill">Java</p>
                             <p class="skill">Java</p>
                         </div>
+                    </div>
+                    <div class="nav-dash">
+                        <p class="nav-title">Dashboard</p>
+                        <nav class="match-cand">
+                            Matches
+                        </nav>
                     </div>
                     <div class="log-out">
                         <p class="line"></p>

@@ -1,4 +1,4 @@
-import { editProfile, viewVaga } from "../pages/candidatoDash"
+import { editProfile, viewMatch, viewPanel, viewVagaCand } from "../pages/candidatoDash"
 
 export function configSkills(): void {
     const novaSkill = document.getElementById('input-skill') as HTMLInputElement
@@ -39,6 +39,34 @@ export function configSkills(): void {
     })
 }
 
+export function cadidatoPanel(): void {
+    const cards = document.querySelectorAll('.card')
+    cards.forEach((card) => {
+        card.addEventListener('click', () => {
+            const name = card.querySelector('.name')?.textContent ?? ''
+            const address = card.querySelector('.address')?.textContent ?? ''
+            const description = card.querySelector('.description')?.textContent ?? ''
+            const match = card.querySelector('.porcent-match')?.textContent ?? ''
+            const skills = Array.from(card.querySelectorAll('.skill')).map(e => e.textContent ?? '')
+            const panel = document.createElement('div')
+            panel.className = 'card-panel'
+            panel.innerHTML = viewPanel(
+                name,
+                address,
+                description,
+                match,
+                skills,
+            )
+
+            document.body.appendChild(panel)
+            const closeButton = panel.querySelector('.close-card')
+            closeButton?.addEventListener('click', (e) => {
+                e.preventDefault()
+                panel.remove()
+            })
+        })
+    })
+}
 
 export function editCandPanel(): void {
     const editButton = document.querySelector('.btn-edit')
@@ -75,7 +103,7 @@ export function vagaPanel(): void {
             const skills = Array.from(card.querySelectorAll('.skill')).map(e => e.textContent ?? '')
             const panel = document.createElement('div')
             panel.className = 'card-panel'
-            panel.innerHTML = viewVaga(
+            panel.innerHTML = viewVagaCand(
                 name,
                 address,
                 description,
@@ -106,5 +134,20 @@ export function pointSkills(): void {
 
             pointers.appendChild(pointer)
         }
+    })
+}
+
+let candidatosCards: string = ''
+
+export function findMatch(): void {
+    const matchCandBtn = document.querySelector('.match-cand') 
+    const dash = document.querySelector('.match-cards') as HTMLElement
+    candidatosCards = dash.innerHTML
+
+    matchCandBtn?.addEventListener('click', () => {
+        dash.style.display = 'grid'
+        dash.innerHTML = viewMatch() 
+        cadidatoPanel()
+        pointSkills()
     })
 }

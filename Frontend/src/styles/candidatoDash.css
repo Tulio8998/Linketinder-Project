@@ -25,7 +25,7 @@
 }
 
 .candidato-profile .profile-content,
-.about, .skills {
+.about, .skills, .nav-dash {
     padding: 0 2rem;
 }
 
@@ -62,7 +62,7 @@
     
 }
 
-.about .about-title,.skill-title{
+.about .about-title,.skill-title, .nav-title{
     color: #64748B;
     font-weight: bold;
 }
@@ -86,6 +86,25 @@
     word-break: break-all;
     text-align: center;
     width: 6rem;
+}
+
+.nav-dash {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-dash .match-cand{
+    color: #64748B;
+    cursor: pointer;
+    padding: 0.5rem 0.5rem;
+}
+
+.nav-dash .match-cand:hover {
+    background: #2564eb11;
+    font-weight: bold;
+    color: #2563EB;
+    border-radius: 5px;
 }
 
 .log-out {
@@ -155,16 +174,16 @@
 
 
 .search-bar div{
-    padding: 1rem;
-    background: #F8FAFC;
+    padding: 0.5rem;
+    background: #f8fafc1f;
     width: 50%;
     border: 1px solid #E2E8F0;
-    border-radius: 20px;
+    border-radius: 15px;
 }
 
 .search-bar div .input-search{
     padding: 1rem;
-    background: #e2e8f08c;
+    background: #e2e8f042;
     border-radius: 10px;
 }
 
@@ -243,6 +262,8 @@
 
 
 .info-job .name {
+    margin-right: auto;
+    color: #0F172A;
     font-weight: bold;
     font-size: 1.2rem;
 }
@@ -583,7 +604,7 @@ div {
     justify-content: end;
 }
 
-.input-form .cancel, .create {
+.input-form .cancel, .create, .delete {
     padding: 0.3rem;
     width: 20%;
     font-size: 0.8rem;
@@ -591,7 +612,7 @@ div {
     font-weight: bold;
 }
 
-.input-form .cancel {
+.input-form .create, .cancel, .delete {
     color: #0F172A;
     border: 1px solid #E2E8F0;
     background: #FFFFFF;
@@ -602,10 +623,9 @@ div {
     background: #FF6B6B;
 }
 
-.input-form .create {
-    color: #0F172A;
-    border: 1px solid #E2E8F0;
-    background: #FFFFFF;
+.input-form .delete:hover {
+    color: #FFFFFF;
+    background: #9b0404;
 }
 
 .input-form .create:hover {
