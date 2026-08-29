@@ -1,4 +1,4 @@
-const estados = [
+export const estados = [
     'Selecione o estado',
     'Acre',
     'Alagoas',
@@ -29,7 +29,7 @@ const estados = [
     'Tocantins'
 ]
 
-const paises = [
+export const paises = [
     'Selecione o país',
     'Argentina',
     'Brasil',
@@ -93,7 +93,7 @@ export function signUpEmpresa(): string {
                                     </div>
                                     <div>
                                         <p class="input-name">CEP</p>
-                                        <input class="input-data" type="number" placeholder="00000-00">
+                                        <input class="input-data" type="text" placeholder="00000-00">
                                     </div>
                                 </div>
                             </div>
@@ -121,6 +121,6 @@ export function signUpEmpresa(): string {
                     </form>
                 </div>
             </div>
-        </section>
+        <!-- </section> -->
     `
 }
