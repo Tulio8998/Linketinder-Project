@@ -5,6 +5,6 @@ class Vaga {
     String descricao
     String estado
     String cidade
-    def competencias = []
+    List<String>  competencias = []
     Empresa empresa
 }

@@ -53,11 +53,11 @@ class CandidatoRepository {
         ))
     }
 
-    def adicionarCandidato(Candidato candidato) {
+    void adicionarCandidato(Candidato candidato) {
         candidatos.add(candidato)
     }
 
-    def listarTodos() {
+    List<Candidato> listarTodos() {
         return candidatos
     }
 }

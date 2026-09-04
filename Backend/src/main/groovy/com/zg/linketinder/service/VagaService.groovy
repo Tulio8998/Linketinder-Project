@@ -14,11 +14,11 @@ class VagaService {
     }
 
 
-    def listarTodos() {
+    List<Vaga> listarTodos() {
         return vagaRepository.listarTodos()
     }
 
-    def adicionarVaga(Vaga vaga) {
+    void adicionarVaga(Vaga vaga) {
         vagaRepository.adicionarVaga(vaga)
     }
 }
