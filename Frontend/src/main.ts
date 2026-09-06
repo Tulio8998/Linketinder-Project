@@ -13,11 +13,19 @@ import { empresaDash } from './pages/empresaDash'
 
 import { CandidatoService } from './ts/services/CandidatoService'
 import { EmpresaService } from './ts/services/EmpresaService'
+import { VagaService } from './ts/services/VagaService'
+import { CurtidaService } from './ts/services/CurtidaService'
+
 import type { Candidato } from './ts/models/Candidato'
 import type { Empresa } from './ts/models/Empresa'
 
 import { configSkills as configCandSkills, cadidatoPanel as candCardPanel, editCandPanel, vagaPanel, pointSkills as candPointSkills, findMatch as candFindMatch, findVaga as candFindVaga } from './components/candidato'
 import { configSkills as configEmpSkills, addVagaPanel, cadidatoPanel as empCardPanel, editEmpPanel, findCand, findMatch as empFindMatch, findVaga as empFindVaga, graphCand, pointSkills as empPointSkills } from './components/empresa'
+
+const candidatoService = new CandidatoService(localStorage)
+const empresaService = new EmpresaService(localStorage)
+const vagaService = new VagaService(localStorage)
+const curtidaService = new CurtidaService(localStorage)
 
 const app = document.querySelector<HTMLDivElement>('#app')!
 
@@ -35,25 +43,25 @@ function signInPage(): void {
         e.preventDefault()
         const emailInput = form.querySelector<HTMLInputElement>('.input-in[type="email"]')
         const email = emailInput?.value.trim()
-
         if (!email) {
             alert('Informe um email.')
             return
         }
 
-        const candidato = CandidatoService.listarCandidatos().find(c => c.email === email)
+        const candidato = candidatoService.listarCandidatos().find(c => c.email === email)
         if (candidato) {
             localStorage.setItem('candidato_atual', JSON.stringify(candidato))
             candidatoDashPage()
             return
         }
 
-        const empresa = EmpresaService.listarEmpresas().find(emp => emp.email === email)
+        const empresa = empresaService.listarEmpresas().find(emp => emp.email === email)
         if (empresa) {
             localStorage.setItem('empresa_atual', JSON.stringify(empresa))
             empresaDashPage()
             return
         }
+
         alert('Usuário nao encontrado! Verifique o e-mail ou cadastre-se.')
     })
 }
@@ -61,7 +69,6 @@ function signInPage(): void {
 function signUpPageCandidato(): void {
     app.innerHTML = signUpCandidato()
     configCandSkills(document)
-
     const form = document.querySelector('form')
     document.querySelector('.cancel')?.addEventListener('click', (e) => {
         e.preventDefault(); signInPage()
@@ -85,14 +92,14 @@ function signUpPageCandidato(): void {
             return
         }
 
-        const emailExisteCand = CandidatoService.listarCandidatos().some(c => c.email === email)
-        const emailExisteEmp = EmpresaService.listarEmpresas().some(e => e.email === email)
+        const emailExisteCand = candidatoService.listarCandidatos().some(c => c.email === email)
+        const emailExisteEmp = empresaService.listarEmpresas().some(e => e.email === email)
         if (emailExisteCand || emailExisteEmp) {
             alert("Este E-mail já está em uso!")
             return
         }
 
-        const cpfExiste = CandidatoService.listarCandidatos().some(c => c.cpf === cpf)
+        const cpfExiste = candidatoService.listarCandidatos().some(c => c.cpf === cpf)
         if (cpfExiste) {
             alert("Este CPF já está cadastrado!")
             return
@@ -110,7 +117,7 @@ function signUpPageCandidato(): void {
             competencias: Array.from(skillsElements).map(s => s.textContent || '')
         }
 
-        CandidatoService.salvarCandidato(novoCandidato)
+        candidatoService.salvarCandidato(novoCandidato)
         localStorage.setItem('candidato_atual', JSON.stringify(novoCandidato))
         candidatoDashPage()
     })
@@ -119,7 +126,6 @@ function signUpPageCandidato(): void {
 function signUpPageEmpresa(): void {
     app.innerHTML = signUpEmpresa()
     configEmpSkills(document) 
-
     const form = document.querySelector('form')
     document.querySelector('.cancel')?.addEventListener('click', (e) => {
         e.preventDefault(); signInPage()
@@ -142,14 +148,14 @@ function signUpPageEmpresa(): void {
             return
         }
 
-        const emailExisteCand = CandidatoService.listarCandidatos().some(c => c.email === email)
-        const emailExisteEmp = EmpresaService.listarEmpresas().some(e => e.email === email)
+        const emailExisteCand = candidatoService.listarCandidatos().some(c => c.email === email)
+        const emailExisteEmp = empresaService.listarEmpresas().some(e => e.email === email)
         if (emailExisteCand || emailExisteEmp) {
             alert("Este E-mail já está em uso!")
             return
         }
 
-        const cnpjExiste = EmpresaService.listarEmpresas().some(e => e.cpnj === cpnj)
+        const cnpjExiste = empresaService.listarEmpresas().some(e => e.cpnj === cpnj)
         if (cnpjExiste) {
             alert("Este CNPJ já está cadastrado!")
             return
@@ -166,14 +172,14 @@ function signUpPageEmpresa(): void {
             competencias: Array.from(skillsElements).map(s => s.textContent || '')
         }
 
-        EmpresaService.salvarEmpresa(novaEmpresa)
+        empresaService.salvarEmpresa(novaEmpresa)
         localStorage.setItem('empresa_atual', JSON.stringify(novaEmpresa))
         empresaDashPage()
     })
 }
 
 export function atualizaSidebarCandidato(): void {
-    const candLogado = CandidatoService.candidatoAtual()
+    const candLogado = candidatoService.candidatoAtual()
     if(candLogado) {
         const nameEl = document.querySelector('.candidato-profile .name')
         const locEl = document.querySelector('.candidato-profile .profile-content div')
@@ -188,7 +194,7 @@ export function atualizaSidebarCandidato(): void {
 }
 
 export function atualizaSidebarEmpresa(): void {
-    const empresaLogada = EmpresaService.empresaAtual()
+    const empresaLogada = empresaService.empresaAtual()
     if(empresaLogada) {
         const nameEl = document.querySelector('.empresa-profile .name')
         const locEl = document.querySelector('.empresa-profile .profile-content div')
@@ -229,7 +235,7 @@ function empresaDashPage(): void {
     findCand()
     empFindMatch()
     empFindVaga()
-
+    
     atualizaSidebarEmpresa()
     document.querySelector<HTMLElement>('.find-cand')?.click()
 
