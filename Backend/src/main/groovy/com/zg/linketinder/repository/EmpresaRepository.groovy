@@ -53,11 +53,11 @@ class EmpresaRepository {
         ))
     }
 
-    def adicionarEmpresa(Empresa empresa) {
+    void adicionarEmpresa(Empresa empresa) {
         empresas.add(empresa)
     }
 
-    def listarTodos() {
+    List<Empresa> listarTodos() {
         return empresas
     }
 }

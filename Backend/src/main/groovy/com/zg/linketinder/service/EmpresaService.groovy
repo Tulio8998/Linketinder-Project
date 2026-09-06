@@ -6,16 +6,16 @@ import com.zg.linketinder.repository.EmpresaRepository
 class EmpresaService {
     EmpresaRepository empresaRepository = new EmpresaRepository()
 
-    def listarTodos(){
+    List<Empresa> listarTodos(){
         return empresaRepository.listarTodos();
     }
 
-    def adicionarEmpresa(Empresa empresa) {
+    void adicionarEmpresa(Empresa empresa) {
         validarEmpresa(empresa)
         empresaRepository.adicionarEmpresa(empresa)
     }
 
-    def validarEmpresa(Empresa empresa) {
+    void validarEmpresa(Empresa empresa) {
         if (empresa == null) {
             throw new IllegalArgumentException("A empresa nao pode ser nulo")
         }
@@ -23,7 +23,7 @@ class EmpresaService {
         validarEmail(empresa)
     }
 
-    def validarCnpj(Empresa empresa) {
+    void validarCnpj(Empresa empresa) {
         def cnpjExist = empresaRepository.listarTodos().find{
             it.cnpj == empresa.cnpj
         }
@@ -32,7 +32,7 @@ class EmpresaService {
         }
     }
 
-    def validarEmail(Empresa empresa) {
+    void validarEmail(Empresa empresa) {
         def emailExist = empresaRepository.listarTodos().find {
             it.email == empresa.email
         }

@@ -9,17 +9,17 @@ import com.zg.linketinder.repository.CurtidaRepository
 class CurtidaService {
     CurtidaRepository curtidaRepository = new CurtidaRepository()
 
-    def listarTodos() {
+    List<Curtida> listarTodos() {
         return curtidaRepository.listarTodos()
     }
 
-    def listarCurtidasDeVolta() {
+    List<Curtida> listarCurtidasDeVolta() {
         return curtidaRepository.listarTodos().findAll({
             it.curtiuDeVolta
         })
     }
 
-    def curtirVaga(Candidato candidato, Vaga vaga) {
+    void curtirVaga(Candidato candidato, Vaga vaga) {
         curtidaRepository.adicionarCurtida(new Curtida(
                 candidato: candidato,
                 vaga: vaga,
@@ -27,7 +27,7 @@ class CurtidaService {
         ))
     }
 
-    def curtirCandidato(Empresa empresa, Candidato candidato) {
+    void curtirCandidato(Empresa empresa, Candidato candidato) {
         Curtida curtida = curtidaRepository.listarTodos().find {
             it.candidato == candidato && it.vaga.empresa == empresa
         }

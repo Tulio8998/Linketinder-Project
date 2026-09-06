@@ -6,16 +6,16 @@ import com.zg.linketinder.repository.CandidatoRepository
 class CandidatoService {
     CandidatoRepository candidatoRepository = new CandidatoRepository()
 
-    def listarTodos() {
+    List<Candidato> listarTodos() {
         return candidatoRepository.listarTodos()
     }
 
-    def adicionarCandidato(Candidato candidato) {
+    void adicionarCandidato(Candidato candidato) {
         validarCandidato(candidato)
         candidatoRepository.adicionarCandidato(candidato)
     }
 
-    def validarCandidato(Candidato candidato) {
+    void validarCandidato(Candidato candidato) {
         if (candidato == null) {
             throw new IllegalArgumentException("O candidato nao pode ser nulo")
         }
@@ -23,7 +23,7 @@ class CandidatoService {
         validarEmail(candidato)
     }
 
-    def validarCpf(Candidato candidato) {
+    void validarCpf(Candidato candidato) {
         def cpfExist = candidatoRepository.listarTodos().find{
             it.cpf == candidato.cpf
         }
@@ -32,7 +32,7 @@ class CandidatoService {
         }
     }
 
-    def validarEmail(Candidato candidato) {
+    void validarEmail(Candidato candidato) {
         def emailExist = candidatoRepository.listarTodos().find {
             it.email == candidato.email
         }

@@ -55,11 +55,11 @@ class VagaRepository {
         }
     }
 
-    def adicionarVaga(Vaga vaga) {
+    void adicionarVaga(Vaga vaga) {
         vagas.add(vaga)
     }
 
-    def listarTodos(){
+    List<Vaga> listarTodos(){
         return vagas
     }
 }

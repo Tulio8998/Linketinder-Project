@@ -34,6 +34,11 @@ O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) s
 * **Regra de Negócio Visual:** Implementação do bloqueio de identidade, candidatos e vagas são exibidos de forma anônima e os nomes reais só são revelados após a interação e confirmação na aba de Matches.
 * **Visualização de Dados Gráfica:** Integração para renderização de gráficos de barras interativos exibindo a métrica e contagem de candidatos separados por competência.
 
+### Versão 1.4.0
+
+* **Arquitetura e Persistência:** Refatoração completa da camada de serviços (Candidato, Empresa, Vaga e Curtida) para o formato de classes.
+* **Índice de Afinidade:** Criação de compatibilidade que cruza dados e exibe dinamicamente a porcentagem (%) de "Match" nos cards de vagas para os candidatos, e na triagem de perfis para as empresas.
+* **Sistema de Interações (Curtir/Passar):** Implementação definitiva da lógica de aprovação e rejeição, salvando o histórico de avaliações no banco local para impedir a renderização duplicada de candidatos e vagas já processados.
 ## Execução pela IDE
 1. Abra o projeto no IntelliJ IDEA.
 2. Aguarde o Gradle sincronizar o projeto.

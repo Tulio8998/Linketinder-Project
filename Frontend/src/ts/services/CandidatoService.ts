@@ -1,10 +1,17 @@
 import type { Candidato } from "../models/Candidato"
 
-export const CandidatoService = {
+export class CandidatoService {
+    private storage: Storage
+
+    constructor (storage: Storage) {
+        this.storage = storage
+    }
+
     listarCandidatos(): Candidato[] {
-        const dados = localStorage.getItem('candidatos_db')
+        const dados = this.storage.getItem('candidatos_db')
         return dados ? JSON.parse(dados) : []
-    },
+    }
+
     salvarCandidato(candidato: Candidato): void {
         const candidatos = this.listarCandidatos()
         const index = candidatos.findIndex(c => c.cpf === candidato.cpf)
@@ -13,14 +20,17 @@ export const CandidatoService = {
         } else {
             candidatos.push(candidato)
         }
-        localStorage.setItem('candidatos_db', JSON.stringify(candidatos))
-    },
+        this.storage.setItem('candidatos_db', JSON.stringify(candidatos))
+    }
+
     candidatoAtual(): Candidato | null {
-        const dados = localStorage.getItem('candidato_atual')
+        const dados = this.storage.getItem('candidato_atual')
         return dados ? JSON.parse(dados) : null
-    },
+    }
+
     excluirCandidato(cpf: string): void {
         const candidatos = this.listarCandidatos().filter(c => c.cpf !== cpf)
-        localStorage.setItem('candidatos_db', JSON.stringify(candidatos))
-    },
+        this.storage.setItem('candidatos_db', JSON.stringify(candidatos))
+    }
+
 }
