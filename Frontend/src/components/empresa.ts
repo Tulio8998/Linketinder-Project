@@ -3,8 +3,14 @@ import { addVaga, editEmpProfile, editVaga, viewPanel, deleteEmpresaProfile } fr
 import { VagaService } from '../ts/services/VagaService'
 import { EmpresaService } from '../ts/services/EmpresaService'
 import { CandidatoService } from '../ts/services/CandidatoService'
+import { CurtidaService } from '../ts/services/CurtidaService'
 import type { Vaga } from '../ts/models/Vaga'
 import { atualizaSidebarEmpresa } from '../main'
+
+const empresaService = new EmpresaService(localStorage)
+const vagaService = new VagaService(localStorage)
+const candidatoService = new CandidatoService(localStorage)
+const curtidaService = new CurtidaService(localStorage)
 
 export function configSkills(container: HTMLElement | Document = document): void {
     const novaSkill = container.querySelector('#input-skill') as HTMLInputElement
@@ -17,7 +23,6 @@ export function configSkills(container: HTMLElement | Document = document): void
             if (valorSkill === '') {
                 return
             }
-
             const skillDiv = document.createElement('div')
             skillDiv.className = 'skill-div'
             const skillName = document.createElement('p')
@@ -44,7 +49,7 @@ export function editEmpPanel(): void {
         document.body.appendChild(panel)
         configSkills(panel)
 
-        const empresa = EmpresaService.empresaAtual()
+        const empresa = empresaService.empresaAtual()
         const inputs = panel.querySelectorAll<HTMLInputElement>('.input-data')
         const selects = panel.querySelectorAll<HTMLSelectElement>('select')
         const textarea = panel.querySelector('textarea')
@@ -70,6 +75,7 @@ export function editEmpPanel(): void {
         panel.querySelector('.btn-cancel')?.addEventListener('click', (e) => {
             e.preventDefault(); panel.remove()
         })
+
         panel.querySelector('.btn-delete')?.addEventListener('click', (e) => {
             e.preventDefault(); deleteEmpresa()
         })
@@ -85,7 +91,8 @@ export function editEmpPanel(): void {
                 empresa.cep = inputs[2].value
                 empresa.descricao = textarea?.value || ''
                 empresa.competencias = Array.from(skillsElements).map(s => s.textContent || '')
-                EmpresaService.salvarEmpresa(empresa)
+                
+                empresaService.salvarEmpresa(empresa)
                 localStorage.setItem('empresa_atual', JSON.stringify(empresa))
                 
                 atualizaSidebarEmpresa()
@@ -104,11 +111,12 @@ export function deleteEmpresa(): void {
     panel.querySelector('.cancel-delete')?.addEventListener('click', (e) => {
         e.preventDefault(); panel.remove()
     })
+
     panel.querySelector('.confirm-delete')?.addEventListener('click', (e) => {
         e.preventDefault()
-        const empLogada = EmpresaService.empresaAtual()
+        const empLogada = empresaService.empresaAtual()
         if (empLogada) {
-            EmpresaService.excluirEmpresa(empLogada.cpnj)
+            empresaService.excluirEmpresa(empLogada.cpnj)
         }
         localStorage.removeItem('empresa_atual')
         window.location.reload()
@@ -137,7 +145,7 @@ export function addVagaPanel(): void {
             const textarea = form.querySelector('textarea')
             const skillsElements = form.querySelectorAll('.info-professional .skill')
             
-            const empresaLogada = EmpresaService.empresaAtual() || {
+            const empresaLogada = empresaService.empresaAtual() || {
                 nome: '', email: '', pais: '', estado: '', cep: '', descricao: '', competencias: [], cpnj: ''
             }
 
@@ -151,7 +159,7 @@ export function addVagaPanel(): void {
                 empresa: empresaLogada
             }
 
-            VagaService.salvarVaga(novaVaga)
+            vagaService.salvarVaga(novaVaga)
             panel.remove()
             
             document.querySelector<HTMLElement>('.view-vaga')?.click()
@@ -160,7 +168,7 @@ export function addVagaPanel(): void {
 }
 
 export function editVagaPanel(index: number): void {
-    const vagaAtual = VagaService.listarVagas()[index]
+    const vagaAtual = vagaService.listarVagas()[index]
     if (!vagaAtual) return
 
     const panel = document.createElement('div')
@@ -194,7 +202,7 @@ export function editVagaPanel(index: number): void {
 
     panel.querySelector('.btn-delete')?.addEventListener('click', (e) => {
         e.preventDefault()
-        VagaService.excluirVaga(index)
+        vagaService.excluirVaga(index)
         panel.remove()
         document.querySelector<HTMLElement>('.view-vaga')?.click()
     })
@@ -204,6 +212,7 @@ export function editVagaPanel(index: number): void {
         e.preventDefault()
         
         const skillsElements = panel.querySelectorAll('.info-professional .skill')
+
         const vagaAtualizada: Vaga = {
             ...vagaAtual,
             nome: inputs[0].value,
@@ -214,7 +223,7 @@ export function editVagaPanel(index: number): void {
             competencias: Array.from(skillsElements).map(s => s.textContent || '')
         }
 
-        VagaService.atualizarVaga(index, vagaAtualizada)
+        vagaService.atualizarVaga(index, vagaAtualizada)
         panel.remove()
         document.querySelector<HTMLElement>('.view-vaga')?.click()
     })
@@ -227,7 +236,6 @@ export function cadidatoPanel(): void {
             if ((e.target as HTMLElement).tagName === 'BUTTON'){
                 return
             }
-
             const name = card.querySelector('.name')?.textContent?.trim() || ''
             const address = card.querySelector('.address')?.textContent?.trim() || ''
             const description = card.querySelector('.description')?.textContent?.trim() || ''
@@ -237,7 +245,6 @@ export function cadidatoPanel(): void {
             const panel = document.createElement('div')
             panel.className = 'card-panel'
             panel.innerHTML = viewPanel(name, address, description, match, skills)
-
             document.body.appendChild(panel)
             panel.querySelector('.close-card')?.addEventListener('click', (ev) => {
                 ev.preventDefault(); panel.remove()
@@ -252,7 +259,6 @@ export function pointSkills(): void {
         const pointers = card.querySelector('.pointers')
         const skills = card.querySelectorAll('.skill')
         const pointerExis = pointers?.querySelector('.pointer')
-
         if (skills.length > 6 && pointers && !pointerExis) {
             const pointer = document.createElement('p')
             pointer.className = 'pointer'
@@ -263,10 +269,15 @@ export function pointSkills(): void {
 }
 
 export function graphCand(): void {
-    const candidatos = CandidatoService.listarCandidatos()
+    const empresaLogada = empresaService.empresaAtual()
+    const todosCandidatos = candidatoService.listarCandidatos()
+    const avaliacoesFeitas = curtidaService.listarMatchs().filter(m => m.empresa.cpnj === empresaLogada?.cpnj)
+    const candidatosNaoAvaliados = todosCandidatos.filter(cand => 
+        !avaliacoesFeitas.some(a => a.candidato.cpf === cand.cpf)
+    )
     const competencias = new Map<string, number>()
     
-    candidatos.forEach((cand) => {
+    candidatosNaoAvaliados.forEach((cand) => {
         cand.competencias.forEach((comp) => {
             competencias.set(comp, (competencias.get(comp) ?? 0) + 1)
         })
@@ -297,36 +308,73 @@ export function findCand(): void {
     const findCandBtn = document.querySelector('.find-cand')
     const dash = document.querySelector('.match-cards') as HTMLElement
     const graphDash = document.querySelector('.graph-class') as HTMLElement
+    const empresaLogada = empresaService.empresaAtual()
+
     if (!dashOriginalHTML && dash) dashOriginalHTML = dash.innerHTML
 
     findCandBtn?.addEventListener('click', () => {
         dash.style.display = 'grid'
-        graphDash.style.display = 'flex'    
+        graphDash.style.display = 'flex'
         
-        const candidatos = CandidatoService.listarCandidatos()
-        if(candidatos.length > 0) {
-            dash.innerHTML = candidatos.map(cand => `
-                <div class="card">
+        if (!empresaLogada) return;
+
+        const candidaturas = curtidaService.listarCurtidas().filter(c => 
+            c.vaga.empresa.cpnj === empresaLogada.cpnj && 
+            c.like === true
+        )
+        const avaliacoesFeitas = curtidaService.listarMatchs().filter(m => m.empresa.cpnj === empresaLogada.cpnj)
+
+        const candidaturasDisponiveis = candidaturas.filter(c => 
+            !avaliacoesFeitas.some(a => 
+                a.candidato.cpf === c.candidato.cpf && 
+                a.vaga.nome === c.vaga.nome
+            )
+        )
+
+        if(candidaturasDisponiveis.length > 0) {
+            dash.innerHTML = candidaturasDisponiveis.map((curtida, index) => {
+                const afinidade = curtidaService.calcularAfinidade(curtida.candidato, curtida.vaga)
+                return `
+                <div class="card" data-index="${index}">
                     <div class="info-job">
-                        <p class="porcent-match">MATCH: 100%</p>
-                        <p class="name">Nome vaga aplicada</p>
-                        <p class="address">${cand.estado}, ${cand.pais}</p>
-                        <p class="description">${cand.descricao}</p>
+                        <p class="porcent-match">MATCH: ${afinidade.toFixed(0)}%</p>
+                        <p class="name">Vaga: ${curtida.vaga.nome}</p>
+                        <p class="address">${curtida.candidato.estado}, ${curtida.candidato.pais}</p>
+                        <p class="description">${curtida.candidato.descricao}</p>
                         <div class="skills-class">
-                            ${cand.competencias.map(skill => `<p class="skill">${skill}</p>`).join('')}
+                            ${curtida.candidato.competencias.map(skill => `<p class="skill">${skill}</p>`).join('')}
                         </div>
                     </div>
                     <div class="pointers"></div>
                     <div class="choice">
-                        <button class="pass">Passar</button>
-                        <button class="like">Curtir</button>
+                        <button class="pass btn-passar">Passar</button>
+                        <button class="like btn-curtir">Dar Match</button>
                     </div>
-                </div>
-            `).join('')
-        } else {
-            dash.innerHTML = dashOriginalHTML
-        }
+                </div>`
+            }).join('')
 
+            dash.querySelectorAll('.btn-curtir').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const card = (e.target as HTMLElement).closest('.card')
+                    const curtidaRef = candidaturasDisponiveis[Number(card?.getAttribute('data-index'))]
+                    
+                    curtidaService.salvarCurtidaEmpresa(empresaLogada, true, curtidaRef)
+                    card?.remove()
+                })
+            })
+            
+            dash.querySelectorAll('.btn-passar').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const card = (e.target as HTMLElement).closest('.card')
+                    const curtidaRef = candidaturasDisponiveis[Number(card?.getAttribute('data-index'))]
+                    
+                    curtidaService.salvarCurtidaEmpresa(empresaLogada, false, curtidaRef)
+                    card?.remove() 
+                })
+            })
+        } else {
+            dash.innerHTML = '<p style="padding: 2rem; color: #64748B;">Nenhum novo candidato para avaliar</p>'
+        }
         cadidatoPanel()
         pointSkills()
     })
@@ -336,22 +384,28 @@ export function findMatch(): void {
     const matchCandBtn = document.querySelector('.match-cand') 
     const dash = document.querySelector('.match-cards') as HTMLElement
     const graphDash = document.querySelector('.graph-class') as HTMLElement
+    const empresaLogada = empresaService.empresaAtual()
+
     if (!dashOriginalHTML && dash) dashOriginalHTML = dash.innerHTML
 
     matchCandBtn?.addEventListener('click', () => {
         dash.style.display = 'grid'
         graphDash.style.display = 'none'
         
-        const candidatos = CandidatoService.listarCandidatos()
-        if (candidatos.length > 0) {
-            dash.innerHTML = candidatos.map(cand => `
+        const matchsConfirmados = curtidaService.listarMatchs().filter(m => 
+            m.empresa.cpnj === empresaLogada?.cpnj && 
+            m.like === true
+        )
+
+        if (matchsConfirmados.length > 0) {
+            dash.innerHTML = matchsConfirmados.map(match => `
                 <div class="card">
                     <div class="info-job">
-                        <p class="name">${cand.nome}</p>
-                        <p class="address">${cand.estado}, ${cand.pais}</p>
-                        <p class="description">${cand.descricao}</p>
+                        <p class="name">${match.candidato.nome} - Vaga: ${match.vaga.nome}</p>
+                        <p class="address">${match.candidato.estado}, ${match.candidato.pais}</p>
+                        <p class="description">${match.candidato.descricao}</p>
                         <div class="skills-class">
-                            ${cand.competencias.map(skill => `<p class="skill">${skill}</p>`).join('')}
+                            ${match.candidato.competencias.map(skill => `<p class="skill">${skill}</p>`).join('')}
                         </div>
                     </div>
                     <div class="pointers"></div>
@@ -361,8 +415,9 @@ export function findMatch(): void {
                     </div>
                 </div>
             `).join('')
+        } else {
+             dash.innerHTML = '<p style="padding: 2rem; color: #64748B;">Nenhum match confirmado</p>'
         }
-
         cadidatoPanel()
         pointSkills()
     })
@@ -372,13 +427,16 @@ export function findVaga(): void {
     const viewVagaBtn = document.querySelector('.view-vaga') 
     const dash = document.querySelector('.match-cards') as HTMLElement
     const graphDash = document.querySelector('.graph-class') as HTMLElement
+    const empresaLogada = empresaService.empresaAtual()
+
     if (!dashOriginalHTML && dash) dashOriginalHTML = dash.innerHTML
 
     viewVagaBtn?.addEventListener('click', () => {
         dash.style.display = 'grid'
         graphDash.style.display = 'none'
         
-        const vagas = VagaService.listarVagas()
+        const vagas = vagaService.listarVagas().filter(v => v.empresa.cpnj === empresaLogada?.cpnj)
+
         if (vagas.length > 0) {
             dash.innerHTML = vagas.map(vaga => `
                 <div class="card">
@@ -391,7 +449,7 @@ export function findVaga(): void {
                         </div>
                     </div>
                     <div class="pointers"></div>
-                    <div class="choice">
+                    <div class="choice" style="visibility: hidden;">
                         <button class="pass">Passar</button>
                         <button class="like">Curtir</button>
                     </div>
@@ -407,8 +465,9 @@ export function findVaga(): void {
                     editVagaPanel(index)
                 })
             })
+        } else {
+             dash.innerHTML = '<p style="padding: 2rem; color: #64748B;">Sua empresa nao possui vagas cadastradas</p>'
         }
-
         pointSkills()
     })
 }
