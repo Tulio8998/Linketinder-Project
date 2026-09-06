@@ -37,10 +37,6 @@ export class CurtidaService {
             vaga: curtidaCandidato.vaga
         }
 
-        if (curtida !== true) {
-            return
-        }
-
         matchs.push(match)
         this.storage.setItem('matchs_db', JSON.stringify(matchs))
     }
