@@ -57,4 +57,16 @@ export class CurtidaService {
         curtidas.push(match)
         this.storage.setItem('curtidas_db', JSON.stringify(curtidas))
     }
+    
+    calcularAfinidade(candidato: Candidato, vaga: Vaga): number {
+    if (vaga.competencias.length === 0) {
+        return 0
+    }
+
+    const compIguais = vaga.competencias.filter(c => candidato.competencias.includes(c))
+    const qntCompVaga = vaga.competencias.length
+    const qntCompTotal = compIguais.length
+
+    return (qntCompTotal * 100) / qntCompVaga
+}
 }
