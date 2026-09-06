@@ -6,7 +6,6 @@ class Pessoa {
     String estado
     String cep
     String descricao
-    def competencias = ["Python", "Java", "Spring Framework", "Angular", "Groovy", "JavaScript", "TypeScript"]
-
+    List<String> competencias = ["Python", "Java", "Spring Framework", "Angular", "Groovy", "JavaScript", "TypeScript"]
 
 }
