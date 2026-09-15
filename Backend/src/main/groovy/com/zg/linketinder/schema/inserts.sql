@@ -1,21 +1,21 @@
-INSERT INTO candidatos (cpf, nome, idade, email, senha, pais, estado, cidade, cep, descricao) 
-	VALUES ('111.111.111-11', 'Túlio Vilela Lopes', 21, 'tulio@gmail.com', '12345678', 'Brasil',
+INSERT INTO candidatos (cpf, nome, data_nascimento, email, senha, pais, estado, cidade, cep, descricao) 
+	VALUES ('111.111.111-11', 'Túlio Vilela Lopes', '2004-10-01', 'tulio@gmail.com', '12345678', 'Brasil',
 	'Minas Gerais', 'Belo Horizonte', '11111-11', 'Minha descricao de candidato é...');
 
-INSERT INTO candidatos (cpf, nome, idade, email, senha, pais, estado, cidade, cep, descricao) 
-	VALUES ('222.222.222-22', 'João Silva', 25, 'joao@gmail.com', '12345678', 'Brasil',
+INSERT INTO candidatos (cpf, nome, data_nascimento, email, senha, pais, estado, cidade, cep, descricao) 
+	VALUES ('222.222.222-22', 'João Silva', '2001-06-20', 'joao@gmail.com', '12345678', 'Brasil',
 	'Minas Gerais', 'João Monlevade', '22222-22', 'Minha descricao de candidato é...');
 
-INSERT INTO candidatos (cpf, nome, idade, email, senha, pais, estado, cidade, cep, descricao) 
-	VALUES ('333.333.333-33', 'Maria Souza', 23, 'maria@gmail.com', '12345678', 'Brasil',
+INSERT INTO candidatos (cpf, nome, data_nascimento, email, senha, pais, estado, cidade, cep, descricao) 
+	VALUES ('333.333.333-33', 'Maria Souza', '2003-03-10', 'maria@gmail.com', '12345678', 'Brasil',
 	'São Paulo', 'São Paulo', '33333-33', 'Minha descricao de candidato é...');
 
-INSERT INTO candidatos (cpf, nome, idade, email, senha, pais, estado, cidade, cep, descricao) 
-	VALUES ('444.444.444-44', 'Carlos Oliveira', 28, 'carlos@gmail.com', '12345678', 'Brasil',
+INSERT INTO candidatos (cpf, nome, data_nascimento, email, senha, pais, estado, cidade, cep, descricao) 
+	VALUES ('444.444.444-44', 'Carlos Oliveira', '1997-09-05', 'carlos@gmail.com', '12345678', 'Brasil',
 	'Rio de Janeiro', 'Rio de Janeiro', '44444-44', 'Minha descricao de candidato é...');
 
-INSERT INTO candidatos (cpf, nome, idade, email, senha, pais, estado, cidade, cep, descricao) 
-	VALUES ('555.555.555-55', 'Ana Santos', 26, 'ana@gmail.com', '12345678', 'Brasil',
+INSERT INTO candidatos (cpf, nome, data_nascimento, email, senha, pais, estado, cidade, cep, descricao) 
+	VALUES ('555.555.555-55', 'Ana Santos', '1999-12-18', 'ana@gmail.com', '12345678', 'Brasil',
 	'Minas Gerais', 'Uberlândia', '55555-55', 'Minha descricao de candidato é...');
 
 SELECT * FROM candidatos;
@@ -71,7 +71,7 @@ INSERT INTO competencias (nome) VALUES ('Postgres');
 INSERT INTO competencias (nome) VALUES ('Git/GitHub');
 INSERT INTO competencias (nome) VALUES ('Angular');
 
-TRUNCATE TABLE competencias RESTART IDENTITY CASCADE;
+--TRUNCATE TABLE candidatos, empresas, competencias, curtidas_candidato, curtidas_empresa RESTART IDENTITY CASCADE;
 
 SELECT * FROM competencias;
 

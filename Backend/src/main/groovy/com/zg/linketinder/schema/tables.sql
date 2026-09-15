@@ -1,10 +1,11 @@
 CREATE DATABASE linketinder;
+DROP DATABASE linketinder;
 
 CREATE TABLE candidatos(
     id SERIAL PRIMARY KEY,
     cpf VARCHAR(14) UNIQUE NOT NULL,
     nome VARCHAR(100) NOT NULL,
-    idade INT CHECK(idade >= 18 AND idade <= 115) NOT NULL,
+    data_nascimento DATE NOT NULL CHECK (data_nascimento <= CURRENT_DATE - INTERVAL '18 years' AND data_nascimento >= CURRENT_DATE - INTERVAL '115 years'),
     email VARCHAR(100) UNIQUE NOT NULL,
     senha VARCHAR(100) CHECK(LENGTH(senha) >= 6) NOT NULL,
     pais VARCHAR(50) NOT NULL,
