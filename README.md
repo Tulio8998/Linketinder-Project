@@ -8,7 +8,8 @@ Desenvolvido por Túlio
 * **TypeScript:** Linguagem principal do frontend, garantindo tipagem estática, contratos de dados (Models) e regras de manipulação na interface.
 * **Vite:** Ferramenta de build e servidor frontend.
 * **ApexCharts:** Biblioteca de visualização de dados utilizada para a plotagem dos gráficos interativos de competências.
-
+* **PostgreSQL:** Sistema de gerenciamento de banco de dados relacional (SGBD) utilizado para a persistência física, consultas e garantia da integridade dos dados.
+* **brModelo:** Ferramenta utilizada para a modelagem conceitual e lógica do banco (criação do Diagrama e Modelo Entidade-Relacionamento).
 
 ## Comentários
 O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) solicitado, priorizando a organização estrutural, aplicação de conceitos de Orientação a Objetos e tratamento de erros de interação. Algumas decisões da implementação foram:
@@ -39,6 +40,14 @@ O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) s
 * **Arquitetura e Persistência:** Refatoração completa da camada de serviços (Candidato, Empresa, Vaga e Curtida) para o formato de classes.
 * **Índice de Afinidade:** Criação de compatibilidade que cruza dados e exibe dinamicamente a porcentagem (%) de "Match" nos cards de vagas para os candidatos, e na triagem de perfis para as empresas.
 * **Sistema de Interações (Curtir/Passar):** Implementação definitiva da lógica de aprovação e rejeição, salvando o histórico de avaliações no banco local para impedir a renderização duplicada de candidatos e vagas já processados.
+
+
+### Versão 1.5.0
+
+* **Modelagem de Dados (DER/MER):** Criação do Diagrama Entidade-Relacionamento e arquitetura lógica do banco de dados utilizando o software brModelo, estruturando as entidades de Candidatos, Empresas, Vagas e Competências.
+* **Banco de Dados Relacional:** Implementação da estrutura física em PostgreSQL
+* **Scripts SQL:** Desenvolvimento dos arquivos de estruturação da base de dados (DDL) e população inicial para testes com candidatos e empresas fictícias (DML).
+
 ## Execução pela IDE
 1. Abra o projeto no IntelliJ IDEA.
 2. Aguarde o Gradle sincronizar o projeto.
