@@ -17,6 +17,10 @@ dependencies {
     testImplementation platform('org.spockframework:spock-bom:2.4-groovy-5.0')
     testImplementation 'org.spockframework:spock-core'
     testImplementation 'net.bytebuddy:byte-buddy:1.15.11'
+
+    implementation 'org.apache.groovy:groovy-sql:4.0.15'
+//    implementation 'com.h2database:h2:2.2.224'
+    implementation 'org.postgresql:postgresql:42.5.1'
 }
 
 application {
