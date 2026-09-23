@@ -1,6 +1,7 @@
 package com.zg.linketinder.service
 
 import com.zg.linketinder.dao.CurtidaDAO
+import com.zg.linketinder.dao.CurtidaDAOImpl
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Curtida
 import com.zg.linketinder.model.Empresa
@@ -8,7 +9,7 @@ import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.repository.CurtidaRepository
 
 class CurtidaService {
-    private CurtidaDAO curtidaDAO = new CurtidaDAO()
+    private CurtidaDAO curtidaDAO = new CurtidaDAOImpl()
 
     void curtirVagaComoCandidato(Candidato candidato, Vaga vaga, Boolean like) {
         try {
