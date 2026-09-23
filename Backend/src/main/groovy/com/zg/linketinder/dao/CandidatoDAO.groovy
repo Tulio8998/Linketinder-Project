@@ -4,102 +4,10 @@ import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.util.ConexaoDB
 import groovy.sql.Sql
 
-class CandidatoDAO {
-    void salvarCandidato(Candidato candidato) {
-        Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
-
-        def query = '''
-                INSERT INTO candidatos (cpf, nome, email, senha,
-                pais, estado, cidade, cep, data_nascimento, descricao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            '''
-        try {
-            sql.executeInsert(query, [candidato.cpf, candidato.nome, candidato.email, candidato.senha,
-                candidato.pais, candidato.estado, candidato.cidade, candidato.cep, candidato.data_nascimento, candidato.descricao])
-            sql.commit()
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
-        } finally {
-            sql.close()
-        }
-    }
-
-    void atualizarCandidato(Candidato candidato) {
-        Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
-
-        def query = '''
-                UPDATE candidatos 
-                SET cpf = ?, nome = ?, email = ?, senha = ?, pais = ?, estado = ?, cidade = ?, cep = ?, data_nascimento = ?, descricao = ? 
-                WHERE id = ?
-            '''
-        try {
-            sql.executeUpdate(query, [candidato.cpf, candidato.nome, candidato.email, candidato.senha,
-                candidato.pais, candidato.estado, candidato.cidade, candidato.cep, candidato.data_nascimento,
-                candidato.descricao, candidato.id])
-            sql.commit()
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
-        } finally {
-            sql.close()
-        }
-    }
-
-    void excluirCandidato(Integer id) {
-        Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
-
-        def query = '''
-                DELETE FROM candidatos WHERE id = ?
-            '''
-        try {
-            sql.executeUpdate(query, [id])
-            sql.commit()
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
-        } finally {
-            sql.close()
-        }
-    }
-
-    def listarCandidato() {
-        Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
-
-        def query = '''
-                SELECT * FROM candidatos;
-            '''
-        try {
-            def resultado = sql.rows(query)
-            sql.commit()
-            return resultado
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
-        } finally {
-            sql.close()
-        }
-    }
-
-    def buscarIdCandidato(Integer id) {
-        Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
-
-        def query = '''
-                SELECT * FROM candidatos WHERE id = ?;
-            '''
-        try {
-            def resultado = sql.firstRow(query, [id])
-            sql.commit()
-            return resultado
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
-        } finally {
-            sql.close()
-        }
-    }
+interface CandidatoDAO {
+    void salvarCandidato(Candidato candidato)
+    void atualizarCandidato(Candidato candidato)
+    void excluirCandidato(Integer id)
+    List<Map> listarCandidato()
+    Map buscarIdCandidato(Integer id)
 }
