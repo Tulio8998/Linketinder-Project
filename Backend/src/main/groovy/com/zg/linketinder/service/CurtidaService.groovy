@@ -11,17 +11,23 @@ class CurtidaService {
     private CurtidaDAO curtidaDAO = new CurtidaDAO()
 
     void curtirVagaComoCandidato(Candidato candidato, Vaga vaga, Boolean like) {
-        if (!candidato || !vaga) {
-            throw new IllegalArgumentException("Candidato e Vaga nao podem ser nulos")
+        try {
+            if (candidato && vaga) {
+                curtidaDAO.salvarCurtidaCandidato(candidato.id, vaga.id, like)
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Candidato e Vaga nao podem ser nulos: ${e.message}")
         }
-        curtidaDAO.salvarCurtidaCandidato(candidato.id, vaga.id, like)
     }
 
     void curtirVagaComoEmpresa(Empresa empresa, Candidato candidato, Vaga vaga, Boolean like) {
-        if (empresa.id != vaga.empresa.id) {
-            throw new IllegalArgumentException("A empresa so pode curtir candidatos das suas proprias vagas")
+        try {
+            if (empresa.id == vaga.empresa.id) {
+                curtidaDAO.salvarCurtidaEmpresa(empresa.id, candidato.id, vaga.id, like)
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("A empresa so pode curtir candidatos das suas proprias vagas: ${e.message}")
         }
-        curtidaDAO.salvarCurtidaEmpresa(empresa.id, candidato.id, vaga.id, like)
     }
 
     int calcularAfinidade(Candidato candidato, Vaga vaga) {
