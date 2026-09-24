@@ -133,6 +133,7 @@ class CandidatoDAOImpl implements CandidatoDAO{
                         cep: row.cep, data_nascimento: row.data_nascimento, descricao: row.descricao
                 )
             }
+            return null
         } finally {
             sql.close()
         }
@@ -152,17 +153,9 @@ class CandidatoDAOImpl implements CandidatoDAO{
                         cep: row.cep, data_nascimento: row.data_nascimento, descricao: row.descricao
                 )
             }
+            return null
         } finally {
             sql.close()
         }
-    }
-
-    @Override
-    void salvaCompeteincia(Integer id_candidato, Integer id_competencia) {
-        Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
-        def query = '''
-                INSERT INTO candidatos_competencias (id, id) VALUES ?, ?
-            '''
     }
 }

@@ -79,14 +79,14 @@ class CandidatoService {
 
     void atualizarCandidato(Integer id, Candidato candidato) {
         try {
-            if (candidatoDAO.buscarIdCandidato(id) != null && candidato != null) {
+            if (candidato != null && candidatoDAO.buscarIdCandidato(id) != null) {
                 candidato.id = id
                 candidatoDAO.atualizarCandidato(candidato)
             } else {
                 throw new IllegalArgumentException("Candidato nao encontrado ou dados nulos")
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("Erro ao salvar candidato: ${e.message}")
+            throw new IllegalArgumentException("Erro ao atualizar candidato: ${e.message}")
         }
     }
 
