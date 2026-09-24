@@ -1,9 +1,10 @@
 package com.zg.linketinder.model
 
-import javax.xml.crypto.Data
+import java.time.LocalDate
 
 class Candidato extends Pessoa{
     String cpf
     int idade
-    Data data_nascimento
+    LocalDate data_nascimento
+    List<Competencia> competencias = []
 }
