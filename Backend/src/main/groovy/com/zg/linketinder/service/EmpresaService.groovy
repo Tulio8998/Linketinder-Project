@@ -8,8 +8,6 @@ import com.zg.linketinder.repository.EmpresaRepository
 
 class EmpresaService {
     private EmpresaDAO empresaDAO = new EmpresaDAOImpl()
-    EmpresaRepository empresaRepository = new EmpresaRepository()
-
 
     List<Empresa> listarEmpresas(){
         try {
@@ -33,7 +31,7 @@ class EmpresaService {
         try {
             return empresaDAO.buscarCnpjEmpresa(cnpj)
         } catch (Exception e) {
-            println "Nao tem empresa com esse cpnj: ${e.message}"
+            println "Nao tem empresa com esse cnpj: ${e.message}"
             return null
         }
     }
@@ -82,14 +80,14 @@ class EmpresaService {
 
     void atualizarEmpresa(Integer id, Empresa empresa) {
         try {
-            if (buscarIdEmpresa(id) != null && empresa != empresa) {
+            if ( empresa != null && buscarIdEmpresa(id) != null) {
                 empresa.id = id
                 empresaDAO.atualizarEmpresa(empresa)
             } else {
                 throw new IllegalArgumentException("Empresa nao encontrado ou dados nulos")
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("Erro ao salvar empresa: ${e.message}")
+            throw new IllegalArgumentException("Erro ao atualizar empresa: ${e.message}")
         }
     }
 
