@@ -50,19 +50,14 @@ class CurtidaDAOImpl implements CurtidaDAO{
     @Override
     List<Map> listarCurtidasEmpresa() {
         Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
 
         def query = '''
                 SELECT * FROM curtidas_empresa;
             '''
         try {
             def resultados = sql.rows(query)
-            sql.commit()
             return resultados
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
-        } finally {
+        }  finally {
             sql.close()
         }
     }
@@ -70,8 +65,6 @@ class CurtidaDAOImpl implements CurtidaDAO{
     @Override
     List<Map> listarMatch() {
         Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
-
         def query = '''
                 SELECT c.nome AS nome_candidato, c.email AS email_candidato, e.nome AS nome_empresa, v.nome AS titulo_vaga
                 FROM curtidas_candidato cc
@@ -89,11 +82,7 @@ class CurtidaDAOImpl implements CurtidaDAO{
             '''
         try {
             def resultados = sql.rows(query)
-            sql.commit()
             return resultados
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
         } finally {
             sql.close()
         }
