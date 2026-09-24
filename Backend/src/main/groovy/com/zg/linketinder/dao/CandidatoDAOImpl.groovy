@@ -38,8 +38,8 @@ class CandidatoDAOImpl implements CandidatoDAO{
             '''
         try {
             sql.executeUpdate(query, [candidato.cpf, candidato.nome, candidato.email, candidato.senha,
-                candidato.pais, candidato.estado, candidato.cidade, candidato.cep, candidato.data_nascimento,
-                candidato.descricao, candidato.id])
+                                      candidato.pais, candidato.estado, candidato.cidade, candidato.cep, candidato.data_nascimento,
+                                      candidato.descricao, candidato.id])
             sql.commit()
         } catch (Exception e) {
             sql.rollback()
@@ -69,40 +69,79 @@ class CandidatoDAOImpl implements CandidatoDAO{
     }
 
     @Override
-    List<Map>  listarCandidato() {
+    List<Candidato> listarCandidato() {
         Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
+        List<Candidato> lista = []
 
         def query = '''
                 SELECT * FROM candidatos;
             '''
         try {
-            def resultado = sql.rows(query)
-            sql.commit()
-            return resultado
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
+            sql.eachRow(query) { row ->
+                lista.add(new Candidato(id: row.id, cpf: row.cpf, nome: row.nome,
+                        email: row.email, senha: row.senha, pais: row.pais, estado: row.estado,
+                        cidade: row.cidade, cep: row.cep, data_nascimento: row.data_nascimento, descricao: row.descricao))
+            }
+            return lista
         } finally {
             sql.close()
         }
     }
 
     @Override
-    Map buscarIdCandidato(Integer id) {
+    Candidato buscarIdCandidato(Integer id) {
         Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
 
         def query = '''
                 SELECT * FROM candidatos WHERE id = ?;
             '''
         try {
-            def resultado = sql.firstRow(query, [id])
-            sql.commit()
-            return resultado
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
+            def row = sql.firstRow(query, [id])
+            if (row) {
+                return new Candidato(id: row.id, cpf: row.cpf, nome: row.nome, email: row.email,
+                        senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
+                        cep: row.cep, data_nascimento: row.data_nascimento, descricao: row.descricao
+                )
+            }
+            return null
+        } finally {
+            sql.close()
+        }
+    }
+
+    @Override
+    Candidato buscarEmailCandidato(String email) {
+        Sql sql = ConexaoDB.getConexao()
+        def query = '''
+                SELECT * FROM candidatos WHERE email = ?
+            '''
+        try {
+            def row = sql.firstRow(query, [email])
+            if (row) {
+                return new Candidato(id: row.id, cpf: row.cpf, nome: row.nome, email: row.email,
+                        senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
+                        cep: row.cep, data_nascimento: row.data_nascimento, descricao: row.descricao
+                )
+            }
+        } finally {
+            sql.close()
+        }
+    }
+
+    @Override
+    Candidato buscarCpfCandidato(String cpf) {
+        Sql sql = ConexaoDB.getConexao()
+        def query = '''
+                SELECT * from candidatos WHERE cpf = ?
+            '''
+        try {
+            def row = sql.firstRow(query, [cpf])
+            if (row) {
+                return new Candidato(id: row.id, cpf: row.cpf, nome: row.nome, email: row.email,
+                        senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
+                        cep: row.cep, data_nascimento: row.data_nascimento, descricao: row.descricao
+                )
+            }
         } finally {
             sql.close()
         }
