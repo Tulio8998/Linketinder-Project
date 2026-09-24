@@ -3,10 +3,11 @@ package com.zg.linketinder.service
 import com.zg.linketinder.dao.CurtidaDAO
 import com.zg.linketinder.dao.CurtidaDAOImpl
 import com.zg.linketinder.model.Candidato
-import com.zg.linketinder.model.Curtida
+import com.zg.linketinder.model.CurtidaCandidato
+import com.zg.linketinder.model.CurtidaEmpresa
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Vaga
-import com.zg.linketinder.repository.CurtidaRepository
+import com.zg.linketinder.model.curtida.Match
 
 class CurtidaService {
     private CurtidaDAO curtidaDAO = new CurtidaDAOImpl()
@@ -23,7 +24,7 @@ class CurtidaService {
 
     void curtirVagaComoEmpresa(Empresa empresa, Candidato candidato, Vaga vaga, Boolean like) {
         try {
-            if (empresa.id == vaga.empresa.id) {
+            if (empresa?.id == vaga?.empresa?.id) {
                 curtidaDAO.salvarCurtidaEmpresa(empresa.id, candidato.id, vaga.id, like)
             }
         } catch (Exception e) {
@@ -45,20 +46,29 @@ class CurtidaService {
         return (qntCompTotal * 100) / qntCompVaga
     }
 
-    def listarCurtidasEmpresa() {
+    List<CurtidaEmpresa> listarCurtidasEmpresa() {
         try {
-            curtidaDAO.listarCurtidasEmpresa()
+            return curtidaDAO.listarCurtidasEmpresa()
         } catch (Exception e) {
-            println "Não tem curtidas disponíveis: ${e.message}"
+            println "Nao tem curtidas disponiveis: ${e.message}"
             return []
         }
     }
 
-    def listarMatch() {
+    List<CurtidaCandidato> listarCurtidasCandidato() {
         try {
-            curtidaDAO.listarMatch()
+            return curtidaDAO.listarCurtidasCandidato()
         } catch (Exception e) {
-            println "Não tem matches: ${e.message}"
+            println "Nao tem curtidas disponiveis: ${e.message}"
+            return []
+        }
+    }
+
+    List<Match> listarMatch() {
+        try {
+            return curtidaDAO.listarMatch()
+        } catch (Exception e) {
+            println "Nao tem matches: ${e.message}"
             return []
         }
     }
