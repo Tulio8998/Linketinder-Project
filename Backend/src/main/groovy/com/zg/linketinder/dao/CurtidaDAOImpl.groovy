@@ -1,5 +1,12 @@
 package com.zg.linketinder.dao
 
+import com.zg.linketinder.model.Candidato
+import com.zg.linketinder.model.CurtidaCandidato
+import com.zg.linketinder.model.CurtidaEmpresa
+import com.zg.linketinder.model.curtida.Curtida
+import com.zg.linketinder.model.Empresa
+import com.zg.linketinder.model.curtida.Match
+import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.util.ConexaoDB
 import groovy.sql.Sql
 
@@ -48,25 +55,53 @@ class CurtidaDAOImpl implements CurtidaDAO{
     }
 
     @Override
-    List<Map> listarCurtidasEmpresa() {
+    List<CurtidaEmpresa> listarCurtidasEmpresa() {
         Sql sql = ConexaoDB.getConexao()
-
+        List<CurtidaEmpresa> lista = []
         def query = '''
                 SELECT * FROM curtidas_empresa;
             '''
         try {
-            def resultados = sql.rows(query)
-            return resultados
+            sql.eachRow(query) { row ->
+                Empresa emp = new Empresa(id: row.id_empresa)
+                Candidato cand = new Candidato(id: row.id_candidato)
+                Vaga vg = new Vaga(id: row.id_vaga)
+                lista.add(new CurtidaEmpresa (id: row.id, empresa: emp, candidato: cand, vaga: vg, curtiu: row.curtiu))
+            }
+            return lista
         }  finally {
             sql.close()
         }
     }
 
     @Override
-    List<Map> listarMatch() {
+    List<CurtidaCandidato> listarCurtidasCandidato() {
         Sql sql = ConexaoDB.getConexao()
+        List<CurtidaCandidato> lista = []
         def query = '''
-                SELECT c.nome AS nome_candidato, c.email AS email_candidato, e.nome AS nome_empresa, v.nome AS titulo_vaga
+                SELECT * FROM curtidas_candidato;
+            '''
+        try {
+            sql.eachRow(query) { row ->
+                Candidato cand = new Candidato(id: row.id_candidato)
+                Vaga vg = new Vaga(id: row.id_vaga)
+                lista.add(new CurtidaCandidato (id: row.id, candidato: cand, vaga: vg, curtiu: row.curtiu))
+            }
+            return lista
+        }  finally {
+            sql.close()
+        }
+    }
+
+    @Override
+    List<Match> listarMatch() {
+        Sql sql = ConexaoDB.getConexao()
+        List<Match> lista = []
+
+        def query = '''
+                SELECT c.id AS id_candidato, c.nome AS nome_candidato, c.email AS email_candidato, 
+                       e.id AS id_empresa, e.nome AS nome_empresa, 
+                       v.id AS id_vaga, v.nome AS nome_vaga
                 FROM curtidas_candidato cc
                 INNER JOIN curtidas_empresa ce 
                     ON cc.id_candidato = ce.id_candidato 
@@ -81,8 +116,13 @@ class CurtidaDAOImpl implements CurtidaDAO{
                   AND ce.curtiu = TRUE;
             '''
         try {
-            def resultados = sql.rows(query)
-            return resultados
+            sql.eachRow(query) { row ->
+                Candidato cand = new Candidato(id: row.id_candidato, nome: row.nome_candidato, email: row.email_candidato)
+                Empresa emp = new Empresa(id: row.id_empresa, nome: row.nome_empresa)
+                Vaga vg = new Vaga(id: row.id_vaga, nome: row.nome_vaga, empresa: emp)
+                lista.add(new Match(candidato: cand, empresa: emp, vaga: vg))
+            }
+            return lista
         } finally {
             sql.close()
         }
