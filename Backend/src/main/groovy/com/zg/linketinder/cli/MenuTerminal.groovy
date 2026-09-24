@@ -1,7 +1,7 @@
 package com.zg.linketinder.cli
 
 import com.zg.linketinder.model.Candidato
-import com.zg.linketinder.model.Curtida
+import com.zg.linketinder.model.curtida.Curtida
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.service.CandidatoService
