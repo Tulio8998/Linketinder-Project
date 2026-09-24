@@ -10,13 +10,23 @@ class CandidatoDAOImpl implements CandidatoDAO{
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
 
-        def query = '''
+        def queryCandidato = '''
                 INSERT INTO candidatos (cpf, nome, email, senha,
                 pais, estado, cidade, cep, data_nascimento, descricao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             '''
+
+        def queryCompetencia = '''
+                INSERT INTO candidatos_competencias (id_candidato, id_competencia) VALUES (?, ?)
+            '''
         try {
-            sql.executeInsert(query, [candidato.cpf, candidato.nome, candidato.email, candidato.senha,
+            def chaves = sql.executeInsert(queryCandidato, [candidato.cpf, candidato.nome, candidato.email, candidato.senha,
                                       candidato.pais, candidato.estado, candidato.cidade, candidato.cep, candidato.data_nascimento, candidato.descricao])
+            def idCandidato = chaves[0][0]
+            if (candidato.competencias && !candidato.competencias.isEmpty()) {
+                candidato.competencias.each { c ->
+                    sql.executeInsert(queryCompetencia, [idCandidato, c.id])
+                }
+            }
             sql.commit()
         } catch (Exception e) {
             sql.rollback()
@@ -145,5 +155,14 @@ class CandidatoDAOImpl implements CandidatoDAO{
         } finally {
             sql.close()
         }
+    }
+
+    @Override
+    void salvaCompeteincia(Integer id_candidato, Integer id_competencia) {
+        Sql sql = ConexaoDB.getConexao()
+        sql.connection.autoCommit = false
+        def query = '''
+                INSERT INTO candidatos_competencias (id, id) VALUES ?, ?
+            '''
     }
 }
