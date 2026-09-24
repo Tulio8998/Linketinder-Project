@@ -24,7 +24,7 @@ class EmpresaService {
         try {
             return empresaDAO.buscarIdEmpresa(id)
         } catch (Exception e) {
-            println "Nao tem empresas para listar: ${e.message}"
+            println "Nao tem empresas com esse id: ${e.message}"
             return null
         }
     }

@@ -19,7 +19,9 @@ class EmpresaDAOImpl implements EmpresaDAO{
         try {
             sql.executeInsert(query, [empresa.cnpj, empresa.nome, empresa.email, empresa.senha,
                                       empresa.pais, empresa.cidade, empresa.estado, empresa.cep, empresa.descricao])
+            sql.commit()
         } catch (Exception e) {
+            sql.rollback()
             throw e
         } finally {
             sql.close()
@@ -39,7 +41,9 @@ class EmpresaDAOImpl implements EmpresaDAO{
         try {
             sql.executeUpdate(query, [empresa.cnpj, empresa.nome, empresa.email, empresa.senha,
                                       empresa.pais, empresa.cidade, empresa.estado, empresa.cep, empresa.descricao, empresa.id])
+            sql.commit()
         } catch (Exception e) {
+            sql.rollback()
             throw e
         } finally {
             sql.close()
@@ -56,7 +60,9 @@ class EmpresaDAOImpl implements EmpresaDAO{
             '''
         try {
             sql.executeUpdate(query, [id])
+            sql.commit()
         } catch (Exception e) {
+            sql.rollback()
             throw e
         } finally {
             sql.close()
@@ -98,6 +104,7 @@ class EmpresaDAOImpl implements EmpresaDAO{
                         cep: row.cep, descricao: row.descricao
                 )
             }
+            return null
         } finally {
             sql.close()
         }
@@ -118,6 +125,7 @@ class EmpresaDAOImpl implements EmpresaDAO{
                         cep: row.cep, descricao: row.descricao
                 )
             }
+            return null
         } finally {
             sql.close()
         }
@@ -138,6 +146,7 @@ class EmpresaDAOImpl implements EmpresaDAO{
                         cep: row.cep, descricao: row.descricao
                 )
             }
+            return null
         } finally {
             sql.close()
         }

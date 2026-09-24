@@ -21,7 +21,7 @@ class CandidatoService {
         try {
             return candidatoDAO.buscarIdCandidato(id)
         } catch (Exception e) {
-            println "Nao tem candidatos para listar: ${e.message}"
+            println "Nao tem candidatos com esse id: ${e.message}"
             return null
         }
     }
