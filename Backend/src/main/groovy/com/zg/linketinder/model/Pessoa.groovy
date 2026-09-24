@@ -11,7 +11,6 @@ class Pessoa {
     String cidade
     String estado
     String cep
-    Data data_nascimento
     String descricao
     List<String> competencias = ["Python", "Java", "Spring Framework", "Angular", "Groovy", "JavaScript", "TypeScript"]
 }
