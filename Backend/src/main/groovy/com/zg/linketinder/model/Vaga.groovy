@@ -6,6 +6,6 @@ class Vaga {
     String descricao
     String estado
     String cidade
-    List<String>  competencias = []
+    List<Competencia> competencias = []
     Empresa empresa
 }
