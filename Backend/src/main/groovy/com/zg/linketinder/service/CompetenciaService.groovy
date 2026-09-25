@@ -12,6 +12,9 @@ class CompetenciaService {
 
     void adicionarCompetenciaCandidato(Integer id_candidato, Integer id_competencia) {
         try {
+            if (competenciaDAO.buscarIdCompetenciaCandidato(id_candidato, id_competencia) != null) {
+                throw new IllegalArgumentException("O candidato ja possui esta competencia")
+            }
             if (candidatoDAO.buscarIdCandidato(id_candidato) && competenciaDAO.buscarIdCompetencia(id_competencia)) {
                 competenciaDAO.salvaCompetenciaCandidato(id_candidato, id_competencia)
             } else {
@@ -63,6 +66,9 @@ class CompetenciaService {
 
     void adicionarCompetenciaVaga(Integer id_vaga, Integer id_competencia) {
         try {
+            if (competenciaDAO.buscarIdCompetenciaVaga(id_vaga, id_competencia) != null) {
+                throw new IllegalArgumentException("Esta vaga ja possui esta competencia")
+            }
             competenciaDAO.salvaCompetenciaVaga(id_vaga, id_competencia)
         } catch(Exception e) {
             throw new IllegalArgumentException("Erro ao vincular competencia a vaga. Verifique se a vaga e a competencia existem: ${e.message}")
@@ -101,6 +107,15 @@ class CompetenciaService {
         } catch (Exception e) {
             println "Erro ao buscar competencia da vaga por Nome: ${e.message}"
             return null
+        }
+    }
+
+    List<Competencia> listarCompetencia() {
+        try {
+            return  competenciaDAO.listarCompetencia()
+        } catch (Exception e) {
+            println "Erro ao listar competencias: ${e.message}"
+            return []
         }
     }
 }
