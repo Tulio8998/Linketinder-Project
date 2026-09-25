@@ -1,8 +1,11 @@
 package com.zg.linketinder.dao
 
 import com.zg.linketinder.model.Candidato
+import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.util.ConexaoDB
 import groovy.sql.Sql
+
+import java.time.LocalDate
 
 class CandidatoDAOImpl implements CandidatoDAO{
     @Override
@@ -81,18 +84,33 @@ class CandidatoDAOImpl implements CandidatoDAO{
     @Override
     List<Candidato> listarCandidato() {
         Sql sql = ConexaoDB.getConexao()
-        List<Candidato> lista = []
+        Map<Integer, Candidato> mapaCandidatos = [:]
 
         def query = '''
-                SELECT * FROM candidatos;
+                SELECT ct.id, '***.***.***-**' AS cpf, 'anonimo' || ct.id AS nome, 'oculto@email.com' AS email, 
+                                       ct.senha, ct.pais, ct.estado, ct.cidade, ct.cep, ct.data_nascimento, ct.descricao, 
+                                       cm.id AS id_competencia, cm.nome AS nome_competencia 
+                                FROM candidatos AS ct
+                                LEFT JOIN candidatos_competencias c ON ct.id = c.id_candidato
+                                LEFT JOIN competencias cm ON cm.id = c.id_competencia;
             '''
         try {
             sql.eachRow(query) { row ->
-                lista.add(new Candidato(id: row.id, cpf: row.cpf, nome: row.nome,
-                        email: row.email, senha: row.senha, pais: row.pais, estado: row.estado,
-                        cidade: row.cidade, cep: row.cep, data_nascimento: row.data_nascimento, descricao: row.descricao))
+                Integer idCand = row.getInt('id')
+                if (!mapaCandidatos.containsKey(idCand)) {
+                    LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
+                    Candidato cand = new Candidato(id: idCand, cpf: row.cpf, nome: row.nome,
+                            email: row.email, senha: row.senha, pais: row.pais, estado: row.estado,
+                            cidade: row.cidade, cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao)
+                    cand.competencias = []
+                    mapaCandidatos[idCand] = cand
+                }
+
+                if (row.id_competencia != null) {
+                    mapaCandidatos[idCand].competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
+                }
             }
-            return lista
+            return mapaCandidatos.values().toList()
         } finally {
             sql.close()
         }
@@ -108,9 +126,10 @@ class CandidatoDAOImpl implements CandidatoDAO{
         try {
             def row = sql.firstRow(query, [id])
             if (row) {
+                LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
                 return new Candidato(id: row.id, cpf: row.cpf, nome: row.nome, email: row.email,
                         senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
-                        cep: row.cep, data_nascimento: row.data_nascimento, descricao: row.descricao
+                        cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao
                 )
             }
             return null
@@ -128,9 +147,10 @@ class CandidatoDAOImpl implements CandidatoDAO{
         try {
             def row = sql.firstRow(query, [email])
             if (row) {
+                LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
                 return new Candidato(id: row.id, cpf: row.cpf, nome: row.nome, email: row.email,
                         senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
-                        cep: row.cep, data_nascimento: row.data_nascimento, descricao: row.descricao
+                        cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao
                 )
             }
             return null
@@ -148,9 +168,10 @@ class CandidatoDAOImpl implements CandidatoDAO{
         try {
             def row = sql.firstRow(query, [cpf])
             if (row) {
+                LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
                 return new Candidato(id: row.id, cpf: row.cpf, nome: row.nome, email: row.email,
                         senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
-                        cep: row.cep, data_nascimento: row.data_nascimento, descricao: row.descricao
+                        cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao
                 )
             }
             return null
