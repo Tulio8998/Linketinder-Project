@@ -7,6 +7,7 @@ interface VagaDAO {
     void atualizarVaga(Vaga vaga)
     void excluirVaga(Integer id_empresa, Integer id_vaga)
     List<Vaga> listarVaga(Integer id_empresa)
+    List<Vaga> listarTodasVagas()
     Vaga buscarIdVaga(Integer id_empresa, Integer id_vaga)
     Vaga buscarNomeVaga(Integer id_empresa, String nome)
 }
