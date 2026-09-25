@@ -13,6 +13,9 @@ class VagaService {
     void salvarVaga(Vaga vaga) {
         try {
             if (vaga != null) {
+                if (vagaDAO.buscarNomeVaga(vaga.empresa.id, vaga.nome) != null) {
+                    throw new IllegalArgumentException("A empresa ja possui uma vaga cadastrada com esse nome: ${vaga.nome}")
+                }
                 vagaDAO.salvarVaga(vaga)
             }
         } catch (Exception e) {
@@ -47,6 +50,15 @@ class VagaService {
             return vagaDAO.listarVaga(id_empresa)
         } catch (Exception e) {
             println "Nao tem vaga para listar: ${e.message}"
+            return []
+        }
+    }
+
+    List<Vaga> listarTodasVagas() {
+        try {
+            return vagaDAO.listarTodasVagas()
+        } catch (Exception e) {
+            println "Erro ao listar todas as vagas: ${e.message}"
             return []
         }
     }
