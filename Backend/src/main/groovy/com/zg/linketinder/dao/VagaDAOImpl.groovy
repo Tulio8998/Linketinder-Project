@@ -1,5 +1,6 @@
 package com.zg.linketinder.dao
 
+import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.util.ConexaoDB
@@ -78,23 +79,73 @@ class VagaDAOImpl implements VagaDAO{
     }
 
     @Override
-    List<Vaga> listarVaga(Integer id_empresa) {
+    List<Vaga> listarTodasVagas() {
         Sql sql = ConexaoDB.getConexao()
-        List<Vaga> lista = []
+        Map<Integer, Vaga> mapaVagas = [:]
 
         def query = '''
-                SELECT v.*, e.nome AS nome_empresa 
+                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade, 
+                       e.id AS id_empresa, e.nome AS nome_empresa,
+                       cm.id AS id_competencia, cm.nome AS nome_competencia
                 FROM vagas v
                 INNER JOIN empresas e ON v.id_empresa = e.id
+                LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
+                LEFT JOIN competencias cm ON cm.id = vc.id_competencia
+            '''
+        try {
+            sql.eachRow(query) { row ->
+                Integer idVaga = row.getInt('id')
+
+                if (!mapaVagas.containsKey(idVaga)) {
+                    Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
+                    Vaga va = new Vaga(id: idVaga, nome: row.nome, descricao: row.descricao,
+                            pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
+                    va.competencias = []
+                    mapaVagas[idVaga] = va
+                }
+
+                if (row.id_competencia != null) {
+                    mapaVagas[idVaga].competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
+                }
+            }
+            return mapaVagas.values().toList()
+        } finally {
+            sql.close()
+        }
+    }
+
+    @Override
+    List<Vaga> listarVaga(Integer id_empresa) {
+        Sql sql = ConexaoDB.getConexao()
+        Map<Integer, Vaga> mapaVagas = [:]
+
+        def query = '''
+                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade, 
+                       e.id AS id_empresa, 'anonimo' AS nome_empresa,
+                       cm.id AS id_competencia, cm.nome AS nome_competencia
+                FROM vagas v
+                INNER JOIN empresas e ON v.id_empresa = e.id
+                LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
+                LEFT JOIN competencias cm ON cm.id = vc.id_competencia
                 WHERE v.id_empresa = ?
             '''
         try {
             sql.eachRow(query, [id_empresa]) { row ->
-                Empresa emp = new Empresa(id: row.id_empresa, nome: row.nome_empresa)
-                lista.add(new Vaga(id: row.id, nome: row.nome, descricao: row.descricao,
-                        pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp ))
+                Integer idVaga = row.getInt('id')
+
+                if (!mapaVagas.containsKey(idVaga)) {
+                    Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
+                    Vaga va = new Vaga(id: idVaga, nome: row.nome, descricao: row.descricao,
+                            pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
+                    va.competencias = []
+                    mapaVagas[idVaga] = va
+                }
+
+                if (row.id_competencia != null) {
+                    mapaVagas[idVaga].competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
+                }
             }
-            return lista
+            return mapaVagas.values().toList()
         } finally {
             sql.close()
         }
