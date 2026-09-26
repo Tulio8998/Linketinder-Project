@@ -12,10 +12,10 @@ import com.zg.linketinder.model.curtida.Match
 class CurtidaService {
     private CurtidaDAO curtidaDAO = new CurtidaDAOImpl()
 
-    void curtirVagaComoCandidato(Candidato candidato, Vaga vaga, Boolean like) {
+    void curtirVagaComoCandidato(Integer id_candidato, Integer id_vaga, Boolean like) {
         try {
-            if (candidato && vaga) {
-                curtidaDAO.salvarCurtidaCandidato(candidato.id, vaga.id, like)
+            if (id_candidato && id_vaga) {
+                curtidaDAO.salvarCurtidaCandidato(id_candidato, id_vaga, like)
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("Candidato e Vaga nao podem ser nulos: ${e.message}")
@@ -64,14 +64,21 @@ class CurtidaService {
         }
     }
 
-    List<Match> listarMatch() {
+    List<Match> listarMatchEmpresa(Integer id_empresa) {
         try {
-            return curtidaDAO.listarMatch()
+            return curtidaDAO.listarMatchEmpresa(id_empresa)
         } catch (Exception e) {
             println "Nao tem matches: ${e.message}"
             return []
         }
     }
 
-
+    List<Match> listarMatchCandidato(Integer id_candidato) {
+        try {
+            return curtidaDAO.listarMatchCandidato(id_candidato)
+        } catch (Exception e) {
+            println "Nao tem matches: ${e.message}"
+            return []
+        }
+    }
 }
