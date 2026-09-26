@@ -121,7 +121,7 @@ class VagaDAOImpl implements VagaDAO{
 
         def query = '''
                 SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade, 
-                       e.id AS id_empresa, 'anonimo' AS nome_empresa,
+                       e.id AS id_empresa, e.nome AS nome_empresa,
                        cm.id AS id_competencia, cm.nome AS nome_competencia
                 FROM vagas v
                 INNER JOIN empresas e ON v.id_empresa = e.id
@@ -156,20 +156,21 @@ class VagaDAOImpl implements VagaDAO{
         Sql sql = ConexaoDB.getConexao()
         Vaga vaga = null
         def query = '''
-                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,   
-                v.id_empresa AS id_empresa,cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
+                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,
+                   v.id_empresa AS id_empresa, e.nome AS nome_empresa, cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
+                INNER JOIN empresas e ON v.id_empresa = e.id
                 LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
                 LEFT JOIN competencias cm ON cm.id = vc.id_competencia
                 WHERE v.id_empresa = ? AND v.id = ?;
             '''
         try {
             sql.eachRow(query, [id_empresa, id_vaga]) { row ->
-               if (vaga == null) {
-                   Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
-                   vaga = new Vaga(id: row.getInt('id'), nome: row.nome, descricao: row.descricao,
-                           pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
-                   vaga.competencias = []
-               }
+                if (vaga == null) {
+                    Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
+                    vaga = new Vaga(id: row.getInt('id'), nome: row.nome, descricao: row.descricao,
+                            pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
+                    vaga.competencias = []
+                }
                 if (row.id_competencia != null) {
                     vaga.competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
                 }
@@ -185,8 +186,9 @@ class VagaDAOImpl implements VagaDAO{
         Sql sql = ConexaoDB.getConexao()
         Vaga vaga = null
         def query = '''
-                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,   
-                v.id_empresa AS id_empresa,cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
+                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,
+                   v.id_empresa AS id_empresa, e.nome AS nome_empresa, cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
+                INNER JOIN empresas e ON v.id_empresa = e.id
                 LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
                 LEFT JOIN competencias cm ON cm.id = vc.id_competencia
                 WHERE v.id_empresa = ? AND v.nome = ?;
