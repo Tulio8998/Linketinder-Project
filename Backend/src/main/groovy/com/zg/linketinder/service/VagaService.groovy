@@ -45,9 +45,9 @@ class VagaService {
         }
     }
 
-    List<Vaga> listarVaga(Integer id_empresa) {
+    List<Vaga> listarVagaEmpresa(Integer id_empresa) {
         try {
-            return vagaDAO.listarVaga(id_empresa)
+            return vagaDAO.listarVagaEmpresa(id_empresa)
         } catch (Exception e) {
             println "Nao tem vaga para listar: ${e.message}"
             return []
@@ -63,18 +63,36 @@ class VagaService {
         }
     }
 
-    Vaga buscarIdVaga(Integer id_empresa, Integer id_vaga) {
+    Vaga buscarIdVagaEmpresa(Integer id_empresa, Integer id_vaga) {
         try {
-            return vagaDAO.buscarIdVaga(id_empresa, id_vaga)
+            return vagaDAO.buscarIdVagaEmpresa(id_empresa, id_vaga)
         } catch (Exception e) {
             println "Nao tem vaga com esse id: ${e.message}"
             return null
         }
     }
 
-    Vaga buscarNomeVaga(Integer id_empresa, String nome) {
+    Vaga buscarNomeVagaEmpresa(Integer id_empresa, String nome) {
         try {
-            return vagaDAO.buscarNomeVaga(id_empresa, nome)
+            return vagaDAO.buscarNomeVagaEmpresa(id_empresa, nome)
+        } catch (Exception e) {
+            println "Nao tem vaga com esse nome: ${e.message}"
+            return null
+        }
+    }
+
+    Vaga buscarIdVaga(Integer id_vaga) {
+        try {
+            return vagaDAO.buscarIdVaga(id_vaga)
+        } catch (Exception e) {
+            println "Nao tem vaga com esse id: ${e.message}"
+            return null
+        }
+    }
+
+    Vaga buscarNomeVaga(String nome) {
+        try {
+            return vagaDAO.buscarNomeVaga(nome)
         } catch (Exception e) {
             println "Nao tem vaga com esse nome: ${e.message}"
             return null
