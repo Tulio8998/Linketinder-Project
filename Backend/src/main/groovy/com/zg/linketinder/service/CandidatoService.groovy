@@ -8,6 +8,15 @@ import com.zg.linketinder.repository.CandidatoRepository
 class CandidatoService {
     private CandidatoDAO candidatoDAO = new CandidatoDAOImpl()
 
+    List<Candidato> listarCandidatoEmpresa() {
+        try {
+            return candidatoDAO.listarCandidatoEmpresa()
+        } catch (Exception e) {
+            println "Nao tem candidatos para listar: ${e.message}"
+            return []
+        }
+    }
+
     List<Candidato> listarCandidatos() {
         try {
             return candidatoDAO.listarCandidato()
