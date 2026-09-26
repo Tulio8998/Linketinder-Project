@@ -39,7 +39,9 @@ class CurtidaService {
         if (!vaga.competencias || vaga.competencias.isEmpty()) {
             return 0
         }
-        def compIguais = vaga.competencias.findAll { c -> candidato.competencias.contains(c)}
+        def compIguais = vaga.competencias.findAll { compVaga ->
+            candidato.competencias.any { compCand -> compCand.nome == compVaga.nome }
+        }
         def qntCompVaga = vaga.competencias.size()
         def qntCompTotal = compIguais.size()
 
