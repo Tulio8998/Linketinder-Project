@@ -82,20 +82,23 @@ class CandidatoDAOImpl implements CandidatoDAO{
     }
 
     @Override
-    List<Candidato> listarCandidatoEmpresa() {
+    List<Candidato> listarCandidatoEmpresa(Integer id_empresa) {
         Sql sql = ConexaoDB.getConexao()
         Map<Integer, Candidato> mapaCandidatos = [:]
 
         def query = '''
                 SELECT ct.id, '***.***.***-**' AS cpf, 'anonimo' || ct.id AS nome, 'anonimo@email.com' AS email, 
-                                       ct.senha, ct.pais, ct.estado, ct.cidade, ct.cep, ct.data_nascimento, ct.descricao, 
-                                       cm.id AS id_competencia, cm.nome AS nome_competencia 
-                                FROM candidatos AS ct
-                                LEFT JOIN candidatos_competencias c ON ct.id = c.id_candidato
-                                LEFT JOIN competencias cm ON cm.id = c.id_competencia;
+                       ct.senha, ct.pais, ct.estado, ct.cidade, ct.cep, ct.data_nascimento, ct.descricao, 
+                       cm.id AS id_competencia, cm.nome AS nome_competencia 
+                            FROM candidatos AS ct
+                            INNER JOIN curtidas_candidato cc ON cc.id_candidato = ct.id
+                            INNER JOIN vagas v ON v.id = cc.id_vaga
+                            LEFT JOIN candidatos_competencias c ON ct.id = c.id_candidato
+                            LEFT JOIN competencias cm ON cm.id = c.id_competencia
+                            WHERE v.id_empresa = ? AND cc.curtiu = TRUE;
             '''
         try {
-            sql.eachRow(query) { row ->
+            sql.eachRow(query, [id_empresa]) { row ->
                 Integer idCand = row.getInt('id')
                 if (!mapaCandidatos.containsKey(idCand)) {
                     LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento

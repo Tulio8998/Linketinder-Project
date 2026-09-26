@@ -8,7 +8,7 @@ interface CandidatoDAO {
     void salvarCandidato(Candidato candidato)
     void atualizarCandidato(Candidato candidato)
     void excluirCandidato(Integer id)
-    List<Candidato> listarCandidatoEmpresa()
+    List<Candidato> listarCandidatoEmpresa(Integer id_empresa)
     List<Candidato> listarCandidato()
     Candidato buscarIdCandidato(Integer id)
     Candidato buscarEmailCandidato(String email)
