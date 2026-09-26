@@ -21,7 +21,7 @@ O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) s
 * **Sistema de Curtidas:** Adição da lógica de relacionamento. Agora, candidatos podem curtir vagas, e empresas podem curtir candidatos. Quando o interesse é mútuo, o sistema registra o evento de Match.
 * **Refatoração Arquitetural:** O projeto ganhou uma nova camada de Repository para isolar a persistência separando da camada de Service.
 
-### Versão 1.2.0 
+### Versão 1.2.0
 
 * **Cobertura de Testes Unitários:** Implementação de testes automatizados utilizando o Spock Framework para as camadas de Model, Repository e Service de Empresa e Candidato.
 * **TDD:** Desenvolvimento guiado por testes para garantir a confiabilidade da inserção de dados no sistema.
@@ -41,12 +41,16 @@ O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) s
 * **Índice de Afinidade:** Criação de compatibilidade que cruza dados e exibe dinamicamente a porcentagem (%) de "Match" nos cards de vagas para os candidatos, e na triagem de perfis para as empresas.
 * **Sistema de Interações (Curtir/Passar):** Implementação definitiva da lógica de aprovação e rejeição, salvando o histórico de avaliações no banco local para impedir a renderização duplicada de candidatos e vagas já processados.
 
-
 ### Versão 1.5.0
 
 * **Modelagem de Dados (DER/MER):** Criação do Diagrama Entidade-Relacionamento e arquitetura lógica do banco de dados utilizando o software brModelo, estruturando as entidades de Candidatos, Empresas, Vagas e Competências.
-* **Banco de Dados Relacional:** Implementação da estrutura física em PostgreSQL
+* **Banco de Dados Relacional:** Implementação da estrutura física em PostgreSQL.
 * **Scripts SQL:** Desenvolvimento dos arquivos de estruturação da base de dados (DDL) e população inicial para testes com candidatos e empresas fictícias (DML).
+
+### Versão 1.6.0
+* **Integração com Banco de Dados via JDBC:** Conexão nativa da aplicação backend em Groovy com o PostgreSQL utilizando a biblioteca groovy.sql.Sql, garantindo a persistência real dos dados.
+* **Implementação do Padrão DAO:** Refatoração da arquitetura com a criação da camada Data Access Object (DAO), isolando a lógica de acesso a dados (queries e inserts SQL) das regras de negócio (Services) e da interface de linha de comando (CLI).
+* **CRUDs Relacionais Completos:** Desenvolvimento das operações de Inserção, Leitura, Atualização e Exclusão integradas ao banco para as 4 entidades principais (Candidatos, Empresas, Vagas e Competências), incluindo o gerenciamento via SQL dos relacionamentos 1:N (Empresas-Vagas) e N:N (Competências com Vagas e Candidatos).
 
 ## Execução pela IDE
 1. Abra o projeto no IntelliJ IDEA.
