@@ -19,90 +19,93 @@ class MenuCandidato {
     VagaService vagaService = new VagaService()
 
     def executaCandidato() {
-        System.in.withReader {
-            while (true) {
-                println "1. Cadastrar Candidato"
-                println "2. Atualizar Candidato"
-                println "3. Excluir Candidato"
-                println "4. Listar Candidatos"
-                println "5. Buscar id Candidato"
-                println "6. Buscar email Candidato"
-                println "7. Buscar CPF Candidato"
-                println "8. Cadastrar Competencia Candidato"
-                println "9. Excluir Competencia Candidato"
-                println "10. Listar Competencias Candidato"
-                println "11. Buscar id Competencias Candidato "
-                println "12. Buscar nome Competencias Candidato"
-                println "13. Salvar Curtida Candidato"
-                println "14. Listar Curtidas Candidato"
-                println "15. Listar Matches Candidato"
-                println "16. Listar Vagas"
-                println "17. Buscar id Vagas "
-                println "18. Buscar nome Vagas"
-                println "19. Sair"
-                print "Escolha: "
-                int opcao = Util.leInteiroConsole(it)
-                switch (opcao) {
-                    case 1:
-                        cadastrarCandidato(it)
-                        break
-                    case 2:
-                        atualizarCandidato(it)
-                        break
-                    case 3:
-                        excluirCandidato(it)
-                        break
-                    case 4:
-                        listarCandidato()
-                        break
-                    case 5:
-                        buscarIdCandidato(it)
-                        break
-                    case 6:
-                        buscarEmailCandidato(it)
-                        break
-                    case 7:
-                        buscarCpfCandidato(it)
-                        break
-                    case 8:
-                        cadastrarCompetenciaCandidato(it)
-                        break
-                    case 9:
-                        excluirCompetenciaCandidato(it)
-                        break
-                    case 10:
-                        listarCompetenciasCandidato(it)
-                        break
-                    case 11:
-                        buscarIdCompetenciaCandidato(it)
-                        break
-                    case 12:
-                        buscarNomeCompetenciaCandidato(it)
-                        break
-                    case 13:
-                        salvarCurtidaCandidato(it)
-                        break
-                    case 14:
-                        listarCurtidaCandidato()
-                        break
-                    case 15:
-                        listarMatchesCandidato(it)
-                        break
-                    case 16:
-                        listarVagas(it)
-                        break
-                    case 17:
-                        buscarIdVaga(it)
-                        break
-                    case 18:
-                        buscarNomeVaga(it)
-                        break
-                    case 19:
-                        print "Saindo"
-                        return
-                    default:
-                        println "Opcao incorreta! Digite novamante\n"
-                }
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))
+        while (true) {
+            println "1. Cadastrar Candidato"
+            println "2. Atualizar Candidato"
+            println "3. Excluir Candidato"
+            println "4. Listar Candidatos"
+            println "5. Buscar id Candidato"
+            println "6. Buscar email Candidato"
+            println "7. Buscar CPF Candidato"
+            println "8. Cadastrar Competencia Candidato"
+            println "9. Excluir Competencia Candidato"
+            println "10. Listar Competencias Candidato"
+            println "11. Buscar id Competencias Candidato "
+            println "12. Buscar nome Competencias Candidato"
+            println "13. Salvar Curtida Candidato"
+            println "14. Listar Curtidas Candidato"
+            println "15. Listar Matches Candidato"
+            println "16. Listar Vagas"
+            println "17. Buscar id Vagas "
+            println "18. Buscar nome Vagas"
+            println "19. Calcular Afinidade"
+            println "20. Sair"
+            print "Escolha: "
+            int opcao = Util.leInteiroConsole(reader)
+            switch (opcao) {
+                case 1:
+                    cadastrarCandidato(reader)
+                    break
+                case 2:
+                    atualizarCandidato(reader)
+                    break
+                case 3:
+                    excluirCandidato(reader)
+                    break
+                case 4:
+                    listarCandidato()
+                    break
+                case 5:
+                    buscarIdCandidato(reader)
+                    break
+                case 6:
+                    buscarEmailCandidato(reader)
+                    break
+                case 7:
+                    buscarCpfCandidato(reader)
+                    break
+                case 8:
+                    cadastrarCompetenciaCandidato(reader)
+                    break
+                case 9:
+                    excluirCompetenciaCandidato(reader)
+                    break
+                case 10:
+                    listarCompetenciasCandidato(reader)
+                    break
+                case 11:
+                    buscarIdCompetenciaCandidato(reader)
+                    break
+                case 12:
+                    buscarNomeCompetenciaCandidato(reader)
+                    break
+                case 13:
+                    salvarCurtidaCandidato(reader)
+                    break
+                case 14:
+                    listarCurtidaCandidato()
+                    break
+                case 15:
+                    listarMatchesCandidato(reader)
+                    break
+                case 16:
+                    listarVagas(reader)
+                    break
+                case 17:
+                    buscarIdVaga(reader)
+                    break
+                case 18:
+                    buscarNomeVaga(reader)
+                    break
+                case 19:
+                    calcularAfinidade(reader)
+                    break
+                case 20:
+                    print "Saindo\n"
+                    return
+                default:
+                    println "Opcao incorreta! Digite novamante\n"
             }
         }
     }
@@ -644,5 +647,58 @@ class MenuCandidato {
             println "${comp.nome} "
         }
         println "\n"
+    }
+
+    def calcularAfinidade(reader) {
+        List<Candidato> candidatos = candidatoService.listarCandidatos()
+
+        println "\nCandidatos"
+        candidatos.eachWithIndex { candidato, index ->
+            println "${index + 1}. ${candidato.nome}\n" +
+                    "Competencias:"
+            candidato.competencias.each {
+                println("${it.nome}")
+            }
+        }
+
+        print "Escolha o candidato: "
+        int opcaoCandidato = Util.leInteiroConsole(reader)
+        if (opcaoCandidato < 1 || opcaoCandidato > candidatos.size()) {
+            println "Candidato invalido!\n"
+            return
+        }
+
+        Candidato cand = candidatoService.buscarIdCandidato(opcaoCandidato)
+
+        List<Vaga> vagas = vagaService.listarTodasVagas()
+
+        println "\nVagas"
+        vagas.eachWithIndex { candidato, index ->
+            println (
+                    "${index + 1}." +
+                            "Nome: ${candidato.nome}\n" +
+                            "Empresa: ${candidato.empresa.nome}\n" +
+                            "Descricao: ${candidato.descricao}\n" +
+                            "Competencias: ${candidato.descricao}"
+            )
+            candidato.competencias?.forEach { comp ->
+                println("${comp.nome}, ")
+            }
+            print "\n"
+        }
+
+
+        print "Escolha a vaga: "
+        int opcaoVaga = Util.leInteiroConsole(reader)
+        if (opcaoVaga < 1 || opcaoVaga > vagas.size()) {
+            println "Vaga invalido!\n"
+            return
+        }
+
+        Vaga vaga = vagaService.buscarIdVaga(opcaoVaga)
+
+        int afinidade = curtidaService.calcularAfinidade(cand, vaga)
+
+        println "O ${cand.nome} tem %${afinidade} de afinidade com a vaga ${vaga.nome}\n"
     }
 }
