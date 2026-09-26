@@ -82,12 +82,47 @@ class CandidatoDAOImpl implements CandidatoDAO{
     }
 
     @Override
+    List<Candidato> listarCandidatoEmpresa() {
+        Sql sql = ConexaoDB.getConexao()
+        Map<Integer, Candidato> mapaCandidatos = [:]
+
+        def query = '''
+                SELECT ct.id, '***.***.***-**' AS cpf, 'anonimo' || ct.id AS nome, 'anonimo@email.com' AS email, 
+                                       ct.senha, ct.pais, ct.estado, ct.cidade, ct.cep, ct.data_nascimento, ct.descricao, 
+                                       cm.id AS id_competencia, cm.nome AS nome_competencia 
+                                FROM candidatos AS ct
+                                LEFT JOIN candidatos_competencias c ON ct.id = c.id_candidato
+                                LEFT JOIN competencias cm ON cm.id = c.id_competencia;
+            '''
+        try {
+            sql.eachRow(query) { row ->
+                Integer idCand = row.getInt('id')
+                if (!mapaCandidatos.containsKey(idCand)) {
+                    LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
+                    Candidato cand = new Candidato(id: idCand, cpf: row.cpf, nome: row.nome,
+                            email: row.email, senha: row.senha, pais: row.pais, estado: row.estado,
+                            cidade: row.cidade, cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao)
+                    cand.competencias = []
+                    mapaCandidatos[idCand] = cand
+                }
+
+                if (row.id_competencia != null) {
+                    mapaCandidatos[idCand].competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
+                }
+            }
+            return mapaCandidatos.values().toList()
+        } finally {
+            sql.close()
+        }
+    }
+
+    @Override
     List<Candidato> listarCandidato() {
         Sql sql = ConexaoDB.getConexao()
         Map<Integer, Candidato> mapaCandidatos = [:]
 
         def query = '''
-                SELECT ct.id, '***.***.***-**' AS cpf, 'anonimo' || ct.id AS nome, 'oculto@email.com' AS email, 
+                SELECT ct.id, ct.cpf, ct. nome, ct.email, 
                                        ct.senha, ct.pais, ct.estado, ct.cidade, ct.cep, ct.data_nascimento, ct.descricao, 
                                        cm.id AS id_competencia, cm.nome AS nome_competencia 
                                 FROM candidatos AS ct
@@ -119,20 +154,27 @@ class CandidatoDAOImpl implements CandidatoDAO{
     @Override
     Candidato buscarIdCandidato(Integer id) {
         Sql sql = ConexaoDB.getConexao()
-
+        Candidato candidato = null
         def query = '''
-                SELECT * FROM candidatos WHERE id = ?;
+                SELECT ct.*, cm.id AS id_competencia, cm.nome AS nome_competencia FROM candidatos ct
+                LEFT JOIN candidatos_competencias c ON ct.id = c.id_candidato
+                LEFT JOIN competencias cm ON cm.id = c.id_competencia
+                WHERE ct.id = ?;
             '''
         try {
-            def row = sql.firstRow(query, [id])
-            if (row) {
-                LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
-                return new Candidato(id: row.id, cpf: row.cpf, nome: row.nome, email: row.email,
-                        senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
-                        cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao
-                )
+            sql.eachRow(query, [id]) { row ->
+                if (candidato == null) {
+                    LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
+                    candidato = new Candidato(id: row.getInt('id'), cpf: row.cpf, nome: row.nome, email: row.email,
+                            senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
+                            cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao)
+                    candidato.competencias = []
+                }
+                if (row.id_competencia != null) {
+                    candidato.competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
+                }
             }
-            return null
+            return candidato
         } finally {
             sql.close()
         }
@@ -141,19 +183,27 @@ class CandidatoDAOImpl implements CandidatoDAO{
     @Override
     Candidato buscarEmailCandidato(String email) {
         Sql sql = ConexaoDB.getConexao()
+        Candidato candidato = null
         def query = '''
-                SELECT * FROM candidatos WHERE email = ?
+                SELECT ct.*, cm.id AS id_competencia, cm.nome AS nome_competencia FROM candidatos ct
+                LEFT JOIN candidatos_competencias c ON ct.id = c.id_candidato
+                LEFT JOIN competencias cm ON cm.id = c.id_competencia
+                WHERE ct.email = ?;
             '''
         try {
-            def row = sql.firstRow(query, [email])
-            if (row) {
-                LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
-                return new Candidato(id: row.id, cpf: row.cpf, nome: row.nome, email: row.email,
-                        senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
-                        cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao
-                )
+            sql.eachRow(query, [email]) { row ->
+                if (candidato == null) {
+                    LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
+                    candidato = new Candidato(id: row.getInt('id'), cpf: row.cpf, nome: row.nome, email: row.email,
+                            senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
+                            cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao)
+                    candidato.competencias = []
+                }
+                if (row.id_competencia != null) {
+                    candidato.competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
+                }
             }
-            return null
+            return candidato
         } finally {
             sql.close()
         }
@@ -162,19 +212,27 @@ class CandidatoDAOImpl implements CandidatoDAO{
     @Override
     Candidato buscarCpfCandidato(String cpf) {
         Sql sql = ConexaoDB.getConexao()
+        Candidato candidato = null
         def query = '''
-                SELECT * from candidatos WHERE cpf = ?
+                SELECT ct.*, cm.id AS id_competencia, cm.nome AS nome_competencia FROM candidatos ct
+                LEFT JOIN candidatos_competencias c ON ct.id = c.id_candidato
+                LEFT JOIN competencias cm ON cm.id = c.id_competencia
+                WHERE ct.cpf = ?;
             '''
         try {
-            def row = sql.firstRow(query, [cpf])
-            if (row) {
-                LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
-                return new Candidato(id: row.id, cpf: row.cpf, nome: row.nome, email: row.email,
-                        senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
-                        cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao
-                )
+            sql.eachRow(query, [cpf]) { row ->
+                if (candidato == null) {
+                    LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
+                    candidato = new Candidato(id: row.getInt('id'), cpf: row.cpf, nome: row.nome, email: row.email,
+                            senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
+                            cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao)
+                    candidato.competencias = []
+                }
+                if (row.id_competencia != null) {
+                    candidato.competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
+                }
             }
-            return null
+            return candidato
         } finally {
             sql.close()
         }
