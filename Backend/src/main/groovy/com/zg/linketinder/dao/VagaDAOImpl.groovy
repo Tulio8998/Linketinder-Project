@@ -84,8 +84,8 @@ class VagaDAOImpl implements VagaDAO{
         Map<Integer, Vaga> mapaVagas = [:]
 
         def query = '''
-                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade, 
-                       e.id AS id_empresa, e.nome AS nome_empresa,
+                SELECT v.id, v.nome AS nome_vaga, v.descricao, v.pais, v.estado, v.cidade, 
+                       e.id AS id_empresa, 'anonimo' || e.id AS nome_empresa,
                        cm.id AS id_competencia, cm.nome AS nome_competencia
                 FROM vagas v
                 INNER JOIN empresas e ON v.id_empresa = e.id
@@ -98,7 +98,7 @@ class VagaDAOImpl implements VagaDAO{
 
                 if (!mapaVagas.containsKey(idVaga)) {
                     Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
-                    Vaga va = new Vaga(id: idVaga, nome: row.nome, descricao: row.descricao,
+                    Vaga va = new Vaga(id: idVaga, nome: row.nome_vaga, descricao: row.descricao,
                             pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
                     va.competencias = []
                     mapaVagas[idVaga] = va
@@ -115,7 +115,7 @@ class VagaDAOImpl implements VagaDAO{
     }
 
     @Override
-    List<Vaga> listarVaga(Integer id_empresa) {
+    List<Vaga> listarVagaEmpresa(Integer id_empresa) {
         Sql sql = ConexaoDB.getConexao()
         Map<Integer, Vaga> mapaVagas = [:]
 
@@ -152,45 +152,117 @@ class VagaDAOImpl implements VagaDAO{
     }
 
     @Override
-    Vaga buscarIdVaga(Integer id_empresa, Integer id_vaga) {
+    Vaga buscarIdVagaEmpresa(Integer id_empresa, Integer id_vaga) {
         Sql sql = ConexaoDB.getConexao()
+        Vaga vaga = null
         def query = '''
-                SELECT v.*, e.nome AS nome_empresa 
-                FROM vagas v
-                INNER JOIN empresas e ON v.id_empresa = e.id
-                WHERE v.id_empresa = ? AND v.id = ?
+                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,   
+                v.id_empresa AS id_empresa,cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
+                LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
+                LEFT JOIN competencias cm ON cm.id = vc.id_competencia
+                WHERE v.id_empresa = ? AND v.id = ?;
             '''
         try {
-            def row = sql.firstRow(query, [id_empresa, id_vaga])
-            if (row) {
-                Empresa emp = new Empresa(id: row.id_empresa, nome: row.nome_empresa)
-                return new Vaga(id: row.id, nome: row.nome, descricao: row.descricao,
-                        pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp
-                )
+            sql.eachRow(query, [id_empresa, id_vaga]) { row ->
+               if (vaga == null) {
+                   Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
+                   vaga = new Vaga(id: row.getInt('id'), nome: row.nome, descricao: row.descricao,
+                           pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
+                   vaga.competencias = []
+               }
+                if (row.id_competencia != null) {
+                    vaga.competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
+                }
             }
-            return null
+            return vaga
         } finally {
             sql.close()
         }
     }
 
     @Override
-    Vaga buscarNomeVaga(Integer id_empresa, String nome) {
+    Vaga buscarNomeVagaEmpresa(Integer id_empresa, String nome) {
         Sql sql = ConexaoDB.getConexao()
+        Vaga vaga = null
         def query = '''
-                SELECT v.*, e.nome AS nome_empresa 
-                FROM vagas v
-                INNER JOIN empresas e ON v.id_empresa = e.id
-                WHERE v.id_empresa = ? AND v.nome = ?
+                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,   
+                v.id_empresa AS id_empresa,cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
+                LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
+                LEFT JOIN competencias cm ON cm.id = vc.id_competencia
+                WHERE v.id_empresa = ? AND v.nome = ?;
             '''
         try {
-            def row = sql.firstRow(query, [id_empresa, nome])
-            if (row) {
-                Empresa emp = new Empresa(id: row.id_empresa, nome: row.nome_empresa)
-                return new Vaga(id: row.id, nome: row.nome, descricao: row.descricao,
-                        pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
+            sql.eachRow(query, [id_empresa, nome]) { row ->
+                if (vaga == null) {
+                    Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
+                    vaga = new Vaga(id: row.getInt('id'), nome: row.nome, descricao: row.descricao,
+                            pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
+                    vaga.competencias = []
+                }
+                if (row.id_competencia != null) {
+                    vaga.competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
+                }
             }
-            return null
+            return vaga
+        } finally {
+            sql.close()
+        }
+    }
+
+    @Override
+    Vaga buscarIdVaga(Integer id_vaga) {
+        Sql sql = ConexaoDB.getConexao()
+        Vaga vaga = null
+        def query = '''
+                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,   
+                v.id_empresa AS id_empresa, 'anonimo' || e.id AS nome_empresa, cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
+                LEFT JOIN empresas e ON v.id_empresa = e.id
+                LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
+                LEFT JOIN competencias cm ON cm.id = vc.id_competencia
+                WHERE v.id = ?;
+            '''
+        try {
+            sql.eachRow(query, [id_vaga]) { row ->
+                if (vaga == null) {
+                    Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
+                    vaga = new Vaga(id: row.getInt('id'), nome: row.nome, descricao: row.descricao,
+                            pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
+                    vaga.competencias = []
+                }
+                if (row.id_competencia != null) {
+                    vaga.competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
+                }
+            }
+            return vaga
+        } finally {
+            sql.close()
+        }
+    }
+
+    @Override
+    Vaga buscarNomeVaga(String nome) {
+        Sql sql = ConexaoDB.getConexao()
+        Vaga vaga = null
+        def query = '''
+                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,   
+                v.id_empresa AS id_empresa,cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
+                LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
+                LEFT JOIN competencias cm ON cm.id = vc.id_competencia
+                WHERE v.nome = ?;
+            '''
+        try {
+            sql.eachRow(query, [nome]) { row ->
+                if (vaga == null) {
+                    Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
+                    vaga = new Vaga(id: row.getInt('id'), nome: row.nome, descricao: row.descricao,
+                            pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
+                    vaga.competencias = []
+                }
+                if (row.id_competencia != null) {
+                    vaga.competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
+                }
+            }
+            return vaga
         } finally {
             sql.close()
         }
