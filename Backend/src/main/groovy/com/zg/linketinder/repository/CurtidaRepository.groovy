@@ -1,7 +1,7 @@
 package com.zg.linketinder.repository
 
 
-import com.zg.linketinder.model.Curtida
+import com.zg.linketinder.model.curtida.Curtida
 
 class CurtidaRepository {
     List<Curtida> curtidas = []

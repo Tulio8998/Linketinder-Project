@@ -1,43 +1,111 @@
 package com.zg.linketinder.service
 
+import com.zg.linketinder.dao.CandidatoDAO
+import com.zg.linketinder.dao.CandidatoDAOImpl
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.repository.CandidatoRepository
 
 class CandidatoService {
-    CandidatoRepository candidatoRepository = new CandidatoRepository()
+    private CandidatoDAO candidatoDAO = new CandidatoDAOImpl()
 
-    List<Candidato> listarTodos() {
-        return candidatoRepository.listarTodos()
+    List<Candidato> listarCandidatoEmpresa(Integer id_empresa) {
+        try {
+            return candidatoDAO.listarCandidatoEmpresa(id_empresa)
+        } catch (Exception e) {
+            println "Nao tem candidatos para listar: ${e.message}"
+            return []
+        }
     }
 
-    void adicionarCandidato(Candidato candidato) {
-        validarCandidato(candidato)
-        candidatoRepository.adicionarCandidato(candidato)
+    List<Candidato> listarCandidatos() {
+        try {
+            return candidatoDAO.listarCandidato()
+        } catch (Exception e) {
+            println "Nao tem candidatos para listar: ${e.message}"
+            return []
+        }
     }
 
-    void validarCandidato(Candidato candidato) {
-        if (candidato == null) {
+    Candidato buscarIdCandidato(Integer id) {
+        try {
+            return candidatoDAO.buscarIdCandidato(id)
+        } catch (Exception e) {
+            println "Nao tem candidatos com esse id: ${e.message}"
+            return null
+        }
+    }
+
+    Candidato buscarCpfCandidato(String cpf) {
+        try {
+            return candidatoDAO.buscarCpfCandidato(cpf)
+        } catch (Exception e) {
+            println "Nao tem candidato com esse cpf: ${e.message}"
+            return null
+        }
+    }
+
+    Candidato buscarEmailCandidato(String email) {
+        try {
+            return candidatoDAO.buscarEmailCandidato(email)
+        } catch (Exception e) {
+            println "Nao tem candidato com esse email: ${e.message}"
+            return null
+        }
+    }
+
+    void salvarCandidato(Candidato candidato) {
+        try {
+            if (validarCandidato(candidato)) {
+                candidatoDAO.salvarCandidato(candidato)
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Erro ao salvar candidato: ${e.message}")
+        }
+    }
+
+    boolean validarCandidato(Candidato candidato) {
+        if (!candidato) {
             throw new IllegalArgumentException("O candidato nao pode ser nulo")
         }
         validarCpf(candidato)
         validarEmail(candidato)
+        return true
     }
 
     void validarCpf(Candidato candidato) {
-        def cpfExist = candidatoRepository.listarTodos().find{
-            it.cpf == candidato.cpf
-        }
+        def cpfExist = candidatoDAO.buscarCpfCandidato(candidato.cpf)
         if (cpfExist) {
             throw new IllegalArgumentException("Cpf ja cadastrado")
         }
     }
 
     void validarEmail(Candidato candidato) {
-        def emailExist = candidatoRepository.listarTodos().find {
-            it.email == candidato.email
-        }
+        def emailExist = candidatoDAO.buscarEmailCandidato(candidato.email)
         if (emailExist) {
             throw new IllegalArgumentException("Email ja cadastrado")
+        }
+    }
+
+    void atualizarCandidato(Integer id, Candidato candidato) {
+        try {
+            if (candidato != null && candidatoDAO.buscarIdCandidato(id) != null) {
+                candidato.id = id
+                candidatoDAO.atualizarCandidato(candidato)
+            } else {
+                throw new IllegalArgumentException("Candidato nao encontrado ou dados nulos")
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Erro ao atualizar candidato: ${e.message}")
+        }
+    }
+
+    void excluirCandidato(Integer id) {
+        try {
+            if (candidatoDAO.buscarIdCandidato(id)) {
+                candidatoDAO.excluirCandidato(id)
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("O candidato nao pode ser nulo e deve ter um id valido: ${e.message}")
         }
     }
 }
