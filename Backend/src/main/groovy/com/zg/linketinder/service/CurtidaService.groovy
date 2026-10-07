@@ -3,6 +3,7 @@ package com.zg.linketinder.service
 import com.zg.linketinder.dao.CurtidaDAO
 import com.zg.linketinder.dao.CurtidaDAOImpl
 import com.zg.linketinder.model.Candidato
+import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.CurtidaCandidato
 import com.zg.linketinder.model.CurtidaEmpresa
 import com.zg.linketinder.model.Empresa
@@ -39,11 +40,11 @@ class CurtidaService {
         if (!vaga.competencias || vaga.competencias.isEmpty()) {
             return 0
         }
-        def compIguais = vaga.competencias.findAll { compVaga ->
+        List<Competencia> compIguais = vaga.competencias.findAll { compVaga ->
             candidato.competencias.any { compCand -> compCand.nome == compVaga.nome }
         }
-        def qntCompVaga = vaga.competencias.size()
-        def qntCompTotal = compIguais.size()
+        int qntCompVaga = vaga.competencias.size()
+        int qntCompTotal = compIguais.size()
 
         return (qntCompTotal * 100) / qntCompVaga
     }

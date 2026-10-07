@@ -9,7 +9,7 @@ class CompetenciaDAOImpl implements CompetenciaDAO {
     List<Competencia> listarCompetencia() {
         Sql sql = ConexaoDB.getConexao()
         List<Competencia> lista = []
-        def query = 'SELECT * FROM competencias'
+        String query = 'SELECT * FROM competencias'
         try {
             sql.eachRow(query) { row ->
                 lista.add(new Competencia(id: row.id, nome: row.nome))
@@ -23,7 +23,7 @@ class CompetenciaDAOImpl implements CompetenciaDAO {
     @Override
     Competencia buscarIdCompetencia(Integer id) {
         Sql sql = ConexaoDB.getConexao()
-        def query = 'SELECT * FROM competencias WHERE id = ?'
+        String query = 'SELECT * FROM competencias WHERE id = ?'
         try {
             def row = sql.firstRow(query, [id])
             return row ? new Competencia(id: row.id, nome: row.nome) : null
@@ -35,7 +35,7 @@ class CompetenciaDAOImpl implements CompetenciaDAO {
     @Override
     Competencia buscarNomeCompetencia(String nome) {
         Sql sql = ConexaoDB.getConexao()
-        def query = 'SELECT * FROM competencias WHERE nome = ?'
+        String query = 'SELECT * FROM competencias WHERE nome = ?'
         try {
             def row = sql.firstRow(query, [nome])
             return row ? new Competencia(id: row.id, nome: row.nome) : null
@@ -48,7 +48,7 @@ class CompetenciaDAOImpl implements CompetenciaDAO {
     void salvaCompetenciaCandidato(Integer id_candidato, Integer id_competencia) {
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
-        def query = 'INSERT INTO candidatos_competencias (id_candidato, id_competencia) VALUES (?, ?)'
+        String query = 'INSERT INTO candidatos_competencias (id_candidato, id_competencia) VALUES (?, ?)'
         try {
             sql.executeInsert(query, [id_candidato, id_competencia])
             sql.commit()
@@ -64,7 +64,7 @@ class CompetenciaDAOImpl implements CompetenciaDAO {
     void excluirCompetenciaCandidato(Integer id_candidato, Integer id_competencia) {
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
-        def query = 'DELETE FROM candidatos_competencias WHERE id_candidato = ? AND id_competencia = ?'
+        String query = 'DELETE FROM candidatos_competencias WHERE id_candidato = ? AND id_competencia = ?'
         try {
             sql.executeUpdate(query, [id_candidato, id_competencia])
             sql.commit()
@@ -80,7 +80,7 @@ class CompetenciaDAOImpl implements CompetenciaDAO {
     List<Competencia> listarCompetenciasCandidato(Integer id_candidato) {
         Sql sql = ConexaoDB.getConexao()
         List<Competencia> lista = []
-        def query = '''
+        String query = '''
             SELECT c.* FROM competencias c
             INNER JOIN candidatos_competencias cc ON c.id = cc.id_competencia
             WHERE cc.id_candidato = ?
@@ -98,7 +98,7 @@ class CompetenciaDAOImpl implements CompetenciaDAO {
     @Override
     Competencia buscarIdCompetenciaCandidato(Integer id_candidato, Integer id_competencia) {
         Sql sql = ConexaoDB.getConexao()
-        def query = '''
+        String query = '''
             SELECT c.* FROM competencias c
             INNER JOIN candidatos_competencias cc ON c.id = cc.id_competencia
             WHERE cc.id_candidato = ? AND c.id = ?
@@ -117,7 +117,7 @@ class CompetenciaDAOImpl implements CompetenciaDAO {
     @Override
     Competencia buscarNomeCompetenciaCandidato(Integer id_candidato, String nome) {
         Sql sql = ConexaoDB.getConexao()
-        def query = '''
+        String query = '''
             SELECT c.* FROM competencias c
             INNER JOIN candidatos_competencias cc ON c.id = cc.id_competencia
             WHERE cc.id_candidato = ? AND c.nome = ?
@@ -137,7 +137,7 @@ class CompetenciaDAOImpl implements CompetenciaDAO {
     void salvaCompetenciaVaga(Integer id_vaga, Integer id_competencia) {
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
-        def query = 'INSERT INTO vagas_competencias (id_vaga, id_competencia) VALUES (?, ?)'
+        String query = 'INSERT INTO vagas_competencias (id_vaga, id_competencia) VALUES (?, ?)'
         try {
             sql.executeInsert(query, [id_vaga, id_competencia])
             sql.commit()
@@ -153,7 +153,7 @@ class CompetenciaDAOImpl implements CompetenciaDAO {
     void excluirCompetenciaVaga(Integer id_vaga, Integer id_competencia) {
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
-        def query = 'DELETE FROM vagas_competencias WHERE id_vaga = ? AND id_competencia = ?'
+        String query = 'DELETE FROM vagas_competencias WHERE id_vaga = ? AND id_competencia = ?'
         try {
             sql.executeUpdate(query, [id_vaga, id_competencia])
             sql.commit()
@@ -169,7 +169,7 @@ class CompetenciaDAOImpl implements CompetenciaDAO {
     List<Competencia> listarCompetenciasVaga(Integer id_vaga) {
         Sql sql = ConexaoDB.getConexao()
         List<Competencia> lista = []
-        def query = '''
+        String query = '''
             SELECT c.* FROM competencias c
             INNER JOIN vagas_competencias vc ON c.id = vc.id_competencia
             WHERE vc.id_vaga = ?
@@ -187,7 +187,7 @@ class CompetenciaDAOImpl implements CompetenciaDAO {
     @Override
     Competencia buscarIdCompetenciaVaga(Integer id_vaga, Integer id_competencia) {
         Sql sql = ConexaoDB.getConexao()
-        def query = '''
+        String query = '''
             SELECT c.* FROM competencias c
             INNER JOIN vagas_competencias vc ON c.id = vc.id_competencia
             WHERE vc.id_vaga = ? AND c.id = ?
@@ -206,7 +206,7 @@ class CompetenciaDAOImpl implements CompetenciaDAO {
     @Override
     Competencia buscarNomeCompetenciaVaga(Integer id_vaga, String nome) {
         Sql sql = ConexaoDB.getConexao()
-        def query = '''
+        String query = '''
             SELECT c.* FROM competencias c
             INNER JOIN vagas_competencias vc ON c.id = vc.id_competencia
             WHERE vc.id_vaga = ? AND c.nome = ?

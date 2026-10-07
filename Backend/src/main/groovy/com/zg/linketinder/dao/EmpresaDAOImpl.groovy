@@ -11,7 +11,7 @@ class EmpresaDAOImpl implements EmpresaDAO{
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
 
-        def query = '''
+        String query = '''
                 INSERT INTO empresas (cnpj, nome, email, senha, pais, cidade, estado,
                 cep, descricao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             '''
@@ -32,7 +32,7 @@ class EmpresaDAOImpl implements EmpresaDAO{
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
 
-        def query = '''
+        String query = '''
                 UPDATE empresas 
                 SET cnpj = ?, nome = ?, email = ?, senha = ?, pais = ?, estado = ?, cidade = ?, cep = ?, descricao = ? 
                 WHERE id = ?
@@ -54,7 +54,7 @@ class EmpresaDAOImpl implements EmpresaDAO{
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
 
-        def query = '''
+        String query = '''
                 DELETE FROM empresas WHERE id = ?
             '''
         try {
@@ -72,7 +72,7 @@ class EmpresaDAOImpl implements EmpresaDAO{
     List<Empresa> listarEmpresa() {
         Sql sql = ConexaoDB.getConexao()
         List<Empresa> lista = []
-        def query = '''
+        String query = '''
                 SELECT * FROM empresas
             '''
 
@@ -91,7 +91,7 @@ class EmpresaDAOImpl implements EmpresaDAO{
     @Override
     Empresa buscarIdEmpresa(Integer id) {
         Sql sql = ConexaoDB.getConexao()
-        def query = '''
+        String query = '''
                 SELECT * FROM empresas WHERE id = ?
             '''
 
@@ -112,7 +112,7 @@ class EmpresaDAOImpl implements EmpresaDAO{
     @Override
     Empresa buscarCnpjEmpresa(String cnpj) {
         Sql sql = ConexaoDB.getConexao()
-        def query = '''
+        String query = '''
                 SELECT * FROM empresas WHERE cnpj = ?
             '''
 
@@ -133,7 +133,7 @@ class EmpresaDAOImpl implements EmpresaDAO{
     @Override
     Empresa buscarEmailEmpresa(String email) {
         Sql sql = ConexaoDB.getConexao()
-        def query = '''
+        String query = '''
                 SELECT * FROM empresas WHERE email = ?
             '''
 

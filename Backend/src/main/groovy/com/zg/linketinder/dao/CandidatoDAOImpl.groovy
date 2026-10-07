@@ -13,12 +13,12 @@ class CandidatoDAOImpl implements CandidatoDAO{
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
 
-        def queryCandidato = '''
+        String queryCandidato = '''
                 INSERT INTO candidatos (cpf, nome, email, senha,
                 pais, estado, cidade, cep, data_nascimento, descricao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             '''
 
-        def queryCompetencia = '''
+        String queryCompetencia = '''
                 INSERT INTO candidatos_competencias (id_candidato, id_competencia) VALUES (?, ?)
             '''
         try {
@@ -44,7 +44,7 @@ class CandidatoDAOImpl implements CandidatoDAO{
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
 
-        def query = '''
+        String query = '''
                 UPDATE candidatos 
                 SET cpf = ?, nome = ?, email = ?, senha = ?, pais = ?, estado = ?, cidade = ?, cep = ?, data_nascimento = ?, descricao = ? 
                 WHERE id = ?
@@ -67,7 +67,7 @@ class CandidatoDAOImpl implements CandidatoDAO{
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
 
-        def query = '''
+        String query = '''
                 DELETE FROM candidatos WHERE id = ?
             '''
         try {
@@ -86,7 +86,7 @@ class CandidatoDAOImpl implements CandidatoDAO{
         Sql sql = ConexaoDB.getConexao()
         Map<Integer, Candidato> mapaCandidatos = [:]
 
-        def query = '''
+        String query = '''
                 SELECT ct.id, '***.***.***-**' AS cpf, 'anonimo' || ct.id AS nome, 'anonimo@email.com' AS email, 
                        ct.senha, ct.pais, ct.estado, ct.cidade, ct.cep, ct.data_nascimento, ct.descricao, 
                        cm.id AS id_competencia, cm.nome AS nome_competencia 
@@ -124,7 +124,7 @@ class CandidatoDAOImpl implements CandidatoDAO{
         Sql sql = ConexaoDB.getConexao()
         Map<Integer, Candidato> mapaCandidatos = [:]
 
-        def query = '''
+        String query = '''
                 SELECT ct.id, ct.cpf, ct. nome, ct.email, 
                                        ct.senha, ct.pais, ct.estado, ct.cidade, ct.cep, ct.data_nascimento, ct.descricao, 
                                        cm.id AS id_competencia, cm.nome AS nome_competencia 
@@ -158,7 +158,7 @@ class CandidatoDAOImpl implements CandidatoDAO{
     Candidato buscarIdCandidato(Integer id) {
         Sql sql = ConexaoDB.getConexao()
         Candidato candidato = null
-        def query = '''
+        String query = '''
                 SELECT ct.*, cm.id AS id_competencia, cm.nome AS nome_competencia FROM candidatos ct
                 LEFT JOIN candidatos_competencias c ON ct.id = c.id_candidato
                 LEFT JOIN competencias cm ON cm.id = c.id_competencia

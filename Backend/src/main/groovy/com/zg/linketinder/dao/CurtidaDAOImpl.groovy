@@ -16,7 +16,7 @@ class CurtidaDAOImpl implements CurtidaDAO{
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
 
-        def query = '''
+        String query = '''
                 INSERT INTO curtidas_candidato (id_candidato, id_vaga, curtiu)
                 VALUES (?, ?, ?)
                 ON CONFLICT (id_candidato, id_vaga) DO UPDATE SET curtiu = EXCLUDED.curtiu
@@ -37,7 +37,7 @@ class CurtidaDAOImpl implements CurtidaDAO{
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
 
-        def query = '''
+        String query = '''
                 INSERT INTO curtidas_empresa (id_empresa, id_candidato, id_vaga, curtiu) 
                 VALUES (?, ?, ?, ?)
                 ON CONFLICT (id_empresa, id_candidato, id_vaga) DO UPDATE SET curtiu = EXCLUDED.curtiu
@@ -58,7 +58,7 @@ class CurtidaDAOImpl implements CurtidaDAO{
         Sql sql = ConexaoDB.getConexao()
         List<CurtidaCandidato> lista = []
 
-        def query = '''
+        String query = '''
                 SELECT cc.id, cc.curtiu,
                        c.id AS id_candidato, c.nome AS nome_candidato,
                        v.id AS id_vaga, v.nome AS nome_vaga
@@ -82,7 +82,7 @@ class CurtidaDAOImpl implements CurtidaDAO{
     List<CurtidaEmpresa> listarCurtidasEmpresa() {
         Sql sql = ConexaoDB.getConexao()
         List<CurtidaEmpresa> lista = []
-        def query = '''
+        String query = '''
                 SELECT ce.id, ce.curtiu,
                        e.id AS id_empresa, e.nome AS nome_empresa,
                        c.id AS id_candidato, c.nome AS nome_candidato,
@@ -111,7 +111,7 @@ class CurtidaDAOImpl implements CurtidaDAO{
         Sql sql = ConexaoDB.getConexao()
         List<Match> lista = []
 
-        def query = '''
+        String query = '''
                 SELECT c.id AS id_candidato, c.nome AS nome_candidato, c.email AS email_candidato, 
                        e.id AS id_empresa, e.nome AS nome_empresa, 
                        v.id AS id_vaga, v.nome AS nome_vaga
@@ -147,7 +147,7 @@ class CurtidaDAOImpl implements CurtidaDAO{
         Sql sql = ConexaoDB.getConexao()
         List<Match> lista = []
 
-        def query = '''
+        String query = '''
                 SELECT c.id AS id_candidato, c.nome AS nome_candidato, c.email AS email_candidato, 
                        e.id AS id_empresa, e.nome AS nome_empresa, 
                        v.id AS id_vaga, v.nome AS nome_vaga

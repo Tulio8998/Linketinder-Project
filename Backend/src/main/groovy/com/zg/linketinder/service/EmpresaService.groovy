@@ -63,14 +63,14 @@ class EmpresaService {
     }
 
     void validarCnpj(Empresa empresa) {
-        def cnpjExist = empresaDAO.buscarCnpjEmpresa(empresa.cnpj)
+        Empresa cnpjExist = empresaDAO.buscarCnpjEmpresa(empresa.cnpj)
         if (cnpjExist) {
             throw new IllegalArgumentException("Cnpj ja cadastrado")
         }
     }
 
     void validarEmail(Empresa empresa) {
-        def emailExist = empresaDAO.buscarEmailEmpresa(empresa.email)
+        Empresa emailExist = empresaDAO.buscarEmailEmpresa(empresa.email)
         if (emailExist) {
             throw new IllegalArgumentException("Email ja cadastrado")
         }

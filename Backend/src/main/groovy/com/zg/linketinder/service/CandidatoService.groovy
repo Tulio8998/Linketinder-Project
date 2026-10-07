@@ -72,14 +72,14 @@ class CandidatoService {
     }
 
     void validarCpf(Candidato candidato) {
-        def cpfExist = candidatoDAO.buscarCpfCandidato(candidato.cpf)
+        Candidato cpfExist = candidatoDAO.buscarCpfCandidato(candidato.cpf)
         if (cpfExist) {
             throw new IllegalArgumentException("Cpf ja cadastrado")
         }
     }
 
     void validarEmail(Candidato candidato) {
-        def emailExist = candidatoDAO.buscarEmailCandidato(candidato.email)
+        Candidato emailExist = candidatoDAO.buscarEmailCandidato(candidato.email)
         if (emailExist) {
             throw new IllegalArgumentException("Email ja cadastrado")
         }

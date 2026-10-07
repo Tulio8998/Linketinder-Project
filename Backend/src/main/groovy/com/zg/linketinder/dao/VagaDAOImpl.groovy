@@ -12,12 +12,12 @@ class VagaDAOImpl implements VagaDAO{
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
 
-        def query = '''
+        String query = '''
                 INSERT INTO vagas (nome, descricao, pais, estado, cidade, id_empresa)
                 VALUES (?, ?, ?, ?, ?, ?)
             '''
 
-        def queryCompetencia = '''
+        String queryCompetencia = '''
                 INSERT INTO vagas_competencias (id_vaga, id_competencia) VALUES (?, ?)
             '''
         try {
@@ -43,7 +43,7 @@ class VagaDAOImpl implements VagaDAO{
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
 
-        def query = '''
+        String query = '''
                 UPDATE vagas SET nome = ?, descricao = ?, pais = ?, estado = ?, cidade = ?
                 WHERE id = ?
             '''
@@ -64,7 +64,7 @@ class VagaDAOImpl implements VagaDAO{
         Sql sql = ConexaoDB.getConexao()
         sql.connection.autoCommit = false
 
-        def query = '''
+        String query = '''
                 DELETE FROM vagas WHERE id = ? AND id_empresa = ?
             '''
         try {
@@ -83,7 +83,7 @@ class VagaDAOImpl implements VagaDAO{
         Sql sql = ConexaoDB.getConexao()
         Map<Integer, Vaga> mapaVagas = [:]
 
-        def query = '''
+        String query = '''
                 SELECT v.id, v.nome AS nome_vaga, v.descricao, v.pais, v.estado, v.cidade, 
                        e.id AS id_empresa, 'anonimo' || e.id AS nome_empresa,
                        cm.id AS id_competencia, cm.nome AS nome_competencia
@@ -119,7 +119,7 @@ class VagaDAOImpl implements VagaDAO{
         Sql sql = ConexaoDB.getConexao()
         Map<Integer, Vaga> mapaVagas = [:]
 
-        def query = '''
+        String query = '''
                 SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade, 
                        e.id AS id_empresa, e.nome AS nome_empresa,
                        cm.id AS id_competencia, cm.nome AS nome_competencia
@@ -155,7 +155,7 @@ class VagaDAOImpl implements VagaDAO{
     Vaga buscarIdVagaEmpresa(Integer id_empresa, Integer id_vaga) {
         Sql sql = ConexaoDB.getConexao()
         Vaga vaga = null
-        def query = '''
+        String query = '''
                 SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,
                    v.id_empresa AS id_empresa, e.nome AS nome_empresa, cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
                 INNER JOIN empresas e ON v.id_empresa = e.id
@@ -185,7 +185,7 @@ class VagaDAOImpl implements VagaDAO{
     Vaga buscarNomeVagaEmpresa(Integer id_empresa, String nome) {
         Sql sql = ConexaoDB.getConexao()
         Vaga vaga = null
-        def query = '''
+        String query = '''
                 SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,
                    v.id_empresa AS id_empresa, e.nome AS nome_empresa, cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
                 INNER JOIN empresas e ON v.id_empresa = e.id
@@ -215,7 +215,7 @@ class VagaDAOImpl implements VagaDAO{
     Vaga buscarIdVaga(Integer id_vaga) {
         Sql sql = ConexaoDB.getConexao()
         Vaga vaga = null
-        def query = '''
+        String query = '''
                 SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,   
                 v.id_empresa AS id_empresa, 'anonimo' || e.id AS nome_empresa, cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
                 LEFT JOIN empresas e ON v.id_empresa = e.id
@@ -245,7 +245,7 @@ class VagaDAOImpl implements VagaDAO{
     Vaga buscarNomeVaga(String nome) {
         Sql sql = ConexaoDB.getConexao()
         Vaga vaga = null
-        def query = '''
+        String query = '''
                 SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,   
                 v.id_empresa AS id_empresa,cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
                 LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
