@@ -1,18 +1,6 @@
 package com.zg.linketinder.cli
 
-import com.zg.linketinder.model.Candidato
-import com.zg.linketinder.model.Competencia
-import com.zg.linketinder.model.curtida.Match
-import com.zg.linketinder.model.Empresa
-import com.zg.linketinder.model.Vaga
-import com.zg.linketinder.service.CandidatoService
-import com.zg.linketinder.service.CompetenciaService
-import com.zg.linketinder.service.CurtidaService
-import com.zg.linketinder.service.EmpresaService
-import com.zg.linketinder.service.VagaService
 import com.zg.linketinder.util.Util
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 class MenuTerminal {
     MenuEmpresa menuEmpresa = new MenuEmpresa()

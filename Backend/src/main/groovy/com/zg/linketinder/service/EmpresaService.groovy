@@ -2,9 +2,7 @@ package com.zg.linketinder.service
 
 import com.zg.linketinder.dao.EmpresaDAO
 import com.zg.linketinder.dao.EmpresaDAOImpl
-import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Empresa
-import com.zg.linketinder.repository.EmpresaRepository
 
 class EmpresaService {
     private EmpresaDAO empresaDAO = new EmpresaDAOImpl()

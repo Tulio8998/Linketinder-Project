@@ -1,6 +1,5 @@
 package com.zg.linketinder.dao
 
-import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.util.ConexaoDB
 import groovy.sql.Sql

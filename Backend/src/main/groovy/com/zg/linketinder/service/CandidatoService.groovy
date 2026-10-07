@@ -3,7 +3,6 @@ package com.zg.linketinder.service
 import com.zg.linketinder.dao.CandidatoDAO
 import com.zg.linketinder.dao.CandidatoDAOImpl
 import com.zg.linketinder.model.Candidato
-import com.zg.linketinder.repository.CandidatoRepository
 
 class CandidatoService {
     private CandidatoDAO candidatoDAO = new CandidatoDAOImpl()

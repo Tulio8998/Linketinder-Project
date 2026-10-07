@@ -2,7 +2,6 @@ package com.zg.linketinder.dao
 
 import com.zg.linketinder.model.CurtidaCandidato
 import com.zg.linketinder.model.CurtidaEmpresa
-import com.zg.linketinder.model.curtida.Curtida
 import com.zg.linketinder.model.curtida.Match
 
 interface CurtidaDAO {
