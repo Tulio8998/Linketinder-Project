@@ -89,7 +89,7 @@ class CandidatoService {
         try {
             if (candidato != null && candidatoDAO.buscarPorId(id) != null) {
                 candidato.id = id
-                candidatoDAO.atualizar(candidato)
+                candidatoDAO.atualizar(id, candidato)
             } else {
                 throw new IllegalArgumentException("Candidato nao encontrado ou dados nulos")
             }
