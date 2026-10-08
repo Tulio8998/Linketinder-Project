@@ -1,153 +1,72 @@
 package com.zg.linketinder.dao
 
+import com.zg.linketinder.dao.Base.CrudDAOImpl
 import com.zg.linketinder.model.Empresa
+import com.zg.linketinder.sql.EmpresaSql
 import com.zg.linketinder.util.ConexaoDB
-import groovy.sql.Sql
 
-class EmpresaDAOImpl implements EmpresaDAO{
+class EmpresaDAOImpl extends CrudDAOImpl<Empresa> implements EmpresaDAO {
 
     @Override
-    void salvarEmpresa(Empresa empresa) {
-        Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
+    protected String getSqlInserir() { return EmpresaSql.INSERIR }
 
-        String query = '''
-                INSERT INTO empresas (cnpj, nome, email, senha, pais, cidade, estado,
-                cep, descricao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            '''
-        try {
-            sql.executeInsert(query, [empresa.cnpj, empresa.nome, empresa.email, empresa.senha,
-                                      empresa.pais, empresa.cidade, empresa.estado, empresa.cep, empresa.descricao])
-            sql.commit()
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
-        } finally {
-            sql.close()
-        }
+    @Override
+    protected String getSqlAtualizar() { return EmpresaSql.ATUALIZAR }
+
+    @Override
+    protected String getSqlExcluir() { return EmpresaSql.EXCLUIR }
+
+    @Override
+    protected String getSqlBuscarPorId() { return EmpresaSql.BUSCAR_POR_ID
+    }
+    @Override
+    protected String getSqlListarTodos() { return EmpresaSql.LISTAR_TODOS }
+
+    @Override
+    protected List getParametrosInserir(Empresa empresa) {
+        return [
+                empresa.cnpj, empresa.nome, empresa.email, empresa.senha,
+                empresa.pais, empresa.cidade, empresa.estado, empresa.cep, empresa.descricao
+        ]
     }
 
     @Override
-    void atualizarEmpresa(Empresa empresa) {
-        Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
-
-        String query = '''
-                UPDATE empresas 
-                SET cnpj = ?, nome = ?, email = ?, senha = ?, pais = ?, estado = ?, cidade = ?, cep = ?, descricao = ? 
-                WHERE id = ?
-            '''
-        try {
-            sql.executeUpdate(query, [empresa.cnpj, empresa.nome, empresa.email, empresa.senha,
-                                      empresa.pais, empresa.cidade, empresa.estado, empresa.cep, empresa.descricao, empresa.id])
-            sql.commit()
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
-        } finally {
-            sql.close()
-        }
+    protected List getParametrosAtualizar(Integer id, Empresa empresa) {
+        return [
+                empresa.cnpj, empresa.nome, empresa.email, empresa.senha,
+                empresa.pais, empresa.estado, empresa.cidade, empresa.cep, empresa.descricao, id
+        ]
     }
 
     @Override
-    void excluirEmpresa(Integer id) {
-        Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
-
-        String query = '''
-                DELETE FROM empresas WHERE id = ?
-            '''
-        try {
-            sql.executeUpdate(query, [id])
-            sql.commit()
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
-        } finally {
-            sql.close()
-        }
-    }
-
-    @Override
-    List<Empresa> listarEmpresa() {
-        Sql sql = ConexaoDB.getConexao()
-        List<Empresa> lista = []
-        String query = '''
-                SELECT * FROM empresas
-            '''
-
-        try {
-            sql.eachRow(query) { row ->
-                lista.add(new Empresa(id: row.id, cnpj: row.cnpj, nome: row.nome,
-                        email: row.email, senha: row.senha, pais: row.pais, estado: row.estado,
-                        cidade: row.cidade, cep: row.cep, descricao: row.descricao))
-            }
-            return lista
-        } finally {
-            sql.close()
-        }
-    }
-
-    @Override
-    Empresa buscarIdEmpresa(Integer id) {
-        Sql sql = ConexaoDB.getConexao()
-        String query = '''
-                SELECT * FROM empresas WHERE id = ?
-            '''
-
-        try {
-            def row = sql.firstRow(query, [id])
-            if (row) {
-                return new Empresa(id: row.id, cnpj: row.cnpj, nome: row.nome, email: row.email,
-                        senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
-                        cep: row.cep, descricao: row.descricao
-                )
-            }
-            return null
-        } finally {
-            sql.close()
-        }
+    protected Empresa mapearResultado(def row) {
+        return new Empresa(
+                id: row.id,
+                cnpj: row.cnpj,
+                nome: row.nome,
+                email: row.email,
+                senha: row.senha,
+                pais: row.pais,
+                estado: row.estado,
+                cidade: row.cidade,
+                cep: row.cep,
+                descricao: row.descricao
+        )
     }
 
     @Override
     Empresa buscarCnpjEmpresa(String cnpj) {
-        Sql sql = ConexaoDB.getConexao()
-        String query = '''
-                SELECT * FROM empresas WHERE cnpj = ?
-            '''
-
-        try {
-            def row = sql.firstRow(query, [cnpj])
-            if (row) {
-                return new Empresa(id: row.id, cnpj: row.cnpj, nome: row.nome, email: row.email,
-                        senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
-                        cep: row.cep, descricao: row.descricao
-                )
-            }
-            return null
-        } finally {
-            sql.close()
+        return ConexaoDB.consultar { sql ->
+            def linhas = sql.rows(EmpresaSql.BUSCAR_POR_CNPJ, [cnpj])
+            return linhas.isEmpty() ? null : mapearResultado(linhas.first())
         }
     }
 
     @Override
     Empresa buscarEmailEmpresa(String email) {
-        Sql sql = ConexaoDB.getConexao()
-        String query = '''
-                SELECT * FROM empresas WHERE email = ?
-            '''
-
-        try {
-            def row = sql.firstRow(query, [email])
-            if (row) {
-                return new Empresa(id: row.id, cnpj: row.cnpj, nome: row.nome, email: row.email,
-                        senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
-                        cep: row.cep, descricao: row.descricao
-                )
-            }
-            return null
-        } finally {
-            sql.close()
+        return ConexaoDB.consultar { sql ->
+            def linhas = sql.rows(EmpresaSql.BUSCAR_POR_EMAIL, [email])
+            return linhas.isEmpty() ? null : mapearResultado(linhas.first())
         }
     }
 }
