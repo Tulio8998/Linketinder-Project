@@ -144,7 +144,7 @@ class MenuEmpresa {
         }
 
         try {
-            empresaService.salvarEmpresa(empresa)
+            empresaService.salvar(empresa)
             println "Dados de empresa salvo!\n"
         } catch (IllegalArgumentException e) {
             println "\nErro no cadastro: ${e.message}\n"
@@ -152,7 +152,7 @@ class MenuEmpresa {
     }
 
     def atualizarEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarEmpresas()
+        List<Empresa> empresas = empresaService.listarTodos()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -200,7 +200,7 @@ class MenuEmpresa {
         }
 
         try {
-            empresaService.atualizarEmpresa(empresaSelecionada.id, emp)
+            empresaService.atualizar(empresaSelecionada.id, emp)
             println "Dados de empresa salvo!\n"
         } catch (IllegalArgumentException e) {
             println "\nErro na atualizanao: ${e.message}\n"
@@ -208,7 +208,7 @@ class MenuEmpresa {
     }
 
     def excluirEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarEmpresas()
+        List<Empresa> empresas = empresaService.listarTodos()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -230,7 +230,7 @@ class MenuEmpresa {
         Empresa empresaSelecionada = empresas[opcaoEmpresa - 1]
 
         try {
-            empresaService.excluirEmpresa(empresaSelecionada.id)
+            empresaService.excluir(empresaSelecionada.id)
             println "Dados excluidos!\n"
         } catch (IllegalArgumentException e) {
             println "\nErro na exclusao: ${e.message}\n"
@@ -242,7 +242,7 @@ class MenuEmpresa {
         print "Digite o id da empresa: "
         int id = Util.leInteiroConsole(reader)
 
-        Empresa empresa = empresaService.buscarIdEmpresa(id)
+        Empresa empresa = empresaService.buscarPorId(id)
 
         if (empresa == null) {
             println "\nEmpresa nao encontrada!\n"
@@ -310,7 +310,7 @@ class MenuEmpresa {
     }
 
     def cadastrarVagaEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarEmpresas()
+        List<Empresa> empresas = empresaService.listarTodos()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -350,7 +350,7 @@ class MenuEmpresa {
         }
 
         try {
-            vagaService.salvarVaga(novaVaga)
+            vagaService.salvar(novaVaga)
             println "Dados de vaga salvo!\n"
         } catch (IllegalArgumentException e) {
             println "\nErro no cadastro: ${e.message}\n"
@@ -358,7 +358,7 @@ class MenuEmpresa {
     }
 
     def atualizarVagaEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarEmpresas()
+        List<Empresa> empresas = empresaService.listarTodos()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -418,7 +418,7 @@ class MenuEmpresa {
         }
 
         try {
-            vagaService.atualizarVaga(empresaSelecionada.id, vagaAtualizada)
+            vagaService.atualizar(vagaSelecionada.id, vagaAtualizada)
             println "Dados de vaga salvo!\n"
         } catch (IllegalArgumentException e) {
             println "\nErro na atualizanao: ${e.message}\n"
@@ -426,7 +426,7 @@ class MenuEmpresa {
     }
 
     def excluirVagaEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarEmpresas()
+        List<Empresa> empresas = empresaService.listarTodos()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -468,7 +468,7 @@ class MenuEmpresa {
         Vaga vagaSelecionada = vagas[opcaoVaga - 1]
 
         try {
-            vagaService.excluirVaga(empresaSelecionada.id, vagaSelecionada.id)
+            vagaService.excluirVagaDaEmpresa(empresaSelecionada.id, vagaSelecionada.id)
             println "Dados excluidos!\n"
         } catch (IllegalArgumentException e) {
             println "\nErro na exclusao: ${e.message}\n"
@@ -476,7 +476,7 @@ class MenuEmpresa {
     }
 
     def listarVagasEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarEmpresas()
+        List<Empresa> empresas = empresaService.listarTodos()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -512,7 +512,7 @@ class MenuEmpresa {
     }
 
     def buscarIdVagasEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarEmpresas()
+        List<Empresa> empresas = empresaService.listarTodos()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -554,7 +554,7 @@ class MenuEmpresa {
     }
 
     def buscarNomeVagasEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarEmpresas()
+        List<Empresa> empresas = empresaService.listarTodos()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -596,7 +596,7 @@ class MenuEmpresa {
     }
 
     def cadastrarCompetenciaVagaEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarEmpresas()
+        List<Empresa> empresas = empresaService.listarTodos()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -637,7 +637,7 @@ class MenuEmpresa {
 
         Vaga vaga = vagas[opcaoVaga - 1]
 
-        List<Competencia> competencias = competenciaService.listarCompetencia()
+        List<Competencia> competencias = competenciaService.listarTodos()
 
         print "Competencias: "
         competencias.eachWithIndex { competencia, index ->
@@ -662,7 +662,7 @@ class MenuEmpresa {
     }
 
     def excluirCompetenciaVagaEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarEmpresas()
+        List<Empresa> empresas = empresaService.listarTodos()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -732,7 +732,7 @@ class MenuEmpresa {
     }
 
     def listarCompetenciasVagaEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarEmpresas()
+        List<Empresa> empresas = empresaService.listarTodos()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -796,7 +796,7 @@ class MenuEmpresa {
         int id_vaga = Util.leInteiroConsole(reader)
 
         Competencia competencia = competenciaService.buscarIdCompetenciaVaga(id_vaga, id_competencia)
-        Vaga vaga = vagaService.buscarIdVaga(id_vaga)
+        Vaga vaga = vagaService.buscarPorId(id_vaga)
 
         if (vaga == null) {
             println "\nVaga nao encontrada!\n"
@@ -822,7 +822,7 @@ class MenuEmpresa {
         int id_vaga = Util.leInteiroConsole(reader)
 
         Competencia competencia = competenciaService.buscarNomeCompetenciaVaga(id_vaga, nome_competencia)
-        Vaga vaga = vagaService.buscarIdVaga(id_vaga)
+        Vaga vaga = vagaService.buscarPorId(id_vaga)
 
         if (vaga == null) {
             println "\nVaga nao encontrada!\n"
@@ -839,7 +839,7 @@ class MenuEmpresa {
     }
 
     def listarCandidatosAnonimos(reader) {
-        List<Empresa> empresas = empresaService.listarEmpresas()
+        List<Empresa> empresas = empresaService.listarTodos()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -886,7 +886,7 @@ class MenuEmpresa {
     }
 
     def salvarCurtidaEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarEmpresas()
+        List<Empresa> empresas = empresaService.listarTodos()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -938,7 +938,7 @@ class MenuEmpresa {
 
         Vaga vaga = vagas[opcaoVaga - 1]
 
-        List<Candidato> candidatos = candidatoService.listarCandidatos()
+        List<Candidato> candidatos = candidatoService.listarTodos()
 
         if (candidatos.isEmpty()) {
             println "Nenhum candidato cadastrado!\n"
@@ -983,7 +983,7 @@ class MenuEmpresa {
     }
 
     def listarMatchesEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarEmpresas()
+        List<Empresa> empresas = empresaService.listarTodos()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
