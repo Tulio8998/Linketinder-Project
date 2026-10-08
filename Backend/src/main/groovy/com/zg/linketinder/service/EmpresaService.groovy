@@ -10,6 +10,14 @@ class EmpresaService extends CrudService<Empresa> {
 
     private EmpresaDAO empresaDAO = new EmpresaDAOImpl()
 
+    EmpresaService() {
+        this(new EmpresaDAOImpl())
+    }
+
+    EmpresaService(EmpresaDAO empresaDAO) {
+        this.empresaDAO = empresaDAO
+    }
+
     @Override
     protected CrudDAO<Empresa> getDao() { return empresaDAO }
 

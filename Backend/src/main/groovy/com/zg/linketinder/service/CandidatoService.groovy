@@ -10,6 +10,14 @@ class CandidatoService extends CrudService<Candidato> {
 
     private CandidatoDAO candidatoDAO = new CandidatoDAOImpl()
 
+    CandidatoService() {
+        this(new CandidatoDAOImpl())
+    }
+
+    CandidatoService(CandidatoDAO candidatoDAO) {
+        this.candidatoDAO = candidatoDAO
+    }
+
     @Override
     protected CrudDAO<Candidato> getDao() { return candidatoDAO }
 
