@@ -1,14 +1,10 @@
 package com.zg.linketinder.dao
 
+import com.zg.linketinder.dao.Base.CrudDAO
 import com.zg.linketinder.model.Candidato
 
-interface CandidatoDAO {
-    void salvarCandidato(Candidato candidato)
-    void atualizarCandidato(Candidato candidato)
-    void excluirCandidato(Integer id)
+interface CandidatoDAO extends CrudDAO<Candidato> {
     List<Candidato> listarCandidatoEmpresa(Integer id_empresa)
-    List<Candidato> listarCandidato()
-    Candidato buscarIdCandidato(Integer id)
     Candidato buscarEmailCandidato(String email)
     Candidato buscarCpfCandidato(String cpf)
 }
