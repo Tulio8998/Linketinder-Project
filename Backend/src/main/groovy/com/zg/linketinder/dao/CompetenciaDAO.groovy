@@ -1,10 +1,9 @@
 package com.zg.linketinder.dao
 
+import com.zg.linketinder.dao.base.CrudDAO
 import com.zg.linketinder.model.Competencia
 
-interface CompetenciaDAO {
-    List<Competencia> listarCompetencia()
-    Competencia buscarIdCompetencia(Integer id)
+interface CompetenciaDAO extends CrudDAO<Competencia> {
     Competencia buscarNomeCompetencia(String nome)
 
     void salvaCompetenciaCandidato(Integer id_candidato, Integer id_competencia)
