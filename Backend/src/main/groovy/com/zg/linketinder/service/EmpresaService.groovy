@@ -9,7 +9,7 @@ class EmpresaService {
 
     List<Empresa> listarEmpresas(){
         try {
-            return empresaDAO.listarEmpresa()
+            return empresaDAO.listarTodos()
         } catch (Exception e) {
             println "Nao tem empresas para listar: ${e.message}"
             return []
@@ -18,7 +18,7 @@ class EmpresaService {
 
     Empresa buscarIdEmpresa(Integer id) {
         try {
-            return empresaDAO.buscarIdEmpresa(id)
+            return empresaDAO.buscarPorId(id)
         } catch (Exception e) {
             println "Nao tem empresas com esse id: ${e.message}"
             return null
@@ -46,7 +46,7 @@ class EmpresaService {
     void salvarEmpresa(Empresa empresa) {
         try {
             if (validarEmpresa(empresa)) {
-                empresaDAO.salvarEmpresa(empresa)
+                empresaDAO.salvar(empresa)
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("Erro ao salvar empresa: ${e.message}")
@@ -80,7 +80,7 @@ class EmpresaService {
         try {
             if ( empresa != null && buscarIdEmpresa(id) != null) {
                 empresa.id = id
-                empresaDAO.atualizarEmpresa(empresa)
+                empresaDAO.atualizar(id, empresa)
             } else {
                 throw new IllegalArgumentException("Empresa nao encontrado ou dados nulos")
             }
@@ -91,8 +91,8 @@ class EmpresaService {
 
     void excluirEmpresa(Integer id) {
         try {
-            if (empresaDAO.buscarIdEmpresa(id)) {
-                empresaDAO.excluirEmpresa(id)
+            if (empresaDAO.buscarPorId(id)) {
+                empresaDAO.excluir(id)
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("O empresa nao pode ser nulo e deve ter um id valido: ${e.message}")
