@@ -135,7 +135,7 @@ class MenuCandidato {
         print "Descricao: "
         String descricao = Util.leStringConsole(reader)
 
-        Candidato candidato = new Candidato(cpf: cpf, idade: idade, data_nascimento: dataNascimento, nome: nome, email: email, senha: senha, pais: pais, cidade: cidade, estado: estado, cep: cep, descricao: descricao)
+        Candidato candidato = new Candidato(cpf: cpf, idade: idade, dataNascimento: dataNascimento, nome: nome, email: email, senha: senha, pais: pais, cidade: cidade, estado: estado, cep: cep, descricao: descricao)
         if (candidato == null) {
             println "\nCandidato nao encontrado!\n"
             return
@@ -191,7 +191,7 @@ class MenuCandidato {
         print "Descricao: "
         String descricao = Util.leStringConsole(reader)
 
-        Candidato cand = new Candidato(cpf: cpf, idade: idade, data_nascimento: dataNascimento, nome: nome, email: email, senha: senha, pais: pais, cidade: cidade, estado: estado, cep: cep, descricao: descricao)
+        Candidato cand = new Candidato(cpf: cpf, idade: idade, dataNascimento: dataNascimento, nome: nome, email: email, senha: senha, pais: pais, cidade: cidade, estado: estado, cep: cep, descricao: descricao)
         if (cand == null) {
             println "\nCandidato nao encontrado!\n"
             return
