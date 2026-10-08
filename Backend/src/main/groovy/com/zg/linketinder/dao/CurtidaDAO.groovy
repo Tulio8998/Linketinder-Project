@@ -10,5 +10,5 @@ interface CurtidaDAO {
     List<CurtidaEmpresa> listarCurtidasEmpresa()
     List<CurtidaCandidato> listarCurtidasCandidato()
     List<Match> listarMatchEmpresa(Integer id_empresa)
-    List<Match> listarMatchCandidato(Integer id_empresa)
+    List<Match> listarMatchCandidato(Integer id_candidato)
 }
