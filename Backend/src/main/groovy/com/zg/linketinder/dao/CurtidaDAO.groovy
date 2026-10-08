@@ -2,7 +2,6 @@ package com.zg.linketinder.dao
 
 import com.zg.linketinder.model.CurtidaCandidato
 import com.zg.linketinder.model.CurtidaEmpresa
-import com.zg.linketinder.model.curtida.Curtida
 import com.zg.linketinder.model.curtida.Match
 
 interface CurtidaDAO {
@@ -11,5 +10,5 @@ interface CurtidaDAO {
     List<CurtidaEmpresa> listarCurtidasEmpresa()
     List<CurtidaCandidato> listarCurtidasCandidato()
     List<Match> listarMatchEmpresa(Integer id_empresa)
-    List<Match> listarMatchCandidato(Integer id_empresa)
+    List<Match> listarMatchCandidato(Integer id_candidato)
 }

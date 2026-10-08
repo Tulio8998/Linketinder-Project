@@ -52,6 +52,22 @@ O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) s
 * **Implementação do Padrão DAO:** Refatoração da arquitetura com a criação da camada Data Access Object (DAO), isolando a lógica de acesso a dados (queries e inserts SQL) das regras de negócio (Services) e da interface de linha de comando (CLI).
 * **CRUDs Relacionais Completos:** Desenvolvimento das operações de Inserção, Leitura, Atualização e Exclusão integradas ao banco para as 4 entidades principais (Candidatos, Empresas, Vagas e Competências), incluindo o gerenciamento via SQL dos relacionamentos 1:N (Empresas-Vagas) e N:N (Competências com Vagas e Candidatos).
 
+### Versão 1.7.0
+
+* **Aplicação dos Princípios SOLID:** Refatoração da arquitetura com foco em SRP, OCP, LSP, ISP e DIP, incluindo interfaces específicas, classes base abstratas e injeção de dependência por construtor.
+* **Camada Base Genérica (Template Method):** Criação de `CrudDAO` e `CrudDAOImpl` para concentrar o CRUD repetitivo, eliminando `try/catch/finally` duplicados. DAOs concretos apenas informam SQL e mapeamento.
+* **Camada de Serviço Genérica:** Criação de `CrudService`, que centraliza o fluxo de salvar, atualizar, excluir e listar, delegando validações para `validarAntesSalvar` e `validarAntesAtualizar`.
+* **Configuração Externalizada:** Remoção de credenciais do `ConexaoDB`, com leitura via `System.getProperty` e fallback para valores padrão.
+* **Conexão Compartilhada:** O `ConexaoDB` agora mantém uma única instância de `Sql`, com `resetar()` e `criar()` para permitir troca de banco em testes.
+* **SQL Centralizado:** Queries movidas para classes `Sql` por entidade, removendo SQL dos DAOs.
+* **Testes de Integração:** Criação do banco `linketinder_test` e da classe `DaoIntegrationSpec`, que limpa as tabelas antes de cada teste.
+* **Testes Unitários com Mock:** Injeção de dependência por construtor nos Services, permitindo `Mock()` do Spock para isolar a persistência.
+* **DRY no Frontend:** Extração de `shared.ts` para eliminar duplicação de `configSkills`, `pointSkills`, `abrirPainelCard` e manipulação de skills.
+* **Constantes Compartilhadas:** Criação de `ts/util/constants.ts` para `ESTADOS` e `PAISES`, eliminando arrays duplicados.
+* **Validação com Regex:** Introdução de `ts/util/validators.ts` com regex para e-mail, CPF, CNPJ e CEP nos fluxos de cadastro.
+* **ViewPanel Unificado:** `viewVagaCand` passa a delegar para `viewPanel`, eliminando duplicação.
+* **Template Reutilizável no Frontend:** `addVaga` e `editVaga` compartilham a função `templateEditavel`, eliminando HTML duplicado.
+
 ## Execução pela IDE
 1. Abra o projeto no IntelliJ IDEA.
 2. Aguarde o Gradle sincronizar o projeto.

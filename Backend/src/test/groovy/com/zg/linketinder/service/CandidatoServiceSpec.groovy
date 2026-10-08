@@ -1,123 +1,64 @@
+
 package com.zg.linketinder.service
 
+import com.zg.linketinder.dao.CandidatoDAO
 import com.zg.linketinder.model.Candidato
-import com.zg.linketinder.repository.CandidatoRepository
 import spock.lang.Specification
 
 class CandidatoServiceSpec extends Specification {
-    def service = new CandidatoService()
 
-    def "deve listar todos os candidatos"() {
-        given: "repository mockado de candidato"
-        CandidatoRepository repositoryMock = Mock(CandidatoRepository)
-        service.candidatoRepository = repositoryMock
+    CandidatoDAO candidatoDAO = Mock()
+    CandidatoService candidatoService = new CandidatoService(candidatoDAO)
 
-        def candidatos = [
-                new Candidato(nome: "Candidato 1"),
-                new Candidato(nome: "Candidato 2")
-        ]
-
-        and: "o repository deve retornar uma lista de candidatos"
-        repositoryMock.listarTodos() >> candidatos
-
-        when: "a lista de candidatos solicitada"
-        def resultado = service.listarTodos()
-
-        then: "o service deve retornar a lista fornecida pelo repository"
-        resultado == candidatos
-    }
-
-    def "deve adicionar um novo candidato"() {
-        given: "repository mockado de candidato"
-        CandidatoRepository repositoryMock = Mock(CandidatoRepository)
-        service.candidatoRepository = repositoryMock
-
-        and: "um novo candidato"
-        def candidato = new Candidato(
-                cpf: "000.000.000-00",
-                idade: 21,
-                nome: "Túlio",
-                email: "teste@teste.com",
-                estado: "MG",
-                cep: "00000-000",
-                descricao: "Desenvolvedor"
+    def "deve validar antes de salvar"() {
+        given: "um candidato com dados inválidos"
+        Candidato candidato = new Candidato(
+                cpf: '',
+                nome: '',
+                email: '',
+                senha: '',
+                competencias: []
         )
 
-        when: "o metodo de adicionar for chamado"
-        service.adicionarCandidato(candidato)
+        when: "tento salvar o candidato"
+        candidatoService.salvarCandidato(candidato)
 
-        then: "o repository deve receber um candidato"
-        1 * repositoryMock.adicionarCandidato(candidato)
+        then: "a validação impede o cadastro"
+        thrown(Exception)
+        0 * candidatoDAO.salvarCandidato(_)
     }
 
-    def "nao deve permitir insercao de candidato nulo"() {
-        when: "é tentado inserir um valor nulo em vez candidato"
-        service.adicionarCandidato(null)
-
-        then: "deve lancar um excecao"
-        def erro = thrown(IllegalArgumentException)
-        erro.message == "O candidato nao pode ser nulo"
-    }
-
-    def "nao deve permitir cpf duplicado"() {
-        given: "repository mockado de candidato"
-        CandidatoRepository repositoryMock = Mock(CandidatoRepository)
-        service.candidatoRepository = repositoryMock
-
-        def candidatos = [
-                new Candidato(cpf: "666.666.666-66",),
-        ]
-
-        and: "o repository deve retornar candidatos cadastradas"
-        repositoryMock.listarTodos() >> candidatos
-
-        and: "uma nova candidato com cpf ja existente"
-        def candidato = new Candidato(
-                cpf: "666.666.666-66",
-                idade: 21,
-                nome: "Túlio",
-                email: "teste@teste.com",
-                estado: "MG",
-                cep: "00000-000",
-                descricao: "Desenvolvedor"
+    def "deve buscar cpf candidato"() {
+        given: "um candidato cadastrado"
+        String cpf = '111.111.111-11'
+        Candidato candidato = new Candidato(
+                cpf: cpf,
+                nome: 'Tulio',
+                email: 't@email.com'
         )
 
-        when: "adicionar uma nova candidato com cpf ja existente"
-        service.adicionarCandidato(candidato)
+        when: "busco o candidato pelo CPF"
+        Candidato resultado = candidatoService.buscarCpfCandidato(cpf)
 
-        then: "deve lancar um excecao"
-        def erro = thrown(IllegalArgumentException)
-        erro.message == "Cpf ja cadastrado"
+        then: "o candidato é retornado"
+        1 * candidatoDAO.buscarCpfCandidato(cpf) >> candidato
+        resultado == candidato
     }
 
-    def "nao deve permitir email duplicado"() {
-        given: "repository mockado de candidato"
-        CandidatoRepository repositoryMock = Mock(CandidatoRepository)
-        service.candidatoRepository = repositoryMock
-
-        def candidatos = [
-                new Candidato(email: "teste@teste.com"),
-        ]
-
-        and: "o repository deve retornar candidatos cadastradas"
-        repositoryMock.listarTodos() >> candidatos
-
-        and: "uma nova empresa com email existente"
-        def candidato = new Candidato(
-                cpf: "000.000.000-00",
-                idade: 21,
-                nome: "Túlio",
-                email: "teste@teste.com",
-                estado: "MG",
-                cep: "00000-000",
-                descricao: "Desenvolvedor"
+    def "deve buscar email candidato"() {
+        given: "um candidato cadastrado"
+        String email = 't@email.com'
+        Candidato candidato = new Candidato(
+                cpf: '111.111.111-11',
+                nome: 'Tulio',
+                email: email
         )
 
-        when: "adicionar uma nova candidato com email ja existente"
-        service.adicionarCandidato(candidato)
+        when: "busco o candidato pelo e-mail"
+        Candidato resultado = candidatoService.buscarEmailCandidato(email)
 
-        then: "deve lancar um excecao"
-        def erro = thrown(IllegalArgumentException)
-        erro.message == "Email ja cadastrado"
+        then: "o candidato é retornado"
+        1 * candidatoDAO.buscarEmailCandidato(email) >> candidato
+        resultado == candidato
     }
 }

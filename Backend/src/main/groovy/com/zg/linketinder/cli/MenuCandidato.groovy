@@ -3,7 +3,6 @@ package com.zg.linketinder.cli
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.CurtidaCandidato
-import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.model.curtida.Match
 import com.zg.linketinder.service.*
@@ -136,14 +135,14 @@ class MenuCandidato {
         print "Descricao: "
         String descricao = Util.leStringConsole(reader)
 
-        Candidato candidato = new Candidato(cpf: cpf, idade: idade, data_nascimento: dataNascimento, nome: nome, email: email, senha: senha, pais: pais, cidade: cidade, estado: estado, cep: cep, descricao: descricao)
+        Candidato candidato = new Candidato(cpf: cpf, idade: idade, dataNascimento: dataNascimento, nome: nome, email: email, senha: senha, pais: pais, cidade: cidade, estado: estado, cep: cep, descricao: descricao)
         if (candidato == null) {
             println "\nCandidato nao encontrado!\n"
             return
         }
 
         try {
-            candidatoService.salvarCandidato(candidato)
+            candidatoService.salvar(candidato)
             println "Dados de candidato salvo!\n"
         } catch (IllegalArgumentException e) {
             println "\nErro no cadastro: ${e.message}\n"
@@ -151,7 +150,7 @@ class MenuCandidato {
     }
 
     def atualizarCandidato(reader) {
-        List<Candidato> candidatos = candidatoService.listarCandidatos()
+        List<Candidato> candidatos = candidatoService.listarTodos()
 
         println "\nCandidatos"
         candidatos.eachWithIndex { candidato, index ->
@@ -192,14 +191,14 @@ class MenuCandidato {
         print "Descricao: "
         String descricao = Util.leStringConsole(reader)
 
-        Candidato cand = new Candidato(cpf: cpf, idade: idade, data_nascimento: dataNascimento, nome: nome, email: email, senha: senha, pais: pais, cidade: cidade, estado: estado, cep: cep, descricao: descricao)
+        Candidato cand = new Candidato(cpf: cpf, idade: idade, dataNascimento: dataNascimento, nome: nome, email: email, senha: senha, pais: pais, cidade: cidade, estado: estado, cep: cep, descricao: descricao)
         if (cand == null) {
             println "\nCandidato nao encontrado!\n"
             return
         }
 
         try {
-            candidatoService.atualizarCandidato(candidato.id, cand)
+            candidatoService.atualizar(candidato.id, cand)
             println "Dados de candidato salvo!\n"
         } catch (IllegalArgumentException e) {
             println "\nErro na atualizanao: ${e.message}\n"
@@ -207,7 +206,7 @@ class MenuCandidato {
     }
 
     def excluirCandidato(reader) {
-        List<Candidato> candidatos = candidatoService.listarCandidatos()
+        List<Candidato> candidatos = candidatoService.listarTodos()
 
         println "\nCandidatos"
         candidatos.eachWithIndex { candidato, index ->
@@ -222,7 +221,7 @@ class MenuCandidato {
         }
 
         try {
-            candidatoService.excluirCandidato(opcaoCandidato)
+            candidatoService.excluir(candidatos[opcaoCandidato - 1].id)
             println "Dados excluidos!\n"
         } catch (IllegalArgumentException e) {
             println "\nErro na exclusao: ${e.message}\n"
@@ -230,7 +229,7 @@ class MenuCandidato {
     }
 
     def listarCandidato() {
-        List<Candidato> candidatos = candidatoService.listarCandidatos()
+        List<Candidato> candidatos = candidatoService.listarTodos()
         candidatos.forEach {
             println(
                     "Cpf: ${it.cpf}\n" +
@@ -256,7 +255,7 @@ class MenuCandidato {
         print "Digite o id do candidato: "
         int id = Util.leInteiroConsole(reader)
 
-        Candidato candidato = candidatoService.buscarIdCandidato(id)
+        Candidato candidato = candidatoService.buscarPorId(id)
 
         if (candidato == null) {
             println "\nCandidato nao encontrado!\n"
@@ -280,7 +279,6 @@ class MenuCandidato {
         }
         println "\n"
     }
-
 
     def buscarEmailCandidato(reader) {
         println "Busca email de candidato"
@@ -343,7 +341,7 @@ class MenuCandidato {
     }
 
     def cadastrarCompetenciaCandidato(reader) {
-        List<Candidato> candidatos = candidatoService.listarCandidatos()
+        List<Candidato> candidatos = candidatoService.listarTodos()
 
         println "\nCandidatos"
         candidatos.eachWithIndex { candidato, index ->
@@ -357,22 +355,22 @@ class MenuCandidato {
             return
         }
 
-        List<Competencia> competencias = competenciaService.listarCompetencia()
+        List<Competencia> competencias = competenciaService.listarTodos()
 
         print "Competencias: "
         competencias.eachWithIndex { competencia, index ->
             println "${index + 1}. ${competencia.nome}"
         }
 
-        print "Escolha o competencia: "
+        print "Escolha a competencia: "
         int opcaoCompetencia = Util.leInteiroConsole(reader)
         if (opcaoCompetencia < 1 || opcaoCompetencia > competencias.size()) {
-            println "Candidato invalido!\n"
+            println "Competencia invalida!\n"
             return
         }
 
         try {
-            competenciaService.adicionarCompetenciaCandidato(opcaoCandidato, opcaoCompetencia)
+            competenciaService.adicionarCompetenciaCandidato(candidatos[opcaoCandidato - 1].id, competencias[opcaoCompetencia - 1].id)
             println "Dados salvo!\n"
         } catch (IllegalArgumentException e) {
             println "\nErro no salvamento: ${e.message}\n"
@@ -380,7 +378,7 @@ class MenuCandidato {
     }
 
     def excluirCompetenciaCandidato(reader) {
-        List<Candidato> candidatos = candidatoService.listarCandidatos()
+        List<Candidato> candidatos = candidatoService.listarTodos()
 
         println "\nCandidatos"
         candidatos.eachWithIndex { candidato, index ->
@@ -394,23 +392,25 @@ class MenuCandidato {
             return
         }
 
-        List<Competencia> competencias = competenciaService.listarCompetenciasCandidato(opcaoCandidato)
+        int idCandidatoReal = candidatos[opcaoCandidato - 1].id
+
+        List<Competencia> competencias = competenciaService.listarCompetenciasCandidato(idCandidatoReal)
 
         print "Competencias: "
         competencias.eachWithIndex { competencia, index ->
             println "${index + 1}. ${competencia.nome}"
         }
 
-        print "Escolha o competencia: "
+        print "Escolha a competencia: "
         int opcaoCompetencia = Util.leInteiroConsole(reader)
         if (opcaoCompetencia < 1 || opcaoCompetencia > competencias.size()) {
-            println "Candidato invalido!\n"
+            println "Competencia invalida!\n"
             return
         }
         Competencia comp = competencias[opcaoCompetencia - 1]
 
         try {
-            competenciaService.excluirCompetenciaCandidato(opcaoCandidato, comp.id)
+            competenciaService.excluirCompetenciaCandidato(idCandidatoReal, comp.id)
             println "Dados excluidos!\n"
         } catch (IllegalArgumentException e) {
             println "\nErro na exclusao: ${e.message}\n"
@@ -418,7 +418,7 @@ class MenuCandidato {
     }
 
     def listarCompetenciasCandidato(reader) {
-        List<Candidato> candidatos = candidatoService.listarCandidatos()
+        List<Candidato> candidatos = candidatoService.listarTodos()
 
         println "\nCandidatos"
         candidatos.eachWithIndex { candidato, index ->
@@ -432,7 +432,7 @@ class MenuCandidato {
             return
         }
 
-        List<Competencia> competencias = competenciaService.listarCompetenciasCandidato(opcaoCandidato)
+        List<Competencia> competencias = competenciaService.listarCompetenciasCandidato(candidatos[opcaoCandidato - 1].id)
         competencias.forEach {
             println(
                     "Nome: ${it.nome}"
@@ -450,7 +450,7 @@ class MenuCandidato {
         int id_candidato = Util.leInteiroConsole(reader)
 
         Competencia competencia = competenciaService.buscarIdCompetenciaCandidato(id_competencia, id_candidato)
-        Candidato candidato = candidatoService.buscarIdCandidato(id_candidato)
+        Candidato candidato = candidatoService.buscarPorId(id_candidato)
 
         if (candidato == null) {
             println "\nCandidato nao encontrado!\n"
@@ -476,7 +476,7 @@ class MenuCandidato {
         int id_candidato = Util.leInteiroConsole(reader)
 
         Competencia competencia = competenciaService.buscarNomeCompetenciaCandidato(id_candidato, nome_competencia)
-        Candidato candidato = candidatoService.buscarIdCandidato(id_candidato)
+        Candidato candidato = candidatoService.buscarPorId(id_candidato)
 
         if (candidato == null) {
             println "\nCandidato nao encontrado!\n"
@@ -493,7 +493,7 @@ class MenuCandidato {
     }
 
     def salvarCurtidaCandidato(reader) {
-        List<Candidato> candidatos = candidatoService.listarCandidatos()
+        List<Candidato> candidatos = candidatoService.listarTodos()
 
         println "\nCandidatos"
         candidatos.eachWithIndex { candidato, index ->
@@ -507,7 +507,7 @@ class MenuCandidato {
             return
         }
 
-        List<Vaga> vagas = vagaService.listarTodasVagas()
+        List<Vaga> vagas = vagaService.listarTodos()
 
         if (vagas.isEmpty()) {
             println "\nNenhuma vaga encontrada\n"
@@ -515,15 +515,15 @@ class MenuCandidato {
         }
 
         println "\nVagas"
-        vagas.eachWithIndex { candidato, index ->
+        vagas.eachWithIndex { vaga, index ->
             println (
                     "${index + 1}." +
-                    "Nome: ${candidato.nome}\n" +
-                    "Empresa: ${candidato.empresa.nome}\n" +
-                    "Descricao: ${candidato.descricao}\n" +
-                    "Competencias: ${candidato.descricao}"
+                            "Nome: ${vaga.nome}\n" +
+                            "Empresa: ${vaga.empresa.nome}\n" +
+                            "Descricao: ${vaga.descricao}\n" +
+                            "Competencias: ${vaga.descricao}"
             )
-            candidato.competencias?.forEach { comp ->
+            vaga.competencias?.forEach { comp ->
                 println("${comp.nome}, ")
             }
             print "\n"
@@ -537,7 +537,7 @@ class MenuCandidato {
         }
 
         try {
-            curtidaService.curtirVagaComoCandidato(opcaoCandidato, opcaoVaga, true)
+            curtidaService.curtirVagaComoCandidato(candidatos[opcaoCandidato - 1].id, vagas[opcaoVaga - 1].id, true)
             println "Dados salvo!\n"
         } catch (IllegalArgumentException e) {
             println "\nErro no salvamento: ${e.message}\n"
@@ -560,7 +560,7 @@ class MenuCandidato {
     }
 
     def listarMatchesCandidato(reader) {
-        List<Candidato> candidatos = candidatoService.listarCandidatos()
+        List<Candidato> candidatos = candidatoService.listarTodos()
 
         println "\nCandidatos"
         candidatos.eachWithIndex { candidato, index ->
@@ -574,7 +574,7 @@ class MenuCandidato {
             return
         }
 
-        List<Match> matches = curtidaService.listarMatchCandidato(opcaoCandidato)
+        List<Match> matches = curtidaService.listarMatchCandidato(candidatos[opcaoCandidato - 1].id)
 
         if (matches.isEmpty()) {
             println "\nNenhum match encontrado\n"
@@ -590,7 +590,7 @@ class MenuCandidato {
     }
 
     def listarVagas(reader) {
-        List<Vaga> vagas = vagaService.listarTodasVagas()
+        List<Vaga> vagas = vagaService.listarTodos()
 
         vagas.each {
             println (
@@ -606,7 +606,7 @@ class MenuCandidato {
         print "Digite o id da vaga: "
         int id_vaga = Util.leInteiroConsole(reader)
 
-        Vaga vaga = vagaService.buscarIdVaga(id_vaga)
+        Vaga vaga = vagaService.buscarPorId(id_vaga)
 
         if (vaga == null) {
             println "\nVaga nao encontrada!\n"
@@ -650,7 +650,7 @@ class MenuCandidato {
     }
 
     def calcularAfinidade(reader) {
-        List<Candidato> candidatos = candidatoService.listarCandidatos()
+        List<Candidato> candidatos = candidatoService.listarTodos()
 
         println "\nCandidatos"
         candidatos.eachWithIndex { candidato, index ->
@@ -668,25 +668,24 @@ class MenuCandidato {
             return
         }
 
-        Candidato cand = candidatoService.buscarIdCandidato(opcaoCandidato)
+        Candidato cand = candidatoService.buscarPorId(candidatos[opcaoCandidato - 1].id)
 
-        List<Vaga> vagas = vagaService.listarTodasVagas()
+        List<Vaga> vagas = vagaService.listarTodos()
 
         println "\nVagas"
-        vagas.eachWithIndex { candidato, index ->
+        vagas.eachWithIndex { vaga, index ->
             println (
                     "${index + 1}." +
-                            "Nome: ${candidato.nome}\n" +
-                            "Empresa: ${candidato.empresa.nome}\n" +
-                            "Descricao: ${candidato.descricao}\n" +
-                            "Competencias: ${candidato.descricao}"
+                            "Nome: ${vaga.nome}\n" +
+                            "Empresa: ${vaga.empresa.nome}\n" +
+                            "Descricao: ${vaga.descricao}\n" +
+                            "Competencias: ${vaga.descricao}"
             )
-            candidato.competencias?.forEach { comp ->
+            vaga.competencias?.forEach { comp ->
                 println("${comp.nome}, ")
             }
             print "\n"
         }
-
 
         print "Escolha a vaga: "
         int opcaoVaga = Util.leInteiroConsole(reader)
@@ -695,10 +694,10 @@ class MenuCandidato {
             return
         }
 
-        Vaga vaga = vagaService.buscarIdVaga(opcaoVaga)
+        Vaga vaga = vagaService.buscarPorId(vagas[opcaoVaga - 1].id)
 
         int afinidade = curtidaService.calcularAfinidade(cand, vaga)
 
-        println "O ${cand.nome} tem %${afinidade} de afinidade com a vaga ${vaga.nome}\n"
+        println "O ${cand.nome} tem ${afinidade}% de afinidade com a vaga ${vaga.nome}\n"
     }
 }

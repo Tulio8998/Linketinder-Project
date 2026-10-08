@@ -1,123 +1,63 @@
+
 package com.zg.linketinder.service
 
+import com.zg.linketinder.dao.EmpresaDAO
 import com.zg.linketinder.model.Empresa
-import com.zg.linketinder.repository.EmpresaRepository
 import spock.lang.Specification
 
 class EmpresaServiceSpec extends Specification {
-    def service = new EmpresaService()
 
-    def "deve listar todas as empresas"() {
-        given: "repository mockado de empresa"
-        EmpresaRepository repositoryMock = Mock(EmpresaRepository)
-        service.empresaRepository = repositoryMock
+    EmpresaDAO empresaDAO = Mock()
+    EmpresaService empresaService = new EmpresaService(empresaDAO)
 
-        def empresas = [
-            new Empresa(nome: "Empresa 1"),
-            new Empresa(nome: "Empresa 2")
-        ]
-
-        and: "o repository deve retornar uma lista de empresas"
-        repositoryMock.listarTodos() >> empresas
-
-        when: "a lista de empresas solicitada"
-        def resultado = service.listarTodos()
-
-        then: "o service deve retornar a lista fornecida pelo repository"
-        resultado == empresas
-    }
-
-    def "deve adicionar uma nova empresa"() {
-        given: "um repository mockado"
-        EmpresaRepository repositoryMock = Mock(EmpresaRepository)
-        service.empresaRepository = repositoryMock
-
-        and: "uma nova empresa"
-        def empresa = new Empresa(
-                cnpj: "00.000.000/0000-00",
-                pais: "Brasil",
-                nome: "ZG",
-                email: "teste@teste.com",
-                estado: "MG",
-                cep: "00000-000",
-                descricao: "Zero Glosa"
+    def "deve validar antes de salvar"() {
+        given: "uma empresa com dados inválidos"
+        Empresa empresa = new Empresa(
+                cnpj: '',
+                nome: '',
+                email: '',
+                senha: ''
         )
 
-        when: "o metodo adicionar for chamado"
-        service.adicionarEmpresa(empresa)
+        when: "tento salvar a empresa"
+        empresaService.salvarEmpresa(empresa)
 
-        then: "o repository deve receber a empresa"
-        1 * repositoryMock.adicionarEmpresa(empresa)
+        then: "a validação impede o cadastro"
+        thrown(Exception)
+        0 * empresaDAO.salvarEmpresa(_)
     }
 
-    def "nao deve permitir insercao de empresa nulo"() {
-        when: "é tentado inserir um valor nulo em vez empresa"
-        service.adicionarEmpresa(null)
-
-        then: "deve lancar uma excecao"
-        def erro = thrown(IllegalArgumentException)
-        erro.message == "A empresa nao pode ser nulo"
-    }
-
-    def "nao deve permitir cnpj duplicado"() {
-        given: "repository mockado de empresa"
-        EmpresaRepository repositoryMock = Mock(EmpresaRepository)
-        service.empresaRepository = repositoryMock
-
-        def empresas = [
-                new Empresa(cnpj: "55.555.555/5555-55",),
-        ]
-
-        and: "o repository deve retornar empresas cadastradas"
-        repositoryMock.listarTodos() >> empresas
-
-        and: "uma nova empresa com cnpj ja existente"
-        def empresa = new Empresa(
-                cnpj: "55.555.555/5555-55",
-                pais: "Brasil",
-                nome: "ZG",
-                email: "teste@teste.com",
-                estado: "MG",
-                cep: "00000-000",
-                descricao: "Zero Glosa"
+    def "deve buscar cnpj da empresa"() {
+        given: "uma empresa cadastrada"
+        String cnpj = '12.345.678/0001-90'
+        Empresa empresa = new Empresa(
+                cnpj: cnpj,
+                nome: 'Empresa Teste',
+                email: 'empresa@email.com'
         )
 
-        when: "adicionar uma nova empresa com cnpj ja existente"
-        service.adicionarEmpresa(empresa)
+        when: "busco a empresa pelo CNPJ"
+        Empresa resultado = empresaService.buscarCnpjEmpresa(cnpj)
 
-        then: "deve lancar um excecao"
-        def erro = thrown(IllegalArgumentException)
-        erro.message == "Cnpj ja cadastrado"
+        then: "a empresa é retornada"
+        1 * empresaDAO.buscarCnpjEmpresa(cnpj) >> empresa
+        resultado == empresa
     }
 
-    def "nao deve permitir email duplicado"() {
-        given: "repository mockado de empresa"
-        EmpresaRepository repositoryMock = Mock(EmpresaRepository)
-        service.empresaRepository = repositoryMock
-
-        def empresas = [
-                new Empresa(email: "teste@teste.com"),
-        ]
-
-        and: "o repository deve retornar empresas cadastradas"
-        repositoryMock.listarTodos() >> empresas
-
-        and: "uma nova empresa com email existente"
-        def empresa = new Empresa(
-                cnpj: "55.555.555/5555-55",
-                pais: "Brasil",
-                nome: "ZG",
-                email: "teste@teste.com",
-                estado: "MG",
-                cep: "00000-000",
-                descricao: "Zero Glosa"
+    def "deve buscar email da empresa"() {
+        given: "uma empresa cadastrada"
+        String email = 'empresa@email.com'
+        Empresa empresa = new Empresa(
+                cnpj: '12.345.678/0001-90',
+                nome: 'Empresa Teste',
+                email: email
         )
 
-        when: "adicionar uma nova empresa com email ja existente"
-        service.adicionarEmpresa(empresa)
+        when: "busco a empresa pelo e-mail"
+        Empresa resultado = empresaService.buscarEmailEmpresa(email)
 
-        then: "deve lancar um excecao"
-        def erro = thrown(IllegalArgumentException)
-        erro.message == "Email ja cadastrado"
+        then: "a empresa é retornada"
+        1 * empresaDAO.buscarEmailEmpresa(email) >> empresa
+        resultado == empresa
     }
 }

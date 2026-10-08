@@ -3,6 +3,7 @@ package com.zg.linketinder.service
 import com.zg.linketinder.dao.CurtidaDAO
 import com.zg.linketinder.dao.CurtidaDAOImpl
 import com.zg.linketinder.model.Candidato
+import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.CurtidaCandidato
 import com.zg.linketinder.model.CurtidaEmpresa
 import com.zg.linketinder.model.Empresa
@@ -13,74 +14,49 @@ class CurtidaService {
     private CurtidaDAO curtidaDAO = new CurtidaDAOImpl()
 
     void curtirVagaComoCandidato(Integer id_candidato, Integer id_vaga, Boolean like) {
+        if (!id_candidato || !id_vaga) throw new IllegalArgumentException("Candidato e Vaga nao podem ser nulos")
         try {
-            if (id_candidato && id_vaga) {
-                curtidaDAO.salvarCurtidaCandidato(id_candidato, id_vaga, like)
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Candidato e Vaga nao podem ser nulos: ${e.message}")
-        }
+            curtidaDAO.salvarCurtidaCandidato(id_candidato, id_vaga, like)
+        } catch (Exception e) { throw new IllegalArgumentException("Erro ao curtir: ${e.message}") }
     }
 
     void curtirVagaComoEmpresa(Empresa empresa, Candidato candidato, Vaga vaga, Boolean like) {
+        if (empresa?.id != vaga?.empresa?.id) throw new IllegalArgumentException("A empresa so pode curtir candidatos das suas proprias vagas")
         try {
-            if (empresa?.id == vaga?.empresa?.id) {
-                curtidaDAO.salvarCurtidaEmpresa(empresa.id, candidato.id, vaga.id, like)
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("A empresa so pode curtir candidatos das suas proprias vagas: ${e.message}")
-        }
+            curtidaDAO.salvarCurtidaEmpresa(empresa.id, candidato.id, vaga.id, like)
+        } catch (Exception e) { throw new IllegalArgumentException("Erro ao curtir: ${e.message}") }
     }
 
     int calcularAfinidade(Candidato candidato, Vaga vaga) {
-        if (!candidato || !vaga) {
-           throw new IllegalArgumentException("Candidato e Vaga nao podem ser nulos")
-        }
-        if (!vaga.competencias || vaga.competencias.isEmpty()) {
-            return 0
-        }
-        def compIguais = vaga.competencias.findAll { compVaga ->
+        if (!candidato || !vaga) throw new IllegalArgumentException("Candidato e Vaga nao podem ser nulos")
+        if (!vaga.competencias) return 0
+
+        int qntCompVaga = vaga.competencias.size()
+        int qntCompIguais = vaga.competencias.count { compVaga ->
             candidato.competencias.any { compCand -> compCand.nome == compVaga.nome }
         }
-        def qntCompVaga = vaga.competencias.size()
-        def qntCompTotal = compIguais.size()
-
-        return (qntCompTotal * 100) / qntCompVaga
+        return (qntCompIguais * 100) / qntCompVaga
     }
 
     List<CurtidaEmpresa> listarCurtidasEmpresa() {
         try {
             return curtidaDAO.listarCurtidasEmpresa()
         } catch (Exception e) {
-            println "Nao tem curtidas disponiveis: ${e.message}"
+            println "ERRO em listarCurtidasEmpresa: ${e.class.name} - ${e.message}"
+            e.printStackTrace()
             return []
         }
     }
 
     List<CurtidaCandidato> listarCurtidasCandidato() {
-        try {
-            return curtidaDAO.listarCurtidasCandidato()
-        } catch (Exception e) {
-            println "Nao tem curtidas disponiveis: ${e.message}"
-            return []
-        }
+        try { return curtidaDAO.listarCurtidasCandidato() } catch (Exception e) { return [] }
     }
 
     List<Match> listarMatchEmpresa(Integer id_empresa) {
-        try {
-            return curtidaDAO.listarMatchEmpresa(id_empresa)
-        } catch (Exception e) {
-            println "Nao tem matches: ${e.message}"
-            return []
-        }
+        try { return curtidaDAO.listarMatchEmpresa(id_empresa) } catch (Exception e) { return [] }
     }
 
     List<Match> listarMatchCandidato(Integer id_candidato) {
-        try {
-            return curtidaDAO.listarMatchCandidato(id_candidato)
-        } catch (Exception e) {
-            println "Nao tem matches: ${e.message}"
-            return []
-        }
+        try { return curtidaDAO.listarMatchCandidato(id_candidato) } catch (Exception e) { return [] }
     }
 }
