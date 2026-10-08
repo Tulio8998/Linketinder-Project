@@ -1,34 +1,93 @@
-import { paises, estados } from './signUpEmpresa' 
+import { ESTADOS, PAISES } from '../ts/util/constants'
+import { viewPanel } from './candidatoDash'
 
+export { viewPanel }
 
-export function viewPanel(name: string, address: string, description: string,
-    match: string, skills: string[]): string {
+function renderizarOpcoes(colecao: string[]): string {
+    return colecao.map((e) => `<option value="${e}">${e}</option>`).join('')
+}
+
+function templateEditavel(titulo: string, subtitulo: string, dados: {
+    tituloPerfil: string,
+    botoes: 'salvar-deletar' | 'cancelar-salvar'
+}): string {
+    const botoes = dados.botoes === 'salvar-deletar'
+        ? `<button class="btn-cancel" type="submit">Cancelar</button>
+           <button class="btn-delete" type="submit">Excluir</button>
+           <button class="btn-create" type="submit">Salvar</button>`
+        : `<button class="cancel" type="submit">Cancelar</button>
+           <button class="create" type="submit">Salvar</button>`
+
     return `
-        <div>
-            <button class="close-card">x</button>
-            <div class="match-cards">
-                <div class="card">
-                    <div class="info-job">
-                        ${match ? `<p class="porcent-match">${match}</p>` : ''}
-                        ${name ? `<p class="name">${name}</p>` : ''}
-                        <p class="address">${address}</p>
-                        <p class="description">${description}</p>
-                        <div>
-                            ${skills.map(e => `<p class="skill">${e}</p>`).join('')}
+        <section class="edit-class">
+            <div class="container">
+                <div class="editVaga-content">
+                    <div class="title-class">
+                        <p class="title">${titulo}</p>
+                        <p class="subtitle">${subtitulo}</p>
+                    </div>
+                    <form>
+                        <div class="input-form">
+                            <div class="info-personal">
+                                <p class="title-personal">${dados.tituloPerfil}</p>
+                                <div>
+                                    <p class="input-name">Tipo de vaga</p>
+                                    <input class="input-data" type="text" placeholder="Desenvolvedor...">
+                                </div>
+                            </div>
+                            <div class="info-location">
+                                <p class="title-personal">LOCALIZAÇÃO</p>
+                                <div class="div-row">
+                                    <div>
+                                        <p class="input-name">País</p>
+                                        <select>${renderizarOpcoes(PAISES)}</select>
+                                    </div>
+                                    <div>
+                                        <p class="input-name">Estado</p>
+                                        <select>${renderizarOpcoes(ESTADOS)}</select>
+                                    </div>
+                                    <div>
+                                        <p class="input-name">Cidade</p>
+                                        <select>${renderizarOpcoes(ESTADOS)}</select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-professional">
+                                <p class="title-personal">PERFIL DA EMPRESA</p>
+                                <div class="div-row">
+                                    <div>
+                                        <p class="input-name">Bio / Descrição</p>
+                                        <textarea placeholder="Escreva mais sobre a empresa, cultura, valores, etc..."></textarea>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="input-name">Habilidades requeridas</p>
+                                    <div class="skills-class"></div>
+                                    <input id="input-skill" class="input-data" type="text" placeholder="Digite e aperte Enter">
+                                </div>
+                            </div>
+                            <div class="button-class">${botoes}</div>
                         </div>
-                    </div>
-
-                    <div class="choice">
-                        <button class="pass">Passar</button>
-                        <button class="like">Curtir</button>
-                    </div>
+                    </form>
                 </div>
             </div>
-        </div>
+        </section>
     `
 }
 
+export function addVaga(): string {
+    return templateEditavel('Vaga Linketinder', 'Adicione suas vagas', {
+        tituloPerfil: 'INFORMAÇÃO VAGA',
+        botoes: 'cancelar-salvar'
+    })
+}
 
+export function editVaga(): string {
+    return templateEditavel('Editar Vaga Linketinder', 'Edite sua vaga', {
+        tituloPerfil: 'INFORMAÇÃO VAGA',
+        botoes: 'salvar-deletar'
+    })
+}
 
 export function editEmpProfile(): string {
     return `
@@ -52,21 +111,16 @@ export function editEmpProfile(): string {
                                     <input class="input-data" type="text" placeholder="00.000.000/0001-00">
                                 </div>
                             </div>
-
                             <div class="info-location">
                                 <p class="title-personal">LOCALIZAÇÃO</p>
                                 <div class="div-row">
                                     <div>
                                         <p class="input-name">País</p>
-                                        <select name="" id="">
-                                            ${paises.map(e => `<option value="${e}">${e}</option>`).join('')}
-                                        </select>
+                                        <select>${renderizarOpcoes(PAISES)}</select>
                                     </div>
                                     <div>
                                         <p class="input-name">Estado</p>
-                                        <select name="" id="">
-                                            ${estados.map(e => `<option value="${e}">${e}</option>`).join('')}
-                                        </select>
+                                        <select>${renderizarOpcoes(ESTADOS)}</select>
                                     </div>
                                     <div>
                                         <p class="input-name">CEP</p>
@@ -74,19 +128,17 @@ export function editEmpProfile(): string {
                                     </div>
                                 </div>
                             </div>
-
                             <div class="info-professional">
                                 <p class="title-personal">PERFIL DA EMPRESA</p>
                                 <div class="div-row">
                                     <div>
                                         <p class="input-name">Bio / Descrição</p>
-                                        <textarea name="" id="" placeholder="Escreva mais sobre a empresa, cultura, valores, etc..."></textarea>
+                                        <textarea placeholder="Escreva mais sobre a empresa, cultura, valores, etc..."></textarea>
                                     </div>
                                 </div>
                                 <div>
                                     <p class="input-name">Habilidades requeridas</p>
-                                    <div class="skills-class">
-                                    </div>
+                                    <div class="skills-class"></div>
                                     <input id="input-skill" class="input-data" type="text" placeholder="Digite e aperte Enter">
                                 </div>
                             </div>
@@ -101,155 +153,6 @@ export function editEmpProfile(): string {
             </div>
         </section>
     `
-}
-
-export function addVaga(): string {
-    return `
-        <section class="add-class">
-            <div class="container">
-                <div class="addVaga-content">
-                    <div class="title-class">
-                        <p class="title">Vaga Linketinder</p>
-                        <p class="subtitle">Adicione suas vagas</p>
-                    </div>
-                    <form>
-                        <div class="input-form">
-                            <div class="info-personal">
-                                <p class="title-personal">INFORMAÇÃO VAGA</p>
-                                <div>
-                                    <p class="input-name">Tipo de vaga</p>
-                                    <input class="input-data" type="text" placeholder="Desenvolvedor...">
-                                </div>
-                            </div>
-
-                            <div class="info-location">
-                                <p class="title-personal">LOCALIZAÇÃO</p>
-                                <div class="div-row">
-                                    <div>
-                                        <p class="input-name">País</p>
-                                        <select name="" id="">
-                                            ${paises.map(e => `<option value="${e}">${e}</option>`).join('')}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <p class="input-name">Estado</p>
-                                        <select name="" id="">
-                                            ${estados.map(e => `<option value="${e}">${e}</option>`).join('')}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <p class="input-name">Cidade</p>
-                                        <select name="" id="">
-                                            ${estados.map(e => `<option value="${e}">${e}</option>`).join('')}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="info-professional">
-                                <p class="title-personal">PERFIL DA EMPRESA</p>
-                                <div class="div-row">
-                                    <div>
-                                        <p class="input-name">Bio / Descrição</p>
-                                        <textarea name="" id="" placeholder="Escreva mais sobre a empresa, cultura, valores, etc..."></textarea>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p class="input-name">Habilidades requeridas</p>
-                                    <div class="skills-class">
-                                    </div>
-                                    <input id="input-skill" class="input-data" type="text" placeholder="Digite e aperte Enter">
-                                </div>
-                            </div>
-                            <div class="button-class">
-                                <button class="cancel" type="submit">Cancelar</button>
-                                <button class="create" type="submit">Salvar</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </section>
-    `
-}
-
-export function editVaga(): string {
-    return `
-        <section class="edit-class">
-            <div class="container">
-                <div class="editVaga-content">
-                    <div class="title-class">
-                        <p class="title">Editar Vaga Linketinder</p>
-                        <p class="subtitle">Edite sua vaga</p>
-                    </div>
-                    <form>
-                        <div class="input-form">
-                            <div class="info-personal">
-                                <p class="title-personal">INFORMAÇÃO VAGA</p>
-                                <div>
-                                    <p class="input-name">Tipo de vaga</p>
-                                    <input class="input-data" type="text" placeholder="Desenvolvedor...">
-                                </div>
-                            </div>
-
-                            <div class="info-location">
-                                <p class="title-personal">LOCALIZAÇÃO</p>
-                                <div class="div-row">
-                                    <div>
-                                        <p class="input-name">País</p>
-                                        <select name="" id="">
-                                            ${paises.map(e => `<option value="${e}">${e}</option>`).join('')}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <p class="input-name">Estado</p>
-                                        <select name="" id="">
-                                            ${estados.map(e => `<option value="${e}">${e}</option>`).join('')}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <p class="input-name">Cidade</p>
-                                        <select name="" id="">
-                                            ${estados.map(e => `<option value="${e}">${e}</option>`).join('')}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="info-professional">
-                                <p class="title-personal">PERFIL DA EMPRESA</p>
-                                <div class="div-row">
-                                    <div>
-                                        <p class="input-name">Bio / Descrição</p>
-                                        <textarea name="" id="" placeholder="Escreva mais sobre a empresa, cultura, valores, etc..."></textarea>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p class="input-name">Habilidades requeridas</p>
-                                    <div class="skills-class">
-                                    </div>
-                                    <input id="input-skill" class="input-data" type="text" placeholder="Digite e aperte Enter">
-                                </div>
-                            </div>
-                            <div class="button-class">
-                                <button class="btn-cancel" type="submit">Cancelar</button>
-                                <button class="btn-delete" type="submit">Excluir</button>
-                                <button class="btn-create" type="submit">Salvar</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </section>
-    `
-}
-
-export function viewMatch(): string {
-    return ''
-}
-
-export function viewVagaEmp(): string {
-    return ''
 }
 
 export function deleteEmpresaProfile(): string {
@@ -268,6 +171,8 @@ export function deleteEmpresaProfile(): string {
     `
 }
 
+export function viewMatch(): string { return '' }
+export function viewVagaEmp(): string { return '' }
 
 export function empresaDash(): string {
     return `
@@ -277,11 +182,7 @@ export function empresaDash(): string {
                 <div class="profile">
                     <div class="profile-content">
                         <p class="name"></p>
-                        <div>
-                            <p>Estado</p>
-                            <p>-</p>
-                            <p>País</p>
-                        </div>
+                        <div><p>Estado</p><p>-</p><p>País</p></div>
                     </div>
                     <p class="line"></p>
                     <div class="about">
@@ -294,18 +195,10 @@ export function empresaDash(): string {
                     </div>
                     <div class="nav-dash">
                         <p class="nav-title">Dashboard</p>
-                        <nav class="find-cand">
-                            Encontrar candidatos
-                        </nav>
-                        <nav class="match-cand">
-                            Matches
-                        </nav>
-                        <nav class="add-vaga">
-                            Adicionar Vaga
-                        </nav>
-                        <nav class="view-vaga">
-                            Ver Vagas
-                        </nav>
+                        <nav class="find-cand">Encontrar candidatos</nav>
+                        <nav class="match-cand">Matches</nav>
+                        <nav class="add-vaga">Adicionar Vaga</nav>
+                        <nav class="view-vaga">Ver Vagas</nav>
                     </div>
                     <div class="log-out">
                         <p class="line"></p>
@@ -316,19 +209,15 @@ export function empresaDash(): string {
                     </div>
                 </div>
             </div>
-
             <div class="dash-content">
                 <div class="search-bar">
-                    <div>
-                        <input class="input-search" type="text" placeholder="Pesquise por competência">
-                    </div>
+                    <div><input class="input-search" type="text" placeholder="Pesquise por competência"></div>
                 </div>
                 <div class="graph-class">
                     <p class="graph-title">Candidatos por competência</p>
                     <div class="graph" id="graph"></div>
                 </div>
-                <div class="match-cards">
-                </div>
+                <div class="match-cards"></div>
             </div>
         </section>
     `

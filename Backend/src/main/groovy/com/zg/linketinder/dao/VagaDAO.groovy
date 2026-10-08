@@ -1,15 +1,12 @@
 package com.zg.linketinder.dao
 
+import com.zg.linketinder.dao.base.CrudDAO
 import com.zg.linketinder.model.Vaga
 
-interface VagaDAO {
-    void salvarVaga(Vaga vaga)
-    void atualizarVaga(Vaga vaga)
-    void excluirVaga(Integer id_empresa, Integer id_vaga)
-    List<Vaga> listarVagaEmpresa(Integer id_empresa)
-    List<Vaga> listarTodasVagas()
-    Vaga buscarIdVagaEmpresa(Integer id_empresa, Integer id_vaga)
-    Vaga buscarNomeVagaEmpresa(Integer id_empresa, String nome)
-    Vaga buscarIdVaga(Integer id_vaga)
+interface VagaDAO extends CrudDAO<Vaga> {
+    void excluirVaga(Integer idEmpresa, Integer idVaga)
+    List<Vaga> listarVagaEmpresa(Integer idEmpresa)
+    Vaga buscarIdVagaEmpresa(Integer idEmpresa, Integer idVaga)
+    Vaga buscarNomeVagaEmpresa(Integer idEmpresa, String nome)
     Vaga buscarNomeVaga(String nome)
 }

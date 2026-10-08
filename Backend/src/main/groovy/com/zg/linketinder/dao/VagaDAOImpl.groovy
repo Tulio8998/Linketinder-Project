@@ -1,272 +1,161 @@
 package com.zg.linketinder.dao
 
+import com.zg.linketinder.dao.base.CrudDAOImpl
 import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Vaga
+import com.zg.linketinder.sql.VagaSql
 import com.zg.linketinder.util.ConexaoDB
 import groovy.sql.Sql
 
-class VagaDAOImpl implements VagaDAO{
+class VagaDAOImpl extends CrudDAOImpl<Vaga> implements VagaDAO {
+
     @Override
-    void salvarVaga(Vaga vaga) {
-        Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
+    protected String getSqlInserir() { return VagaSql.INSERIR }
 
-        def query = '''
-                INSERT INTO vagas (nome, descricao, pais, estado, cidade, id_empresa)
-                VALUES (?, ?, ?, ?, ?, ?)
-            '''
+    @Override
+    protected String getSqlAtualizar() { return VagaSql.ATUALIZAR }
 
-        def queryCompetencia = '''
-                INSERT INTO vagas_competencias (id_vaga, id_competencia) VALUES (?, ?)
-            '''
-        try {
-            def chaves = sql.executeInsert(query, [vaga.nome, vaga.descricao, vaga.pais,
-                                                   vaga.estado, vaga.cidade, vaga.empresa.id])
-            def idVaga = chaves[0][0]
-            if (vaga.competencias && !vaga.competencias.isEmpty()) {
-                vaga.competencias.each { c ->
-                    sql.executeInsert(queryCompetencia, [idVaga, c.id])
-                }
-            }
-            sql.commit()
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
-        } finally {
-            sql.close()
+    @Override
+    protected String getSqlExcluir() { return 'DELETE FROM vagas WHERE id = ?' }
+
+    @Override
+    protected String getSqlBuscarPorId() { return VagaSql.BUSCAR_POR_ID }
+
+    @Override
+    protected String getSqlListarTodos() { return VagaSql.LISTAR_TODAS }
+
+    @Override
+    protected List getParametrosInserir(Vaga vaga) {
+        return [vaga.nome, vaga.descricao, vaga.pais, vaga.estado, vaga.cidade, vaga.empresa.id]
+    }
+
+    @Override
+    protected List getParametrosAtualizar(Integer id, Vaga vaga) {
+        return [vaga.nome, vaga.descricao, vaga.pais, vaga.estado, vaga.cidade, id]
+    }
+
+    @Override
+    protected Vaga mapearResultado(def row) {
+        return mapearLinha(row)
+    }
+
+    @Override
+    List<Vaga> listarTodos() {
+        return ConexaoDB.consultar { Sql sql ->
+            return agruparPorId(sql.rows(VagaSql.LISTAR_TODAS))
         }
     }
 
     @Override
-    void atualizarVaga(Vaga vaga) {
-        Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
-
-        def query = '''
-                UPDATE vagas SET nome = ?, descricao = ?, pais = ?, estado = ?, cidade = ?
-                WHERE id = ?
-            '''
-        try {
-            sql.executeUpdate(query, [vaga.nome, vaga.descricao, vaga.pais,
-                                      vaga.estado, vaga.cidade, vaga.id])
-            sql.commit()
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
-        } finally {
-            sql.close()
+    Vaga buscarPorId(Integer id) {
+        return ConexaoDB.consultar { Sql sql ->
+            def lista = agruparPorId(sql.rows(VagaSql.BUSCAR_POR_ID, [id]))
+            return lista.isEmpty() ? null : lista.first()
         }
     }
 
     @Override
-    void excluirVaga(Integer id_empresa, Integer id_vaga) {
-        Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
-
-        def query = '''
-                DELETE FROM vagas WHERE id = ? AND id_empresa = ?
-            '''
-        try {
-            sql.executeUpdate(query, [id_vaga, id_empresa])
-            sql.commit()
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
-        } finally {
-            sql.close()
+    void salvar(Vaga vaga) {
+        ConexaoDB.emTransacao { Sql sql ->
+            def chaves = sql.executeInsert(VagaSql.INSERIR, getParametrosInserir(vaga))
+            long idVaga = chaves[0][0] as long
+            salvarCompetencias(sql, idVaga, vaga.competencias)
+            vaga.id = (int) idVaga
         }
     }
 
     @Override
-    List<Vaga> listarTodasVagas() {
-        Sql sql = ConexaoDB.getConexao()
-        Map<Integer, Vaga> mapaVagas = [:]
-
-        def query = '''
-                SELECT v.id, v.nome AS nome_vaga, v.descricao, v.pais, v.estado, v.cidade, 
-                       e.id AS id_empresa, 'anonimo' || e.id AS nome_empresa,
-                       cm.id AS id_competencia, cm.nome AS nome_competencia
-                FROM vagas v
-                INNER JOIN empresas e ON v.id_empresa = e.id
-                LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
-                LEFT JOIN competencias cm ON cm.id = vc.id_competencia
-            '''
-        try {
-            sql.eachRow(query) { row ->
-                Integer idVaga = row.getInt('id')
-
-                if (!mapaVagas.containsKey(idVaga)) {
-                    Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
-                    Vaga va = new Vaga(id: idVaga, nome: row.nome_vaga, descricao: row.descricao,
-                            pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
-                    va.competencias = []
-                    mapaVagas[idVaga] = va
-                }
-
-                if (row.id_competencia != null) {
-                    mapaVagas[idVaga].competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
-                }
-            }
-            return mapaVagas.values().toList()
-        } finally {
-            sql.close()
+    void excluirVaga(Integer idEmpresa, Integer idVaga) {
+        ConexaoDB.emTransacao { Sql sql ->
+            sql.executeUpdate(VagaSql.EXCLUIR, [idVaga, idEmpresa])
         }
     }
 
     @Override
-    List<Vaga> listarVagaEmpresa(Integer id_empresa) {
-        Sql sql = ConexaoDB.getConexao()
-        Map<Integer, Vaga> mapaVagas = [:]
-
-        def query = '''
-                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade, 
-                       e.id AS id_empresa, e.nome AS nome_empresa,
-                       cm.id AS id_competencia, cm.nome AS nome_competencia
-                FROM vagas v
-                INNER JOIN empresas e ON v.id_empresa = e.id
-                LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
-                LEFT JOIN competencias cm ON cm.id = vc.id_competencia
-                WHERE v.id_empresa = ?
-            '''
-        try {
-            sql.eachRow(query, [id_empresa]) { row ->
-                Integer idVaga = row.getInt('id')
-
-                if (!mapaVagas.containsKey(idVaga)) {
-                    Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
-                    Vaga va = new Vaga(id: idVaga, nome: row.nome, descricao: row.descricao,
-                            pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
-                    va.competencias = []
-                    mapaVagas[idVaga] = va
-                }
-
-                if (row.id_competencia != null) {
-                    mapaVagas[idVaga].competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
-                }
-            }
-            return mapaVagas.values().toList()
-        } finally {
-            sql.close()
+    List<Vaga> listarVagaEmpresa(Integer idEmpresa) {
+        return ConexaoDB.consultar { Sql sql ->
+            return agruparPorId(sql.rows(VagaSql.LISTAR_POR_EMPRESA, [idEmpresa]))
         }
     }
 
     @Override
-    Vaga buscarIdVagaEmpresa(Integer id_empresa, Integer id_vaga) {
-        Sql sql = ConexaoDB.getConexao()
-        Vaga vaga = null
-        def query = '''
-                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,
-                   v.id_empresa AS id_empresa, e.nome AS nome_empresa, cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
-                INNER JOIN empresas e ON v.id_empresa = e.id
-                LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
-                LEFT JOIN competencias cm ON cm.id = vc.id_competencia
-                WHERE v.id_empresa = ? AND v.id = ?;
-            '''
-        try {
-            sql.eachRow(query, [id_empresa, id_vaga]) { row ->
-                if (vaga == null) {
-                    Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
-                    vaga = new Vaga(id: row.getInt('id'), nome: row.nome, descricao: row.descricao,
-                            pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
-                    vaga.competencias = []
-                }
-                if (row.id_competencia != null) {
-                    vaga.competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
-                }
-            }
-            return vaga
-        } finally {
-            sql.close()
+    Vaga buscarIdVagaEmpresa(Integer idEmpresa, Integer idVaga) {
+        return ConexaoDB.consultar { Sql sql ->
+            def lista = agruparPorId(sql.rows(VagaSql.BUSCAR_POR_ID_E_EMPRESA, [idEmpresa, idVaga]))
+            return lista.isEmpty() ? null : lista.first()
         }
     }
 
     @Override
-    Vaga buscarNomeVagaEmpresa(Integer id_empresa, String nome) {
-        Sql sql = ConexaoDB.getConexao()
-        Vaga vaga = null
-        def query = '''
-                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,
-                   v.id_empresa AS id_empresa, e.nome AS nome_empresa, cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
-                INNER JOIN empresas e ON v.id_empresa = e.id
-                LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
-                LEFT JOIN competencias cm ON cm.id = vc.id_competencia
-                WHERE v.id_empresa = ? AND v.nome = ?;
-            '''
-        try {
-            sql.eachRow(query, [id_empresa, nome]) { row ->
-                if (vaga == null) {
-                    Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
-                    vaga = new Vaga(id: row.getInt('id'), nome: row.nome, descricao: row.descricao,
-                            pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
-                    vaga.competencias = []
-                }
-                if (row.id_competencia != null) {
-                    vaga.competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
-                }
-            }
-            return vaga
-        } finally {
-            sql.close()
-        }
-    }
-
-    @Override
-    Vaga buscarIdVaga(Integer id_vaga) {
-        Sql sql = ConexaoDB.getConexao()
-        Vaga vaga = null
-        def query = '''
-                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,   
-                v.id_empresa AS id_empresa, 'anonimo' || e.id AS nome_empresa, cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
-                LEFT JOIN empresas e ON v.id_empresa = e.id
-                LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
-                LEFT JOIN competencias cm ON cm.id = vc.id_competencia
-                WHERE v.id = ?;
-            '''
-        try {
-            sql.eachRow(query, [id_vaga]) { row ->
-                if (vaga == null) {
-                    Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
-                    vaga = new Vaga(id: row.getInt('id'), nome: row.nome, descricao: row.descricao,
-                            pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
-                    vaga.competencias = []
-                }
-                if (row.id_competencia != null) {
-                    vaga.competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
-                }
-            }
-            return vaga
-        } finally {
-            sql.close()
+    Vaga buscarNomeVagaEmpresa(Integer idEmpresa, String nome) {
+        return ConexaoDB.consultar { Sql sql ->
+            def lista = agruparPorId(sql.rows(VagaSql.BUSCAR_POR_NOME_E_EMPRESA, [idEmpresa, nome]))
+            return lista.isEmpty() ? null : lista.first()
         }
     }
 
     @Override
     Vaga buscarNomeVaga(String nome) {
-        Sql sql = ConexaoDB.getConexao()
-        Vaga vaga = null
-        def query = '''
-                SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,   
-                v.id_empresa AS id_empresa,cm.id AS id_competencia, cm.nome AS nome_competencia FROM vagas v
-                LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
-                LEFT JOIN competencias cm ON cm.id = vc.id_competencia
-                WHERE v.nome = ?;
-            '''
-        try {
-            sql.eachRow(query, [nome]) { row ->
-                if (vaga == null) {
-                    Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
-                    vaga = new Vaga(id: row.getInt('id'), nome: row.nome, descricao: row.descricao,
-                            pais: row.pais, estado: row.estado, cidade: row.cidade, empresa: emp)
-                    vaga.competencias = []
-                }
-                if (row.id_competencia != null) {
-                    vaga.competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
-                }
+        String query = '''
+            SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,   
+                   v.id_empresa AS id_empresa, e.nome AS nome_empresa, 
+                   cm.id AS id_competencia, cm.nome AS nome_competencia 
+            FROM vagas v
+            LEFT JOIN empresas e ON v.id_empresa = e.id
+            LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
+            LEFT JOIN competencias cm ON cm.id = vc.id_competencia
+            WHERE v.nome = ?
+        '''
+        return ConexaoDB.consultar { Sql sql ->
+            def lista = agruparPorId(sql.rows(query, [nome]))
+            return lista.isEmpty() ? null : lista.first()
+        }
+    }
+
+    private List<Vaga> agruparPorId(List linhas) {
+        if (!linhas || linhas.isEmpty()) return []
+        Map<Integer, Vaga> mapa = [:]
+
+        linhas.each { linha ->
+            Integer id = (linha.id instanceof Number) ? ((Number) linha.id).intValue() : Integer.parseInt(linha.id.toString())
+            if (!mapa.containsKey(id)) {
+                mapa[id] = mapearLinha(linha)
             }
-            return vaga
-        } finally {
-            sql.close()
+            if (linha.id_competencia != null) {
+                Integer idComp = (linha.id_competencia instanceof Number) ?
+                        ((Number) linha.id_competencia).intValue() : Integer.parseInt(linha.id_competencia.toString())
+                mapa[id].competencias.add(new Competencia(id: idComp, nome: linha.nome_competencia))
+            }
+        }
+        return mapa.values().toList()
+    }
+
+    private Vaga mapearLinha(linha) {
+        Integer idEmp = linha.id_empresa != null ?
+                ((linha.id_empresa instanceof Number) ? ((Number) linha.id_empresa).intValue() : Integer.parseInt(linha.id_empresa.toString())) : null
+
+        String nomeVaga = linha.containsKey('nome_vaga') && linha.nome_vaga ? linha.nome_vaga : linha.nome
+        String nomeEmpresa = linha.containsKey('nome_empresa') ? linha.nome_empresa : ""
+
+        Empresa emp = new Empresa(id: idEmp, nome: nomeEmpresa)
+
+        return new Vaga(
+                id: (linha.id instanceof Number) ? ((Number) linha.id).intValue() : Integer.parseInt(linha.id.toString()),
+                nome: nomeVaga,
+                descricao: linha.descricao,
+                pais: linha.pais,
+                estado: linha.estado,
+                cidade: linha.cidade,
+                empresa: emp,
+                competencias: []
+        )
+    }
+
+    private void salvarCompetencias(Sql sql, long idVaga, List<Competencia> competencias) {
+        if (!competencias) return
+        competencias.each { competencia ->
+            sql.executeInsert(VagaSql.INSERIR_COMPETENCIA, [idVaga, competencia.id])
         }
     }
 }

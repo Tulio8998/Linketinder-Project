@@ -19,8 +19,29 @@ import { CurtidaService } from './ts/services/CurtidaService'
 import type { Candidato } from './ts/models/Candidato'
 import type { Empresa } from './ts/models/Empresa'
 
-import { configSkills as configCandSkills, cadidatoPanel as candCardPanel, editCandPanel, vagaPanel, pointSkills as candPointSkills, findMatch as candFindMatch, findVaga as candFindVaga } from './components/candidato'
-import { configSkills as configEmpSkills, addVagaPanel, cadidatoPanel as empCardPanel, editEmpPanel, findCand, findMatch as empFindMatch, findVaga as empFindVaga, graphCand, pointSkills as empPointSkills } from './components/empresa'
+import { validarCep, validarCnpj, validarCpf, validarEmail } from './ts/util/validators'
+
+import {
+    configCandSkills,
+    cadidatoPanel as candCardPanel,
+    editCandPanel,
+    vagaPanel,
+    candPointSkills,
+    candFindMatch,
+    candFindVaga
+} from './components/candidato'
+
+import {
+    configEmpSkills,
+    addVagaPanel,
+    cadidatoPanel as empCardPanel,
+    editEmpPanel,
+    findCand,
+    empFindMatch,
+    empFindVaga,
+    graphCand,
+    empPointSkills
+} from './components/empresa'
 
 const candidatoService = new CandidatoService(localStorage)
 const empresaService = new EmpresaService(localStorage)
@@ -43,19 +64,16 @@ function signInPage(): void {
         e.preventDefault()
         const emailInput = form.querySelector<HTMLInputElement>('.input-in[type="email"]')
         const email = emailInput?.value.trim()
-        if (!email) {
-            alert('Informe um email.')
-            return
-        }
+        if (!email) { alert('Informe um email.'); return }
 
-        const candidato = candidatoService.listarCandidatos().find(c => c.email === email)
+        const candidato = candidatoService.listarCandidatos().find((c) => c.email === email)
         if (candidato) {
             localStorage.setItem('candidato_atual', JSON.stringify(candidato))
             candidatoDashPage()
             return
         }
 
-        const empresa = empresaService.listarEmpresas().find(emp => emp.email === email)
+        const empresa = empresaService.listarEmpresas().find((emp) => emp.email === email)
         if (empresa) {
             localStorage.setItem('empresa_atual', JSON.stringify(empresa))
             empresaDashPage()
@@ -88,33 +106,30 @@ function signUpPageCandidato(): void {
         const cep = inputs[5].value.trim()
 
         if (!nome || !cpf || !email) {
-            alert("Preencha os campos obrigatórios!")
+            alert('Preencha os campos obrigatórios!')
             return
         }
 
-        const emailExisteCand = candidatoService.listarCandidatos().some(c => c.email === email)
-        const emailExisteEmp = empresaService.listarEmpresas().some(e => e.email === email)
+        if (!validarEmail(email)) { alert('E-mail inválido!'); return }
+        if (!validarCpf(cpf)) { alert('CPF inválido! Use o formato 000.000.000-00'); return }
+        if (!validarCep(cep)) { alert('CEP inválido! Use o formato 00000-000'); return }
+
+        const emailExisteCand = candidatoService.listarCandidatos().some((c) => c.email === email)
+        const emailExisteEmp = empresaService.listarEmpresas().some((e) => e.email === email)
         if (emailExisteCand || emailExisteEmp) {
-            alert("Este E-mail já está em uso!")
+            alert('Este E-mail já está em uso!')
             return
         }
 
-        const cpfExiste = candidatoService.listarCandidatos().some(c => c.cpf === cpf)
-        if (cpfExiste) {
-            alert("Este CPF já está cadastrado!")
-            return
-        }
+        const cpfExiste = candidatoService.listarCandidatos().some((c) => c.cpf === cpf)
+        if (cpfExiste) { alert('Este CPF já está cadastrado!'); return }
 
         const novoCandidato: Candidato = {
-            nome,
-            cpf,
-            idade,
-            email, 
-            cep,
+            nome, cpf, idade, email, cep,
             pais: selects[0].value,
             estado: selects[1].value,
             descricao: textarea?.value || '',
-            competencias: Array.from(skillsElements).map(s => s.textContent || '')
+            competencias: Array.from(skillsElements).map((s) => s.textContent || '')
         }
 
         candidatoService.salvarCandidato(novoCandidato)
@@ -125,7 +140,7 @@ function signUpPageCandidato(): void {
 
 function signUpPageEmpresa(): void {
     app.innerHTML = signUpEmpresa()
-    configEmpSkills(document) 
+    configEmpSkills(document)
     const form = document.querySelector('form')
     document.querySelector('.cancel')?.addEventListener('click', (e) => {
         e.preventDefault(); signInPage()
@@ -144,32 +159,30 @@ function signUpPageEmpresa(): void {
         const cep = inputs[4].value.trim()
 
         if (!nome || !cpnj || !email) {
-            alert("Preencha os campos obrigatórios!")
+            alert('Preencha os campos obrigatórios!')
             return
         }
 
-        const emailExisteCand = candidatoService.listarCandidatos().some(c => c.email === email)
-        const emailExisteEmp = empresaService.listarEmpresas().some(e => e.email === email)
+        if (!validarEmail(email)) { alert('E-mail inválido!'); return }
+        if (!validarCnpj(cpnj)) { alert('CNPJ inválido! Use o formato 00.000.000/0001-00'); return }
+        if (!validarCep(cep)) { alert('CEP inválido! Use o formato 00000-000'); return }
+
+        const emailExisteCand = candidatoService.listarCandidatos().some((c) => c.email === email)
+        const emailExisteEmp = empresaService.listarEmpresas().some((e) => e.email === email)
         if (emailExisteCand || emailExisteEmp) {
-            alert("Este E-mail já está em uso!")
+            alert('Este E-mail já está em uso!')
             return
         }
 
-        const cnpjExiste = empresaService.listarEmpresas().some(e => e.cpnj === cpnj)
-        if (cnpjExiste) {
-            alert("Este CNPJ já está cadastrado!")
-            return
-        }
+        const cnpjExiste = empresaService.listarEmpresas().some((e) => e.cpnj === cpnj)
+        if (cnpjExiste) { alert('Este CNPJ já está cadastrado!'); return }
 
         const novaEmpresa: Empresa = {
-            nome,
-            cpnj, 
-            email, 
-            cep, 
+            nome, cpnj, email, cep,
             pais: selects[0].value,
             estado: selects[1].value,
             descricao: textarea?.value || '',
-            competencias: Array.from(skillsElements).map(s => s.textContent || '')
+            competencias: Array.from(skillsElements).map((s) => s.textContent || '')
         }
 
         empresaService.salvarEmpresa(novaEmpresa)
@@ -180,32 +193,30 @@ function signUpPageEmpresa(): void {
 
 export function atualizaSidebarCandidato(): void {
     const candLogado = candidatoService.candidatoAtual()
-    if(candLogado) {
-        const nameEl = document.querySelector('.candidato-profile .name')
-        const locEl = document.querySelector('.candidato-profile .profile-content div')
-        const aboutEl = document.querySelector('.candidato-profile .about p:last-child')
-        const skillsEl = document.querySelector('.candidato-profile .skills div')
+    if (!candLogado) return
+    const nameEl = document.querySelector('.candidato-profile .name')
+    const locEl = document.querySelector('.candidato-profile .profile-content div')
+    const aboutEl = document.querySelector('.candidato-profile .about p:last-child')
+    const skillsEl = document.querySelector('.candidato-profile .skills div')
 
-        if(nameEl) nameEl.textContent = candLogado.nome
-        if(locEl) locEl.innerHTML = `<p>${candLogado.estado}</p><p>-</p><p>${candLogado.pais}</p>`
-        if(aboutEl) aboutEl.textContent = candLogado.descricao
-        if(skillsEl) skillsEl.innerHTML = candLogado.competencias.map(s => `<p class="skill">${s}</p>`).join('')
-    }
+    if (nameEl) nameEl.textContent = candLogado.nome
+    if (locEl) locEl.innerHTML = `<p>${candLogado.estado}</p><p>-</p><p>${candLogado.pais}</p>`
+    if (aboutEl) aboutEl.textContent = candLogado.descricao
+    if (skillsEl) skillsEl.innerHTML = candLogado.competencias.map((s) => `<p class="skill">${s}</p>`).join('')
 }
 
 export function atualizaSidebarEmpresa(): void {
     const empresaLogada = empresaService.empresaAtual()
-    if(empresaLogada) {
-        const nameEl = document.querySelector('.empresa-profile .name')
-        const locEl = document.querySelector('.empresa-profile .profile-content div')
-        const aboutEl = document.querySelector('.empresa-profile .about p:last-child')
-        const skillsEl = document.querySelector('.empresa-profile .skills div')
+    if (!empresaLogada) return
+    const nameEl = document.querySelector('.empresa-profile .name')
+    const locEl = document.querySelector('.empresa-profile .profile-content div')
+    const aboutEl = document.querySelector('.empresa-profile .about p:last-child')
+    const skillsEl = document.querySelector('.empresa-profile .skills div')
 
-        if(nameEl) nameEl.textContent = empresaLogada.nome
-        if(locEl) locEl.innerHTML = `<p>${empresaLogada.estado}</p><p>-</p><p>${empresaLogada.pais}</p>`
-        if(aboutEl) aboutEl.textContent = empresaLogada.descricao
-        if(skillsEl) skillsEl.innerHTML = empresaLogada.competencias.map(s => `<p class="skill">${s}</p>`).join('')
-    }
+    if (nameEl) nameEl.textContent = empresaLogada.nome
+    if (locEl) locEl.innerHTML = `<p>${empresaLogada.estado}</p><p>-</p><p>${empresaLogada.pais}</p>`
+    if (aboutEl) aboutEl.textContent = empresaLogada.descricao
+    if (skillsEl) skillsEl.innerHTML = empresaLogada.competencias.map((s) => `<p class="skill">${s}</p>`).join('')
 }
 
 function candidatoDashPage(): void {
@@ -218,7 +229,7 @@ function candidatoDashPage(): void {
 
     atualizaSidebarCandidato()
     document.querySelector<HTMLElement>('.find-vaga')?.click()
-    
+
     document.querySelector('.btn-out')?.addEventListener('click', () => {
         localStorage.removeItem('candidato_atual')
         signInPage()
@@ -235,7 +246,7 @@ function empresaDashPage(): void {
     findCand()
     empFindMatch()
     empFindVaga()
-    
+
     atualizaSidebarEmpresa()
     document.querySelector<HTMLElement>('.find-cand')?.click()
 

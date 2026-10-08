@@ -1,101 +1,49 @@
 package com.zg.linketinder.service
 
+import com.zg.linketinder.dao.base.CrudDAO
 import com.zg.linketinder.dao.VagaDAO
 import com.zg.linketinder.dao.VagaDAOImpl
-import com.zg.linketinder.model.Candidato
-import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.Vaga
-import com.zg.linketinder.repository.VagaRepository
+import com.zg.linketinder.service.base.CrudService
 
-class VagaService {
+class VagaService extends CrudService<Vaga> {
+
     private VagaDAO vagaDAO = new VagaDAOImpl()
 
-    void salvarVaga(Vaga vaga) {
-        try {
-            if (vaga != null) {
-                if (vagaDAO.buscarNomeVaga(vaga.empresa.id, vaga.nome) != null) {
-                    throw new IllegalArgumentException("A empresa ja possui uma vaga cadastrada com esse nome: ${vaga.nome}")
-                }
-                vagaDAO.salvarVaga(vaga)
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Erro ao salvar vaga: ${e.message}")
+    @Override
+    protected CrudDAO<Vaga> getDao() { return vagaDAO }
+
+    @Override
+    protected void validarAntesSalvar(Vaga vaga) {
+        if (vagaDAO.buscarNomeVagaEmpresa(vaga.empresa.id, vaga.nome) != null) {
+            throw new IllegalArgumentException("A empresa ja possui uma vaga cadastrada com esse nome: ${vaga.nome}")
         }
     }
 
-    void atualizarVaga(Integer id_empresa, Vaga vaga) {
+    void excluirVagaDaEmpresa(Integer id_empresa, Integer id_vaga) {
         try {
-            if (vaga != null && vagaDAO.buscarIdVaga(id_empresa, vaga.id) != null) {
-                vagaDAO.atualizarVaga(vaga)
-            } else {
-                throw new IllegalArgumentException("Vaga nao encontrado ou dados nulos")
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Erro ao atualizar vaga: ${e.message}")
-        }
-    }
-
-    void excluirVaga(Integer id_empresa, Integer id_vaga) {
-        try {
-            if (vagaDAO.buscarIdVaga(id_empresa, id_vaga)) {
-                vagaDAO.excluirVaga(id_empresa, id_vaga)
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("A vaga nao pode ser nulo e deve ter um id valido: ${e.message}")
-        }
+            if (vagaDAO.buscarIdVagaEmpresa(id_empresa, id_vaga)) vagaDAO.excluirVaga(id_empresa, id_vaga)
+            else throw new IllegalArgumentException("Vaga nao pertence a esta empresa ou nao existe")
+        } catch (Exception e) { throw new IllegalArgumentException("Erro ao excluir: ${e.message}") }
     }
 
     List<Vaga> listarVagaEmpresa(Integer id_empresa) {
-        try {
-            return vagaDAO.listarVagaEmpresa(id_empresa)
-        } catch (Exception e) {
-            println "Nao tem vaga para listar: ${e.message}"
-            return []
-        }
-    }
-
-    List<Vaga> listarTodasVagas() {
-        try {
-            return vagaDAO.listarTodasVagas()
-        } catch (Exception e) {
-            println "Erro ao listar todas as vagas: ${e.message}"
-            return []
-        }
+        try { return vagaDAO.listarVagaEmpresa(id_empresa) }
+        catch (Exception e) { println "Erro ao listar: ${e.message}"; return [] }
     }
 
     Vaga buscarIdVagaEmpresa(Integer id_empresa, Integer id_vaga) {
-        try {
-            return vagaDAO.buscarIdVagaEmpresa(id_empresa, id_vaga)
-        } catch (Exception e) {
-            println "Nao tem vaga com esse id: ${e.message}"
-            return null
-        }
+        try { return vagaDAO.buscarIdVagaEmpresa(id_empresa, id_vaga) }
+        catch (Exception e) { println "Erro ao buscar: ${e.message}"; return null }
     }
 
     Vaga buscarNomeVagaEmpresa(Integer id_empresa, String nome) {
-        try {
-            return vagaDAO.buscarNomeVagaEmpresa(id_empresa, nome)
-        } catch (Exception e) {
-            println "Nao tem vaga com esse nome: ${e.message}"
-            return null
-        }
-    }
-
-    Vaga buscarIdVaga(Integer id_vaga) {
-        try {
-            return vagaDAO.buscarIdVaga(id_vaga)
-        } catch (Exception e) {
-            println "Nao tem vaga com esse id: ${e.message}"
-            return null
-        }
+        try { return vagaDAO.buscarNomeVagaEmpresa(id_empresa, nome) }
+        catch (Exception e) { println "Erro ao buscar: ${e.message}"; return null }
     }
 
     Vaga buscarNomeVaga(String nome) {
-        try {
-            return vagaDAO.buscarNomeVaga(nome)
-        } catch (Exception e) {
-            println "Nao tem vaga com esse nome: ${e.message}"
-            return null
-        }
+        try { return vagaDAO.buscarNomeVaga(nome) }
+        catch (Exception e) { println "Erro ao buscar: ${e.message}"; return null }
     }
 }

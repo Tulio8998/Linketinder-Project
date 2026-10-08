@@ -15,7 +15,7 @@ class CompetenciaService {
             if (competenciaDAO.buscarIdCompetenciaCandidato(id_candidato, id_competencia) != null) {
                 throw new IllegalArgumentException("O candidato ja possui esta competencia")
             }
-            if (candidatoDAO.buscarIdCandidato(id_candidato) && competenciaDAO.buscarIdCompetencia(id_competencia)) {
+            if (candidatoDAO.buscarPorId(id_candidato) && competenciaDAO.buscarPorId(id_competencia)) {
                 competenciaDAO.salvaCompetenciaCandidato(id_candidato, id_competencia)
             } else {
                 throw new IllegalArgumentException("Candidato ou Competencia nao encontrados no sistema")
@@ -27,7 +27,7 @@ class CompetenciaService {
 
     void excluirCompetenciaCandidato(Integer id_candidato, Integer id_competencia) {
         try {
-            if (candidatoDAO.buscarIdCandidato(id_candidato) && competenciaDAO.buscarIdCompetencia(id_competencia)) {
+            if (candidatoDAO.buscarPorId(id_candidato) && competenciaDAO.buscarPorId(id_competencia)) {
                 competenciaDAO.excluirCompetenciaCandidato(id_candidato, id_competencia)
             } else {
                 throw new IllegalArgumentException("Candidato ou Competencia nao encontrados no sistema")
@@ -112,7 +112,7 @@ class CompetenciaService {
 
     List<Competencia> listarCompetencia() {
         try {
-            return  competenciaDAO.listarCompetencia()
+            return  competenciaDAO.listarTodos()
         } catch (Exception e) {
             println "Erro ao listar competencias: ${e.message}"
             return []

@@ -1,8 +1,24 @@
-import { paises, estados } from './signUpCandidato' 
+import { ESTADOS, PAISES } from '../ts/util/constants'
 
+interface OpcoesPanel {
+    mostrarMatch?: boolean
+}
 
-export function viewPanel(name: string, address: string, description: string,
-    match: string, skills: string[]): string {
+function renderizarOpcoes(colecao: string[]): string {
+    return colecao.map((e) => `<option value="${e}">${e}</option>`).join('')
+}
+
+function renderizarSkills(skills: string[]): string {
+    return skills.map((e) => `<p class="skill">${e}</p>`).join('')
+}
+
+export function viewPanel(
+    name: string,
+    address: string,
+    description: string,
+    match: string,
+    skills: string[]
+): string {
     return `
         <div>
             <button class="close-card">x</button>
@@ -13,11 +29,8 @@ export function viewPanel(name: string, address: string, description: string,
                         ${name ? `<p class="name">${name}</p>` : ''}
                         <p class="address">${address}</p>
                         <p class="description">${description}</p>
-                        <div>
-                            ${skills.map(e => `<p class="skill">${e}</p>`).join('')}
-                        </div>
+                        <div>${renderizarSkills(skills)}</div>
                     </div>
-
                     <div class="choice">
                         <button class="pass">Passar</button>
                         <button class="like">Curtir</button>
@@ -28,34 +41,15 @@ export function viewPanel(name: string, address: string, description: string,
     `
 }
 
-export function viewVagaCand(name: string, address: string, description: string,
-    match: string, skills: string[]): string {
-    return `
-        <div>
-            <button class="close-card">x</button>
-            <div class="match-cards">
-                <div class="card">
-                    <div class="info-job">
-                        <p class="porcent-match">${match}</p>
-                        <p class="name">${name}</p>
-                        <p class="address">${address}</p>
-                        <p class="description">${description}</p>
-                        <div>
-                            ${skills.map(e => `<p class="skill">${e}</p>`).join('')}
-                        </div>
-                    </div>
-
-                    <div class="choice">
-                        <button class="pass">Passar</button>
-                        <button class="like">Curtir</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `
+export function viewVagaCand(
+    name: string,
+    address: string,
+    description: string,
+    match: string,
+    skills: string[]
+): string {
+    return viewPanel(name, address, description, match, skills)
 }
-
-
 
 export function editProfile(): string {
     return `
@@ -85,21 +79,16 @@ export function editProfile(): string {
                                     </div>
                                 </div>
                             </div>
-
                             <div class="info-location">
                                 <p class="title-personal">LOCALIZAÇÃO</p>
                                 <div class="div-row">
                                     <div>
                                         <p class="input-name">País</p>
-                                        <select name="" id="">
-                                            ${paises.map(e => `<option value="${e}">${e}</option>`).join('')}
-                                        </select>
+                                        <select>${renderizarOpcoes(PAISES)}</select>
                                     </div>
                                     <div>
                                         <p class="input-name">Estado</p>
-                                        <select name="" id="">
-                                            ${estados.map(e => `<option value="${e}">${e}</option>`).join('')}
-                                        </select>
+                                        <select>${renderizarOpcoes(ESTADOS)}</select>
                                     </div>
                                     <div>
                                         <p class="input-name">CEP</p>
@@ -107,19 +96,17 @@ export function editProfile(): string {
                                     </div>
                                 </div>
                             </div>
-
                             <div class="info-professional">
                                 <p class="title-personal">PERFIL PROFISSIONAL</p>
                                 <div class="div-row">
                                     <div>
                                         <p class="input-name">Bio / Descrição</p>
-                                        <textarea name="" id="" placeholder="Escreva mais sobre você, expericências, etc..."></textarea>
+                                        <textarea placeholder="Escreva mais sobre você, expericências, etc..."></textarea>
                                     </div>
                                 </div>
                                 <div>
                                     <p class="input-name">Habilidades</p>
-                                    <div class="skills-class">
-                                    </div>
+                                    <div class="skills-class"></div>
                                     <input id="input-skill" class="input-data" type="text" placeholder="Digite e aperte Enter">
                                 </div>
                             </div>
@@ -152,9 +139,7 @@ export function deleteCandidatoProfile(): string {
     `
 }
 
-export function viewMatch(): string {
-    return ''
-}
+export function viewMatch(): string { return '' }
 
 export function candidatoDash(): string {
     return `
@@ -164,11 +149,7 @@ export function candidatoDash(): string {
                 <div class="profile">
                     <div class="profile-content">
                         <p class="name"></p>
-                        <div>
-                            <p>Estado</p>
-                            <p>-</p>
-                            <p>País</p>
-                        </div>
+                        <div><p>Estado</p><p>-</p><p>País</p></div>
                     </div>
                     <p class="line"></p>
                     <div class="about">
@@ -181,12 +162,8 @@ export function candidatoDash(): string {
                     </div>
                     <div class="nav-dash">
                         <p class="nav-title">Dashboard</p>
-                        <nav class="find-vaga">
-                            Encontrar vagas
-                        </nav>
-                        <nav class="match-cand">
-                            Matches
-                        </nav>
+                        <nav class="find-vaga">Encontrar vagas</nav>
+                        <nav class="match-cand">Matches</nav>
                     </div>
                     <div class="log-out">
                         <p class="line"></p>
@@ -197,15 +174,11 @@ export function candidatoDash(): string {
                     </div>
                 </div>
             </div>
-
             <div class="dash-content">
                 <div class="search-bar">
-                    <div>
-                        <input class="input-search" type="text" placeholder="Pesquise vagas">
-                    </div>
+                    <div><input class="input-search" type="text" placeholder="Pesquise vagas"></div>
                 </div>
-                <div class="match-cards">
-                </div>
+                <div class="match-cards"></div>
             </div>
         </section>
     `
