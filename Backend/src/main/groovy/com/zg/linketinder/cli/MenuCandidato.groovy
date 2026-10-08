@@ -698,6 +698,6 @@ class MenuCandidato {
 
         int afinidade = curtidaService.calcularAfinidade(cand, vaga)
 
-        println "O ${cand.nome} tem %${afinidade} de afinidade com a vaga ${vaga.nome}\n"
+        println "O ${cand.nome} tem ${afinidade}% de afinidade com a vaga ${vaga.nome}\n"
     }
 }
