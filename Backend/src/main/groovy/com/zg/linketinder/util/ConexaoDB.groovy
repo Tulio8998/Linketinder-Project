@@ -3,18 +3,18 @@ package com.zg.linketinder.util
 import groovy.sql.Sql
 
 class ConexaoDB {
+    private static Sql instancia
+
     static Sql getConexao() {
-        String url = "jdbc:postgresql://localhost:5432/linketinder"
-        String user = "postgres"
-        String password = "postgres"
-        String driver = "org.postgresql.Driver"
-        return Sql.newInstance(url, user, password, driver)
+        if (instancia == null) {
+            instancia = criar()
+        }
+        return instancia
     }
 
     static <T> T emTransacao(Closure<T> operacao) {
-        Sql sql = ConexaoDB.getConexao()
+        Sql sql = getConexao()
         sql.connection.autoCommit = false
-
         try {
             T resultado = operacao.call(sql)
             sql.commit()
@@ -22,17 +22,26 @@ class ConexaoDB {
         } catch (Exception e) {
             sql.rollback()
             throw e
-        } finally {
-            sql.close()
         }
     }
 
     static <T> T consultar(Closure<T> operacao) {
-        Sql sql = ConexaoDB.getConexao()
-        try {
-            return operacao.call(sql)
-        } finally {
-            sql.close()
+        Sql sql = getConexao()
+        return operacao.call(sql)
+    }
+
+    static void resetar() {
+        if (instancia != null) {
+            try { instancia.close() } catch (Exception ignored) { }
+            instancia = null
         }
+    }
+
+    private static Sql criar() {
+        String url = System.getProperty('db.url') ?: 'jdbc:postgresql://localhost:5432/linketinder'
+        String user = System.getProperty('db.user') ?: 'postgres'
+        String password = System.getProperty('db.password') ?: 'postgres'
+        String driver = System.getProperty('db.driver') ?: 'org.postgresql.Driver'
+        return Sql.newInstance(url, user, password, driver)
     }
 }
