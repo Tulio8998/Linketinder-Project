@@ -12,26 +12,26 @@ import com.zg.linketinder.util.ConexaoDB
 class CurtidaDAOImpl implements CurtidaDAO {
 
     @Override
-    void salvarCurtidaCandidato(Integer id_candidato, Integer id_vaga, Boolean like) {
+    void salvarCurtidaCandidato(Integer idCandidato, Integer idVaga, Boolean curtiu) {
         ConexaoDB.emTransacao { sql ->
-            sql.executeInsert(CurtidaSql.INSERIR_CANDIDATO, [id_candidato, id_vaga, like])
+            sql.executeInsert(CurtidaSql.INSERIR_CANDIDATO, [idCandidato, idVaga, curtiu])
         }
     }
 
     @Override
-    void salvarCurtidaEmpresa(Integer id_empresa, Integer id_candidato, Integer id_vaga, Boolean like) {
+    void salvarCurtidaEmpresa(Integer idEmpresa, Integer idCandidato, Integer idVaga, Boolean curtiu) {
         ConexaoDB.emTransacao { sql ->
-            sql.executeInsert(CurtidaSql.INSERIR_EMPRESA, [id_empresa, id_candidato, id_vaga, like])
+            sql.executeInsert(CurtidaSql.INSERIR_EMPRESA, [idEmpresa, idCandidato, idVaga, curtiu])
         }
     }
 
     @Override
     List<CurtidaCandidato> listarCurtidasCandidato() {
         return ConexaoDB.consultar { sql ->
-            return sql.rows(CurtidaSql.LISTAR_CURTIDAS_CANDIDATO).collect { row ->
-                Candidato cand = new Candidato(id: row.getInt('id_candidato'), nome: row.nome_candidato)
-                Vaga vg = new Vaga(id: row.getInt('id_vaga'), nome: row.nome_vaga)
-                new CurtidaCandidato(id: row.getInt('id'), candidato: cand, vaga: vg, curtiu: row.curtiu)
+            sql.rows(CurtidaSql.LISTAR_CURTIDAS_CANDIDATO).collect { row ->
+                Candidato cand = new Candidato(id: row.id_candidato, nome: row.nome_candidato)
+                Vaga vaga = new Vaga(id: row.id_vaga, nome: row.nome_vaga)
+                new CurtidaCandidato(id: row.id, candidato: cand, vaga: vaga, curtiu: row.curtiu)
             }
         }
     }
@@ -39,35 +39,43 @@ class CurtidaDAOImpl implements CurtidaDAO {
     @Override
     List<CurtidaEmpresa> listarCurtidasEmpresa() {
         return ConexaoDB.consultar { sql ->
-            return sql.rows(CurtidaSql.LISTAR_CURTIDAS_EMPRESA).collect { row ->
-                Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
-                Candidato cand = new Candidato(id: row.getInt('id_candidato'), nome: row.nome_candidato)
-                Vaga vg = new Vaga(id: row.getInt('id_vaga'), nome: row.nome_vaga)
-                new CurtidaEmpresa(id: row.getInt('id'), empresa: emp, candidato: cand, vaga: vg, curtiu: row.curtiu)
+            sql.rows(CurtidaSql.LISTAR_CURTIDAS_EMPRESA).collect { row ->
+                Empresa emp = new Empresa(id: row.id_empresa, nome: row.nome_empresa)
+                Candidato cand = new Candidato(id: row.id_candidato, nome: row.nome_candidato)
+                Vaga vaga = new Vaga(id: row.id_vaga, nome: row.nome_vaga)
+                new CurtidaEmpresa(id: row.id, empresa: emp, candidato: cand, vaga: vaga, curtiu: row.curtiu)
             }
         }
     }
 
     @Override
-    List<Match> listarMatchEmpresa(Integer id_empresa) {
+    List<Match> listarMatchEmpresa(Integer idEmpresa) {
         return ConexaoDB.consultar { sql ->
-            return sql.rows(CurtidaSql.LISTAR_MATCHES_EMPRESA, [id_empresa]).collect { row ->
-                Candidato cand = new Candidato(id: row.getInt('id_candidato'), nome: row.nome_candidato, email: row.email_candidato)
-                Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
-                Vaga vg = new Vaga(id: row.getInt('id_vaga'), nome: row.nome_vaga, empresa: emp)
-                new Match(candidato: cand, empresa: emp, vaga: vg)
+            sql.rows(CurtidaSql.LISTAR_MATCHES_EMPRESA, [idEmpresa]).collect { row ->
+                Candidato cand = new Candidato(
+                        id: row.id_candidato,
+                        nome: row.nome_candidato,
+                        email: row.email_candidato
+                )
+                Empresa emp = new Empresa(id: row.id_empresa, nome: row.nome_empresa)
+                Vaga vaga = new Vaga(id: row.id_vaga, nome: row.nome_vaga, empresa: emp)
+                new Match(candidato: cand, empresa: emp, vaga: vaga)
             }
         }
     }
 
     @Override
-    List<Match> listarMatchCandidato(Integer id_candidato) {
+    List<Match> listarMatchCandidato(Integer idCandidato) {
         return ConexaoDB.consultar { sql ->
-            return sql.rows(CurtidaSql.LISTAR_MATCHES_CANDIDATO, [id_candidato]).collect { row ->
-                Candidato cand = new Candidato(id: row.getInt('id_candidato'), nome: row.nome_candidato, email: row.email_candidato)
-                Empresa emp = new Empresa(id: row.getInt('id_empresa'), nome: row.nome_empresa)
-                Vaga vg = new Vaga(id: row.getInt('id_vaga'), nome: row.nome_vaga, empresa: emp)
-                new Match(candidato: cand, empresa: emp, vaga: vg)
+            sql.rows(CurtidaSql.LISTAR_MATCHES_CANDIDATO, [idCandidato]).collect { row ->
+                Candidato cand = new Candidato(
+                        id: row.id_candidato,
+                        nome: row.nome_candidato,
+                        email: row.email_candidato
+                )
+                Empresa emp = new Empresa(id: row.id_empresa, nome: row.nome_empresa)
+                Vaga vaga = new Vaga(id: row.id_vaga, nome: row.nome_vaga, empresa: emp)
+                new Match(candidato: cand, empresa: emp, vaga: vaga)
             }
         }
     }
