@@ -18,7 +18,7 @@ class CandidatoService {
 
     List<Candidato> listarCandidatos() {
         try {
-            return candidatoDAO.listarCandidato()
+            return candidatoDAO.listarTodos()
         } catch (Exception e) {
             println "Nao tem candidatos para listar: ${e.message}"
             return []
@@ -27,7 +27,7 @@ class CandidatoService {
 
     Candidato buscarIdCandidato(Integer id) {
         try {
-            return candidatoDAO.buscarIdCandidato(id)
+            return candidatoDAO.buscarPorId(id)
         } catch (Exception e) {
             println "Nao tem candidatos com esse id: ${e.message}"
             return null
@@ -55,7 +55,7 @@ class CandidatoService {
     void salvarCandidato(Candidato candidato) {
         try {
             if (validarCandidato(candidato)) {
-                candidatoDAO.salvarCandidato(candidato)
+                candidatoDAO.salvar(candidato)
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("Erro ao salvar candidato: ${e.message}")
@@ -87,9 +87,9 @@ class CandidatoService {
 
     void atualizarCandidato(Integer id, Candidato candidato) {
         try {
-            if (candidato != null && candidatoDAO.buscarIdCandidato(id) != null) {
+            if (candidato != null && candidatoDAO.buscarPorId(id) != null) {
                 candidato.id = id
-                candidatoDAO.atualizarCandidato(candidato)
+                candidatoDAO.atualizar(candidato)
             } else {
                 throw new IllegalArgumentException("Candidato nao encontrado ou dados nulos")
             }
@@ -100,8 +100,8 @@ class CandidatoService {
 
     void excluirCandidato(Integer id) {
         try {
-            if (candidatoDAO.buscarIdCandidato(id)) {
-                candidatoDAO.excluirCandidato(id)
+            if (candidatoDAO.buscarPorId(id)) {
+                candidatoDAO.excluir(id)
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("O candidato nao pode ser nulo e deve ter um id valido: ${e.message}")
