@@ -1,243 +1,150 @@
 package com.zg.linketinder.dao
 
+import com.zg.linketinder.dao.Base.CrudDAOImpl
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Competencia
+import com.zg.linketinder.sql.CandidatoSql
 import com.zg.linketinder.util.ConexaoDB
 import groovy.sql.Sql
-
 import java.time.LocalDate
 
-class CandidatoDAOImpl implements CandidatoDAO{
+class CandidatoDAOImpl extends CrudDAOImpl<Candidato> implements CandidatoDAO {
+
     @Override
-    void salvarCandidato(Candidato candidato) {
-        Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
+    protected String getSqlInserir() { return CandidatoSql.INSERIR }
 
-        String queryCandidato = '''
-                INSERT INTO candidatos (cpf, nome, email, senha,
-                pais, estado, cidade, cep, data_nascimento, descricao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            '''
+    @Override
+    protected String getSqlAtualizar() { return CandidatoSql.ATUALIZAR }
 
-        String queryCompetencia = '''
-                INSERT INTO candidatos_competencias (id_candidato, id_competencia) VALUES (?, ?)
-            '''
-        try {
-            def chaves = sql.executeInsert(queryCandidato, [candidato.cpf, candidato.nome, candidato.email, candidato.senha,
-                                      candidato.pais, candidato.estado, candidato.cidade, candidato.cep, candidato.data_nascimento, candidato.descricao])
-            def idCandidato = chaves[0][0]
-            if (candidato.competencias && !candidato.competencias.isEmpty()) {
-                candidato.competencias.each { c ->
-                    sql.executeInsert(queryCompetencia, [idCandidato, c.id])
-                }
-            }
-            sql.commit()
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
-        } finally {
-            sql.close()
+    @Override
+    protected String getSqlExcluir() { return CandidatoSql.EXCLUIR }
+
+    @Override
+    protected String getSqlBuscarPorId() { return CandidatoSql.BUSCAR_POR_ID }
+
+    @Override
+    protected String getSqlListarTodos() { return CandidatoSql.LISTAR_TODOS }
+
+    @Override
+    protected List getParametrosInserir(Candidato candidato) {
+        return [candidato.cpf, candidato.nome, candidato.email, candidato.senha, candidato.pais,
+                candidato.estado, candidato.cidade, candidato.cep, candidato.dataNascimento, candidato.descricao]
+    }
+
+    @Override
+    protected List getParametrosAtualizar(Integer id, Candidato candidato) {
+        return [candidato.cpf, candidato.nome, candidato.email, candidato.senha, candidato.pais,
+                candidato.estado, candidato.cidade, candidato.cep, candidato.dataNascimento, candidato.descricao, id]
+    }
+
+    @Override
+    protected Candidato mapearResultado(def row) {
+        return mapearLinha(row)
+    }
+
+    @Override
+    List<Candidato> listarTodos() {
+        return ConexaoDB.consultar { Sql sql ->
+            return agruparPorId(sql.rows(CandidatoSql.LISTAR_TODOS))
         }
     }
 
     @Override
-    void atualizarCandidato(Candidato candidato) {
-        Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
-
-        String query = '''
-                UPDATE candidatos 
-                SET cpf = ?, nome = ?, email = ?, senha = ?, pais = ?, estado = ?, cidade = ?, cep = ?, data_nascimento = ?, descricao = ? 
-                WHERE id = ?
-            '''
-        try {
-            sql.executeUpdate(query, [candidato.cpf, candidato.nome, candidato.email, candidato.senha,
-                                      candidato.pais, candidato.estado, candidato.cidade, candidato.cep, candidato.data_nascimento,
-                                      candidato.descricao, candidato.id])
-            sql.commit()
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
-        } finally {
-            sql.close()
+    Candidato buscarPorId(Integer id) {
+        return ConexaoDB.consultar { Sql sql ->
+            def lista = agruparPorId(sql.rows(CandidatoSql.BUSCAR_POR_ID, [id]))
+            return lista.isEmpty() ? null : lista.first()
         }
     }
 
     @Override
-    void excluirCandidato(Integer id) {
-        Sql sql = ConexaoDB.getConexao()
-        sql.connection.autoCommit = false
-
-        String query = '''
-                DELETE FROM candidatos WHERE id = ?
-            '''
-        try {
-            sql.executeUpdate(query, [id])
-            sql.commit()
-        } catch (Exception e) {
-            sql.rollback()
-            throw e
-        } finally {
-            sql.close()
+    void salvar(Candidato candidato) {
+        ConexaoDB.emTransacao { Sql sql ->
+            def chaves = sql.executeInsert(CandidatoSql.INSERIR, getParametrosInserir(candidato))
+            long idCandidato = chaves[0][0] as long
+            salvarCompetencias(sql, idCandidato, candidato.competencias)
+            candidato.id = (int) idCandidato
         }
     }
 
     @Override
-    List<Candidato> listarCandidatoEmpresa(Integer id_empresa) {
-        Sql sql = ConexaoDB.getConexao()
-        Map<Integer, Candidato> mapaCandidatos = [:]
-
-        String query = '''
-                SELECT ct.id, '***.***.***-**' AS cpf, 'anonimo' || ct.id AS nome, 'anonimo@email.com' AS email, 
-                       ct.senha, ct.pais, ct.estado, ct.cidade, ct.cep, ct.data_nascimento, ct.descricao, 
-                       cm.id AS id_competencia, cm.nome AS nome_competencia 
-                            FROM candidatos AS ct
-                            INNER JOIN curtidas_candidato cc ON cc.id_candidato = ct.id
-                            INNER JOIN vagas v ON v.id = cc.id_vaga
-                            LEFT JOIN candidatos_competencias c ON ct.id = c.id_candidato
-                            LEFT JOIN competencias cm ON cm.id = c.id_competencia
-                            WHERE v.id_empresa = ? AND cc.curtiu = TRUE;
-            '''
-        try {
-            sql.eachRow(query, [id_empresa]) { row ->
-                Integer idCand = row.getInt('id')
-                if (!mapaCandidatos.containsKey(idCand)) {
-                    LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
-                    Candidato cand = new Candidato(id: idCand, cpf: row.cpf, nome: row.nome,
-                            email: row.email, senha: row.senha, pais: row.pais, estado: row.estado,
-                            cidade: row.cidade, cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao)
-                    cand.competencias = []
-                    mapaCandidatos[idCand] = cand
-                }
-
-                if (row.id_competencia != null) {
-                    mapaCandidatos[idCand].competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
-                }
-            }
-            return mapaCandidatos.values().toList()
-        } finally {
-            sql.close()
+    void atualizar(Integer id, Candidato candidato) {
+        ConexaoDB.emTransacao { Sql sql ->
+            sql.executeUpdate(CandidatoSql.ATUALIZAR, getParametrosAtualizar(id, candidato))
+            sql.executeUpdate(CandidatoSql.EXCLUIR_COMPETENCIAS, [id])
+            salvarCompetencias(sql, id, candidato.competencias)
         }
     }
 
     @Override
-    List<Candidato> listarCandidato() {
-        Sql sql = ConexaoDB.getConexao()
-        Map<Integer, Candidato> mapaCandidatos = [:]
-
-        String query = '''
-                SELECT ct.id, ct.cpf, ct. nome, ct.email, 
-                                       ct.senha, ct.pais, ct.estado, ct.cidade, ct.cep, ct.data_nascimento, ct.descricao, 
-                                       cm.id AS id_competencia, cm.nome AS nome_competencia 
-                                FROM candidatos AS ct
-                                LEFT JOIN candidatos_competencias c ON ct.id = c.id_candidato
-                                LEFT JOIN competencias cm ON cm.id = c.id_competencia;
-            '''
-        try {
-            sql.eachRow(query) { row ->
-                Integer idCand = row.getInt('id')
-                if (!mapaCandidatos.containsKey(idCand)) {
-                    LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
-                    Candidato cand = new Candidato(id: idCand, cpf: row.cpf, nome: row.nome,
-                            email: row.email, senha: row.senha, pais: row.pais, estado: row.estado,
-                            cidade: row.cidade, cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao)
-                    cand.competencias = []
-                    mapaCandidatos[idCand] = cand
-                }
-
-                if (row.id_competencia != null) {
-                    mapaCandidatos[idCand].competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
-                }
-            }
-            return mapaCandidatos.values().toList()
-        } finally {
-            sql.close()
-        }
-    }
-
-    @Override
-    Candidato buscarIdCandidato(Integer id) {
-        Sql sql = ConexaoDB.getConexao()
-        Candidato candidato = null
-        String query = '''
-                SELECT ct.*, cm.id AS id_competencia, cm.nome AS nome_competencia FROM candidatos ct
-                LEFT JOIN candidatos_competencias c ON ct.id = c.id_candidato
-                LEFT JOIN competencias cm ON cm.id = c.id_competencia
-                WHERE ct.id = ?;
-            '''
-        try {
-            sql.eachRow(query, [id]) { row ->
-                if (candidato == null) {
-                    LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
-                    candidato = new Candidato(id: row.getInt('id'), cpf: row.cpf, nome: row.nome, email: row.email,
-                            senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
-                            cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao)
-                    candidato.competencias = []
-                }
-                if (row.id_competencia != null) {
-                    candidato.competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
-                }
-            }
-            return candidato
-        } finally {
-            sql.close()
+    List<Candidato> listarCandidatoEmpresa(Integer idEmpresa) {
+        return ConexaoDB.consultar { Sql sql ->
+            agruparPorId(sql.rows(CandidatoSql.LISTAR_POR_EMPRESA, [idEmpresa]))
         }
     }
 
     @Override
     Candidato buscarEmailCandidato(String email) {
-        Sql sql = ConexaoDB.getConexao()
-        Candidato candidato = null
-        def query = '''
-                SELECT ct.*, cm.id AS id_competencia, cm.nome AS nome_competencia FROM candidatos ct
-                LEFT JOIN candidatos_competencias c ON ct.id = c.id_candidato
-                LEFT JOIN competencias cm ON cm.id = c.id_competencia
-                WHERE ct.email = ?;
-            '''
-        try {
-            sql.eachRow(query, [email]) { row ->
-                if (candidato == null) {
-                    LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
-                    candidato = new Candidato(id: row.getInt('id'), cpf: row.cpf, nome: row.nome, email: row.email,
-                            senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
-                            cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao)
-                    candidato.competencias = []
-                }
-                if (row.id_competencia != null) {
-                    candidato.competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
-                }
-            }
-            return candidato
-        } finally {
-            sql.close()
+        return ConexaoDB.consultar { Sql sql ->
+            def lista = agruparPorId(sql.rows(CandidatoSql.BUSCAR_POR_EMAIL, [email]))
+            return lista.isEmpty() ? null : lista.first()
         }
     }
 
     @Override
     Candidato buscarCpfCandidato(String cpf) {
-        Sql sql = ConexaoDB.getConexao()
-        Candidato candidato = null
-        def query = '''
-                SELECT ct.*, cm.id AS id_competencia, cm.nome AS nome_competencia FROM candidatos ct
-                LEFT JOIN candidatos_competencias c ON ct.id = c.id_candidato
-                LEFT JOIN competencias cm ON cm.id = c.id_competencia
-                WHERE ct.cpf = ?;
-            '''
-        try {
-            sql.eachRow(query, [cpf]) { row ->
-                if (candidato == null) {
-                    LocalDate dataNasc = row.data_nascimento instanceof java.sql.Date ? row.data_nascimento.toLocalDate() : row.data_nascimento
-                    candidato = new Candidato(id: row.getInt('id'), cpf: row.cpf, nome: row.nome, email: row.email,
-                            senha: row.senha, pais: row.pais, estado: row.estado, cidade: row.cidade,
-                            cep: row.cep, data_nascimento: dataNasc, descricao: row.descricao)
-                    candidato.competencias = []
-                }
-                if (row.id_competencia != null) {
-                    candidato.competencias.add(new Competencia(id: row.getInt('id_competencia'), nome: row.nome_competencia))
-                }
-            }
-            return candidato
-        } finally {
-            sql.close()
+        return ConexaoDB.consultar { Sql sql ->
+            def lista = agruparPorId(sql.rows(CandidatoSql.BUSCAR_POR_CPF, [cpf]))
+            return lista.isEmpty() ? null : lista.first()
         }
+    }
+
+    private List<Candidato> agruparPorId(List linhas) {
+        if (!linhas || linhas.isEmpty()) return []
+        Map<Integer, Candidato> mapa = [:]
+        linhas.each { linha ->
+            Integer id = (linha.id instanceof Number) ? ((Number) linha.id).intValue() : Integer.parseInt(linha.id.toString())
+            if (!mapa.containsKey(id)) {
+                mapa[id] = mapearLinha(linha)
+            }
+            if (linha.id_competencia != null) {
+                Integer idComp = (linha.id_competencia instanceof Number) ?
+                        ((Number) linha.id_competencia).intValue() :
+                        Integer.parseInt(linha.id_competencia.toString())
+                mapa[id].competencias.add(new Competencia(
+                        id: idComp,
+                        nome: linha.nome_competencia
+                ))
+            }
+        }
+        return mapa.values().toList()
+    }
+
+    private Candidato mapearLinha(linha) {
+        return new Candidato(
+                id: (linha.id instanceof Number) ? ((Number) linha.id).intValue() : Integer.parseInt(linha.id.toString()),
+                cpf: linha.cpf,
+                nome: linha.nome,
+                email: linha.email,
+                senha: linha.senha,
+                pais: linha.pais,
+                estado: linha.estado,
+                cidade: linha.cidade,
+                cep: linha.cep,
+                dataNascimento: paraDataLocal(linha.data_nascimento),
+                descricao: linha.descricao,
+                competencias: []
+        )
+    }
+
+    private void salvarCompetencias(Sql sql, long idCandidato, List<Competencia> competencias) {
+        if (!competencias) return
+        competencias.each { competencia ->
+            sql.executeInsert(CandidatoSql.INSERIR_COMPETENCIA, [idCandidato, competencia.id])
+        }
+    }
+
+    private LocalDate paraDataLocal(valor) {
+        return valor instanceof java.sql.Date ? valor.toLocalDate() : valor
     }
 }
