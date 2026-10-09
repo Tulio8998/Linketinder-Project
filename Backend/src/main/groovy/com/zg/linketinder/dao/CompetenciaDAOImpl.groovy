@@ -3,7 +3,7 @@ package com.zg.linketinder.dao
 import com.zg.linketinder.dao.base.CrudDAOImpl
 import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.sql.CompetenciaSql
-import com.zg.linketinder.util.ConexaoDB
+import com.zg.linketinder.factory.ConexaoDB
 
 class CompetenciaDAOImpl extends CrudDAOImpl<Competencia> implements CompetenciaDAO {
 

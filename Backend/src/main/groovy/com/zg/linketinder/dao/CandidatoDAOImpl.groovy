@@ -3,8 +3,11 @@ package com.zg.linketinder.dao
 import com.zg.linketinder.dao.base.CrudDAOImpl
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Competencia
+import com.zg.linketinder.model.Endereco
 import com.zg.linketinder.sql.CandidatoSql
-import com.zg.linketinder.util.ConexaoDB
+import com.zg.linketinder.factory.ConexaoDB
+import com.zg.linketinder.vo.CpfVO
+import com.zg.linketinder.vo.EmailVO
 import groovy.sql.Sql
 import java.time.LocalDate
 
@@ -27,14 +30,20 @@ class CandidatoDAOImpl extends CrudDAOImpl<Candidato> implements CandidatoDAO {
 
     @Override
     protected List getParametrosInserir(Candidato candidato) {
-        return [candidato.cpf, candidato.nome, candidato.email, candidato.senha, candidato.pais,
-                candidato.estado, candidato.cidade, candidato.cep, candidato.dataNascimento, candidato.descricao]
+        return [
+                candidato.cpf.valor, candidato.nome, candidato.email.valor, candidato.senha,
+                candidato.endereco?.pais, candidato.endereco?.estado, candidato.endereco?.cidade, candidato.endereco?.cep,
+                candidato.dataNascimento, candidato.descricao
+        ]
     }
 
     @Override
     protected List getParametrosAtualizar(Integer id, Candidato candidato) {
-        return [candidato.cpf, candidato.nome, candidato.email, candidato.senha, candidato.pais,
-                candidato.estado, candidato.cidade, candidato.cep, candidato.dataNascimento, candidato.descricao, id]
+        return [
+                candidato.cpf.valor, candidato.nome, candidato.email.valor, candidato.senha,
+                candidato.endereco?.pais, candidato.endereco?.estado, candidato.endereco?.cidade, candidato.endereco?.cep,
+                candidato.dataNascimento, candidato.descricao, id
+        ]
     }
 
     @Override
@@ -99,40 +108,42 @@ class CandidatoDAOImpl extends CrudDAOImpl<Candidato> implements CandidatoDAO {
         }
     }
 
-    private List<Candidato> agruparPorId(List linhas) {
-        if (!linhas || linhas.isEmpty()) return []
+    private List<Candidato> agruparPorId(List rows) {
+        if (!rows || rows.isEmpty()) return []
         Map<Integer, Candidato> mapa = [:]
-        linhas.each { linha ->
-            Integer id = (linha.id instanceof Number) ? ((Number) linha.id).intValue() : Integer.parseInt(linha.id.toString())
+        rows.each { row ->
+            Integer id = (row.id instanceof Number) ? ((Number) row.id).intValue() : Integer.parseInt(row.id.toString())
             if (!mapa.containsKey(id)) {
-                mapa[id] = mapearLinha(linha)
+                mapa[id] = mapearLinha(row)
             }
-            if (linha.id_competencia != null) {
-                Integer idComp = (linha.id_competencia instanceof Number) ?
-                        ((Number) linha.id_competencia).intValue() :
-                        Integer.parseInt(linha.id_competencia.toString())
+            if (row.id_competencia != null) {
+                Integer idComp = (row.id_competencia instanceof Number) ?
+                        ((Number) row.id_competencia).intValue() :
+                        Integer.parseInt(row.id_competencia.toString())
                 mapa[id].competencias.add(new Competencia(
                         id: idComp,
-                        nome: linha.nome_competencia
+                        nome: row.nome_competencia
                 ))
             }
         }
         return mapa.values().toList()
     }
 
-    private Candidato mapearLinha(linha) {
+    private Candidato mapearLinha(row) {
         return new Candidato(
-                id: (linha.id instanceof Number) ? ((Number) linha.id).intValue() : Integer.parseInt(linha.id.toString()),
-                cpf: linha.cpf,
-                nome: linha.nome,
-                email: linha.email,
-                senha: linha.senha,
-                pais: linha.pais,
-                estado: linha.estado,
-                cidade: linha.cidade,
-                cep: linha.cep,
-                dataNascimento: paraDataLocal(linha.data_nascimento),
-                descricao: linha.descricao,
+                id: (row.id instanceof Number) ? ((Number) row.id).intValue() : Integer.parseInt(row.id.toString()),
+                cpf: new CpfVO(row.cpf),
+                nome: row.nome,
+                email: new EmailVO(row.email),
+                senha: row.senha,
+                endereco: new Endereco(
+                        pais: row.pais,
+                        estado: row.estado,
+                        cidade: row.cidade,
+                        cep: row.cep
+                ),
+                dataNascimento: paraDataLocal(row.data_nascimento),
+                descricao: row.descricao,
                 competencias: []
         )
     }

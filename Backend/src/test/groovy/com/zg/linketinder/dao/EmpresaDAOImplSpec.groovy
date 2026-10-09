@@ -2,6 +2,9 @@ package com.zg.linketinder.dao
 
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Empresa
+import com.zg.linketinder.model.Endereco
+import com.zg.linketinder.vo.CnpjVO
+import com.zg.linketinder.vo.EmailVO
 import spock.lang.Specification
 
 import java.time.LocalDate
@@ -41,14 +44,16 @@ class EmpresaDAOImplSpec extends DaoIntegrationSpec {
 
     private Empresa criarEmpresa(String cnpj, String nome, String email) {
         return new Empresa(
-                cnpj: cnpj,
+                cnpj: new CnpjVO(cnpj),
                 nome: nome,
-                email: email,
+                email: new EmailVO(email),
                 senha: '12345678',
-                pais: 'Brasil',
-                estado: 'MG',
-                cidade: 'Belo Horizonte',
-                cep: '00000-000',
+                endereco: new Endereco(
+                    pais: 'Brasil',
+                    estado: 'MG',
+                    cidade: 'Belo Horizonte',
+                    cep: '00000-000',
+                ),
                 descricao: 'Descricao',
         )
     }

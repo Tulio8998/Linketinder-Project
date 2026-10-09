@@ -1,6 +1,9 @@
 package com.zg.linketinder.dao
 
-import com.zg.linketinder.util.ConexaoDB
+import com.zg.linketinder.factory.ConexaoDB
+import com.zg.linketinder.factory.DatabaseFactory
+import com.zg.linketinder.factory.PostgresFactory
+import com.zg.linketinder.factory.PostgresTestFactory
 import groovy.sql.Sql
 import spock.lang.Shared
 import spock.lang.Specification
@@ -9,24 +12,15 @@ abstract class DaoIntegrationSpec extends Specification {
     @Shared
     Sql sql
 
-    def setupSpec() {
-        System.setProperty('db.url', 'jdbc:postgresql://localhost:5432/linketinder_test')
-        System.setProperty('db.user', 'postgres')
-        System.setProperty('db.password', 'postgres')
-        System.setProperty('db.driver', 'org.postgresql.Driver')
+    private static DatabaseFactory factory = new PostgresTestFactory()
 
-        ConexaoDB.resetar()
+    def setupSpec() {
+        ConexaoDB.setFactory(factory)
         sql = ConexaoDB.getConexao()
     }
 
     def cleanupSpec() {
         limparBanco()
-
-        System.clearProperty('db.url')
-        System.clearProperty('db.user')
-        System.clearProperty('db.password')
-        System.clearProperty('db.driver')
-
         ConexaoDB.resetar()
     }
 
