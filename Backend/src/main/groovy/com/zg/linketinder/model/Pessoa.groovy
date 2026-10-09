@@ -6,9 +6,6 @@ class Pessoa {
     String nome
     String email
     String senha
-    String pais
-    String cidade
-    String estado
-    String cep
+    Endereco endereco
     String descricao
 }
