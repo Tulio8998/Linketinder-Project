@@ -3,6 +3,7 @@ package com.zg.linketinder.dao
 import com.zg.linketinder.dao.base.CrudDAOImpl
 import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.Empresa
+import com.zg.linketinder.model.Endereco
 import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.sql.VagaSql
 import com.zg.linketinder.factory.ConexaoDB
@@ -144,9 +145,11 @@ class VagaDAOImpl extends CrudDAOImpl<Vaga> implements VagaDAO {
                 id: (linha.id instanceof Number) ? ((Number) linha.id).intValue() : Integer.parseInt(linha.id.toString()),
                 nome: nomeVaga,
                 descricao: linha.descricao,
-                pais: linha.pais,
-                estado: linha.estado,
-                cidade: linha.cidade,
+                endereco: linha.endereco = new Endereco(
+                        pais: linha.pais,
+                        estado: linha.estado,
+                        cidade: linha.cidade,
+                ),
                 empresa: emp,
                 competencias: []
         )

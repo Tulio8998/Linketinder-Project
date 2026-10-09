@@ -3,6 +3,7 @@ package com.zg.linketinder.dao
 import com.zg.linketinder.dao.base.CrudDAOImpl
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Competencia
+import com.zg.linketinder.model.Endereco
 import com.zg.linketinder.sql.CandidatoSql
 import com.zg.linketinder.factory.ConexaoDB
 import groovy.sql.Sql
@@ -127,10 +128,12 @@ class CandidatoDAOImpl extends CrudDAOImpl<Candidato> implements CandidatoDAO {
                 nome: linha.nome,
                 email: linha.email,
                 senha: linha.senha,
-                pais: linha.pais,
-                estado: linha.estado,
-                cidade: linha.cidade,
-                cep: linha.cep,
+                endereco: linha.endereco =
+                        new Endereco(
+                        pais: linha.pais,
+                        estado: linha.estado,
+                        cidade: linha.cidade,
+                        cep: linha.cep),
                 dataNascimento: paraDataLocal(linha.data_nascimento),
                 descricao: linha.descricao,
                 competencias: []
