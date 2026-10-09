@@ -1,6 +1,6 @@
 package com.zg.linketinder.dao
 
-import com.zg.linketinder.util.ConexaoDB
+import com.zg.linketinder.factory.ConexaoDB
 import groovy.sql.Sql
 import spock.lang.Shared
 import spock.lang.Specification

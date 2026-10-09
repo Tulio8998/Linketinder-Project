@@ -3,7 +3,7 @@ package com.zg.linketinder.dao
 import com.zg.linketinder.dao.base.CrudDAOImpl
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.sql.EmpresaSql
-import com.zg.linketinder.util.ConexaoDB
+import com.zg.linketinder.factory.ConexaoDB
 
 class EmpresaDAOImpl extends CrudDAOImpl<Empresa> implements EmpresaDAO {
 

@@ -4,7 +4,7 @@ import com.zg.linketinder.dao.base.CrudDAOImpl
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.sql.CandidatoSql
-import com.zg.linketinder.util.ConexaoDB
+import com.zg.linketinder.factory.ConexaoDB
 import groovy.sql.Sql
 import java.time.LocalDate
 

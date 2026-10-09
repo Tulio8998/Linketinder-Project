@@ -5,7 +5,7 @@ import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.sql.VagaSql
-import com.zg.linketinder.util.ConexaoDB
+import com.zg.linketinder.factory.ConexaoDB
 import groovy.sql.Sql
 
 class VagaDAOImpl extends CrudDAOImpl<Vaga> implements VagaDAO {

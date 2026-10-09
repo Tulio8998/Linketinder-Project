@@ -1,6 +1,6 @@
 package com.zg.linketinder.dao.base
 
-import com.zg.linketinder.util.ConexaoDB
+import com.zg.linketinder.factory.ConexaoDB
 
 abstract class CrudDAOImpl<T> implements CrudDAO<T> {
 

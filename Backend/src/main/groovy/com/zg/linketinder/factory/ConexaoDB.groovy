@@ -1,13 +1,19 @@
-package com.zg.linketinder.util
+package com.zg.linketinder.factory
 
 import groovy.sql.Sql
 
 class ConexaoDB {
     private static Sql instancia
+    private static DatabaseFactory factory = new PostgresFactory()
+
+    static void setFactory(DatabaseFactory novaFactory) {
+        factory = novaFactory
+        resetar()
+    }
 
     static Sql getConexao() {
         if (instancia == null) {
-            instancia = criar()
+            instancia = factory.criarConexao()
         }
         return instancia
     }
@@ -35,13 +41,5 @@ class ConexaoDB {
             try { instancia.close() } catch (Exception ignored) { }
             instancia = null
         }
-    }
-
-    private static Sql criar() {
-        String url = System.getProperty('db.url') ?: 'jdbc:postgresql://localhost:5432/linketinder'
-        String user = System.getProperty('db.user') ?: 'postgres'
-        String password = System.getProperty('db.password') ?: 'postgres'
-        String driver = System.getProperty('db.driver') ?: 'org.postgresql.Driver'
-        return Sql.newInstance(url, user, password, driver)
     }
 }
