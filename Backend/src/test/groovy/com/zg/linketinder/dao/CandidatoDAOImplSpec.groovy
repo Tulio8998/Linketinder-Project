@@ -1,6 +1,8 @@
 package com.zg.linketinder.dao
 
 import com.zg.linketinder.model.Candidato
+import com.zg.linketinder.model.Endereco
+
 import java.time.LocalDate
 
 class CandidatoDAOImplSpec extends DaoIntegrationSpec {
@@ -92,10 +94,12 @@ class CandidatoDAOImplSpec extends DaoIntegrationSpec {
                 nome: nome,
                 email: email,
                 senha: '12345678',
-                pais: 'Brasil',
-                estado: 'MG',
-                cidade: 'Belo Horizonte',
-                cep: '00000-000',
+                endereco: new Endereco(
+                        pais: 'Brasil',
+                        estado: 'MG',
+                        cidade: 'Belo Horizonte',
+                        cep: '00000-000'
+                ),
                 dataNascimento: LocalDate.of(2004, 10, 1),
                 descricao: 'Descricao',
                 competencias: []
