@@ -68,6 +68,18 @@ O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) s
 * **ViewPanel Unificado:** `viewVagaCand` passa a delegar para `viewPanel`, eliminando duplicação.
 * **Template Reutilizável no Frontend:** `addVaga` e `editVaga` compartilham a função `templateEditavel`, eliminando HTML duplicado.
 
+### Versão 1.8.0
+- **Consolidação de Padrões de Projeto (Design Patterns):** Refinamento da arquitetura do sistema com a aplicação e formalização de diversos padrões conceituados de engenharia de software:
+    - **Factory Method:** Implementação do `DatabaseFactory` (com `PostgresFactory` e `PostgresTestFactory`) para encapsular a lógica de criação e injeção de conexões de banco de dados, facilitando a transição fluida entre ambientes de produção e teste.
+    - **Singleton:** Refinamento do gerenciador `ConexaoDB`, garantindo que a aplicação compartilhe uma única instância centralizada de conexão e transação com o banco de dados durante todo o ciclo de vida da execução.
+    - **Template Method:** Aplicação contínua na camada base genérica (`CrudDAOImpl` e `CrudService`), onde o esqueleto dos algoritmos de CRUD é definido na classe pai, delegando apenas os detalhes específicos (como queries SQL e mapeamento de dados) para as subclasses.
+    - **Dependency Injection (Injeção de Dependência):** Utilizada fortemente na transição das classes de Teste (`DaoIntegrationSpec`) e Services, injetando o comportamento esperado (Mocks ou Factories) via construtor para isolar contextos e facilitar os testes unitários e de integração.
+    - **Data Access Object (DAO):** Padrão arquitetural mantido e aprimorado para isolar completamente a camada de persistência física (SQL/JDBC) das regras de negócio.
+- **Value Objects (VOs) (Domain-Driven Design):** Introdução de objetos de valor ricos e imutáveis (`CpfVO`, `CnpjVO`, `EmailVO`) para encapsular a formatação e as regras de negócio vitais, garantindo auto-validação desde o momento da instanciação.
+- **Encapsulamento Estrutural (Endereço):** Criação do VO `Endereco` para agrupar atributos de localização (país, estado, cidade, CEP), removendo a repetição excessiva (Code Smell) desses campos das entidades `Pessoa`, `Candidato`, `Empresa` e `Vaga`.
+- **Adaptação de DAOs:** Refatoração nos parâmetros de Inserção e Atualização dos DAOs para descompactar os atributos dos VOs (ex: `candidato.cpf.valor`) corretamente na base de dados relacional e remontá-los de forma transparente na leitura.
+- **Refatoração de Testes (DaoIntegrationSpec):** Atualização da suíte de testes de integração para utilizar a Injeção de Dependência da Factory (`PostgresTestFactory`) direto no Singleton `ConexaoDB`, garantindo que os DAOs e o ambiente de teste rodem exatamente sobre a mesma transação, permitindo o rollback seguro entre os testes.
+
 ## Execução pela IDE
 1. Abra o projeto no IntelliJ IDEA.
 2. Aguarde o Gradle sincronizar o projeto.

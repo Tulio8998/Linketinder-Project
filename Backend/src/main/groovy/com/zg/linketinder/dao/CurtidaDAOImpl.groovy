@@ -7,7 +7,7 @@ import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.model.curtida.Match
 import com.zg.linketinder.sql.CurtidaSql
-import com.zg.linketinder.util.ConexaoDB
+import com.zg.linketinder.factory.ConexaoDB
 
 class CurtidaDAOImpl implements CurtidaDAO {
 

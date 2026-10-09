@@ -1,14 +1,13 @@
 package com.zg.linketinder.model
 
+import com.zg.linketinder.vo.EmailVO
+
 
 class Pessoa {
     Integer id
     String nome
-    String email
+    EmailVO email
     String senha
-    String pais
-    String cidade
-    String estado
-    String cep
+    Endereco endereco
     String descricao
 }
