@@ -28,14 +28,20 @@ class CandidatoDAOImpl extends CrudDAOImpl<Candidato> implements CandidatoDAO {
 
     @Override
     protected List getParametrosInserir(Candidato candidato) {
-        return [candidato.cpf, candidato.nome, candidato.email, candidato.senha, candidato.pais,
-                candidato.estado, candidato.cidade, candidato.cep, candidato.dataNascimento, candidato.descricao]
+        return [
+                candidato.cpf, candidato.nome, candidato.email, candidato.senha,
+                candidato.endereco?.pais, candidato.endereco?.estado, candidato.endereco?.cidade, candidato.endereco?.cep,
+                candidato.dataNascimento, candidato.descricao
+        ]
     }
 
     @Override
     protected List getParametrosAtualizar(Integer id, Candidato candidato) {
-        return [candidato.cpf, candidato.nome, candidato.email, candidato.senha, candidato.pais,
-                candidato.estado, candidato.cidade, candidato.cep, candidato.dataNascimento, candidato.descricao, id]
+        return [
+                candidato.cpf, candidato.nome, candidato.email, candidato.senha,
+                candidato.endereco?.pais, candidato.endereco?.estado, candidato.endereco?.cidade, candidato.endereco?.cep,
+                candidato.dataNascimento, candidato.descricao, id
+        ]
     }
 
     @Override
@@ -128,12 +134,12 @@ class CandidatoDAOImpl extends CrudDAOImpl<Candidato> implements CandidatoDAO {
                 nome: linha.nome,
                 email: linha.email,
                 senha: linha.senha,
-                endereco: linha.endereco =
-                        new Endereco(
+                endereco: new Endereco(
                         pais: linha.pais,
                         estado: linha.estado,
                         cidade: linha.cidade,
-                        cep: linha.cep),
+                        cep: linha.cep
+                ),
                 dataNascimento: paraDataLocal(linha.data_nascimento),
                 descricao: linha.descricao,
                 competencias: []

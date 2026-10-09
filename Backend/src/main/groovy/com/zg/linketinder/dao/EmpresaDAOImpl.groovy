@@ -2,6 +2,7 @@ package com.zg.linketinder.dao
 
 import com.zg.linketinder.dao.base.CrudDAOImpl
 import com.zg.linketinder.model.Empresa
+import com.zg.linketinder.model.Endereco
 import com.zg.linketinder.sql.EmpresaSql
 import com.zg.linketinder.factory.ConexaoDB
 
@@ -26,7 +27,7 @@ class EmpresaDAOImpl extends CrudDAOImpl<Empresa> implements EmpresaDAO {
     protected List getParametrosInserir(Empresa empresa) {
         return [
                 empresa.cnpj, empresa.nome, empresa.email, empresa.senha,
-                empresa.pais, empresa.cidade, empresa.estado, empresa.cep, empresa.descricao
+                empresa.endereco?.pais, empresa.endereco?.cidade, empresa.endereco?.estado, empresa.endereco?.cep, empresa.descricao
         ]
     }
 
@@ -34,7 +35,7 @@ class EmpresaDAOImpl extends CrudDAOImpl<Empresa> implements EmpresaDAO {
     protected List getParametrosAtualizar(Integer id, Empresa empresa) {
         return [
                 empresa.cnpj, empresa.nome, empresa.email, empresa.senha,
-                empresa.pais, empresa.estado, empresa.cidade, empresa.cep, empresa.descricao, id
+                empresa.endereco?.pais, empresa.endereco?.estado, empresa.endereco?.cidade, empresa.endereco?.cep, empresa.descricao, id
         ]
     }
 
@@ -46,10 +47,12 @@ class EmpresaDAOImpl extends CrudDAOImpl<Empresa> implements EmpresaDAO {
                 nome: row.nome,
                 email: row.email,
                 senha: row.senha,
-                pais: row.pais,
-                estado: row.estado,
-                cidade: row.cidade,
-                cep: row.cep,
+                endereco: new Endereco(
+                    pais: row.pais,
+                    estado: row.estado,
+                    cidade: row.cidade,
+                    cep: row.cep,
+                ),
                 descricao: row.descricao
         )
     }
