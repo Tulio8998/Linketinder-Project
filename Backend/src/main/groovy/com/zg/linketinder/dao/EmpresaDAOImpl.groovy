@@ -5,6 +5,8 @@ import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Endereco
 import com.zg.linketinder.sql.EmpresaSql
 import com.zg.linketinder.factory.ConexaoDB
+import com.zg.linketinder.vo.CnpjVO
+import com.zg.linketinder.vo.EmailVO
 
 class EmpresaDAOImpl extends CrudDAOImpl<Empresa> implements EmpresaDAO {
 
@@ -26,7 +28,7 @@ class EmpresaDAOImpl extends CrudDAOImpl<Empresa> implements EmpresaDAO {
     @Override
     protected List getParametrosInserir(Empresa empresa) {
         return [
-                empresa.cnpj, empresa.nome, empresa.email, empresa.senha,
+                empresa.cnpj.valor, empresa.nome, empresa.email.valor, empresa.senha,
                 empresa.endereco?.pais, empresa.endereco?.cidade, empresa.endereco?.estado, empresa.endereco?.cep, empresa.descricao
         ]
     }
@@ -34,7 +36,7 @@ class EmpresaDAOImpl extends CrudDAOImpl<Empresa> implements EmpresaDAO {
     @Override
     protected List getParametrosAtualizar(Integer id, Empresa empresa) {
         return [
-                empresa.cnpj, empresa.nome, empresa.email, empresa.senha,
+                empresa.cnpj.valor, empresa.nome, empresa.email.valor, empresa.senha,
                 empresa.endereco?.pais, empresa.endereco?.estado, empresa.endereco?.cidade, empresa.endereco?.cep, empresa.descricao, id
         ]
     }
@@ -43,9 +45,9 @@ class EmpresaDAOImpl extends CrudDAOImpl<Empresa> implements EmpresaDAO {
     protected Empresa mapearResultado(def row) {
         return new Empresa(
                 id: row.id,
-                cnpj: row.cnpj,
+                cnpj: new CnpjVO(row.cnpj),
                 nome: row.nome,
-                email: row.email,
+                email: new EmailVO(row.email),
                 senha: row.senha,
                 endereco: new Endereco(
                     pais: row.pais,
