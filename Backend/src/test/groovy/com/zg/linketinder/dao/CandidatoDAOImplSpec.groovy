@@ -2,6 +2,8 @@ package com.zg.linketinder.dao
 
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Endereco
+import com.zg.linketinder.vo.CpfVO
+import com.zg.linketinder.vo.EmailVO
 
 import java.time.LocalDate
 
@@ -40,7 +42,7 @@ class CandidatoDAOImplSpec extends DaoIntegrationSpec {
         then: "encontro o candidato"
         encontrado != null
         encontrado.nome == 'Tulio'
-        encontrado.cpf == '111.111.111-11'
+        encontrado.cpf.valor == '111.111.111-11'
     }
 
     def "deve salvar o candidato no banco"() {
@@ -90,9 +92,9 @@ class CandidatoDAOImplSpec extends DaoIntegrationSpec {
 
     private Candidato criarCandidato(String cpf, String nome, String email) {
         return new Candidato(
-                cpf: cpf,
+                cpf: new CpfVO(cpf),
                 nome: nome,
-                email: email,
+                email: new EmailVO(email),
                 senha: '12345678',
                 endereco: new Endereco(
                         pais: 'Brasil',
