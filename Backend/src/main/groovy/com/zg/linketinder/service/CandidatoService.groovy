@@ -23,8 +23,8 @@ class CandidatoService extends CrudService<Candidato> {
 
     @Override
     protected void validarAntesSalvar(Candidato candidato) {
-        if (candidatoDAO.buscarCpfCandidato(candidato.cpf)) throw new IllegalArgumentException("CPF ja cadastrado")
-        if (candidatoDAO.buscarEmailCandidato(candidato.email)) throw new IllegalArgumentException("Email ja cadastrado")
+        if (candidatoDAO.buscarCpfCandidato(candidato.cpf.valor)) throw new IllegalArgumentException("CPF ja cadastrado")
+        if (candidatoDAO.buscarEmailCandidato(candidato.email.valor)) throw new IllegalArgumentException("Email ja cadastrado")
     }
 
     List<Candidato> listarCandidatoEmpresa(Integer id_empresa) {
