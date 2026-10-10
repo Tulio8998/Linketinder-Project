@@ -1,23 +1,26 @@
 package com.zg.linketinder.cli
 
+import com.zg.linketinder.controller.CandidatoController
+import com.zg.linketinder.controller.CompetenciaController
+import com.zg.linketinder.controller.CurtidaController
+import com.zg.linketinder.controller.EmpresaController
+import com.zg.linketinder.controller.VagaController
+import com.zg.linketinder.dto.EmpresaDTO
+import com.zg.linketinder.dto.VagaDTO
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.CurtidaEmpresa
 import com.zg.linketinder.model.Empresa
-import com.zg.linketinder.model.Endereco
 import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.model.curtida.Match
-import com.zg.linketinder.service.*
 import com.zg.linketinder.util.Util
-import com.zg.linketinder.vo.CnpjVO
-import com.zg.linketinder.vo.EmailVO
 
 class MenuEmpresa {
-    EmpresaService empresaService = new EmpresaService()
-    CandidatoService candidatoService = new CandidatoService()
-    CurtidaService curtidaService = new CurtidaService()
-    CompetenciaService competenciaService = new CompetenciaService()
-    VagaService vagaService = new VagaService()
+    EmpresaController empresaController = new EmpresaController()
+    CandidatoController candidatoController = new CandidatoController()
+    CurtidaController curtidaController = new CurtidaController()
+    CompetenciaController competenciaController = new CompetenciaController()
+    VagaController vagaController = new VagaController()
 
     def executaEmpresa() {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))
@@ -140,23 +143,17 @@ class MenuEmpresa {
         print "Descricao: "
         String descricao = Util.leStringConsole(reader)
 
-        Empresa empresa = new Empresa(cnpj: new CnpjVO(cnpj), nome: nome, email: new EmailVO(email), senha: senha,
-                endereco: new Endereco(pais: pais, estado: estado, cidade: cidade, cep: cep), descricao: descricao)
-        if (empresa == null) {
-            println "\nEmpresa nao encontrada!\n"
-            return
-        }
+        EmpresaDTO dto = new EmpresaDTO(
+                cnpj: cnpj, nome: nome, email: email, senha: senha,
+                pais: pais, estado: estado, cidade: cidade, cep: cep, descricao: descricao
+        )
 
-        try {
-            empresaService.salvar(empresa)
-            println "Dados de empresa salvo!\n"
-        } catch (IllegalArgumentException e) {
-            println "\nErro no cadastro: ${e.message}\n"
-        }
+        String resposta = empresaController.cadastrarEmpresa(dto)
+        println "\n${resposta}\n"
     }
 
     def atualizarEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarTodos()
+        List<Empresa> empresas = empresaController.listarEmpresas()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -197,23 +194,17 @@ class MenuEmpresa {
         print "Descricao: "
         String descricao = Util.leStringConsole(reader)
 
-        Empresa emp = new Empresa(cnpj: new CnpjVO(cnpj), nome: nome, email: new EmailVO(email), senha: senha,
-                endereco: new Endereco(pais: pais, estado: estado, cidade: cidade, cep: cep), descricao: descricao)
-        if (emp == null) {
-            println "\nEmpresa nao encontrada!\n"
-            return
-        }
+        EmpresaDTO dto = new EmpresaDTO(
+                cnpj: cnpj, nome: nome, email: email, senha: senha,
+                pais: pais, estado: estado, cidade: cidade, cep: cep, descricao: descricao
+        )
 
-        try {
-            empresaService.atualizar(empresaSelecionada.id, emp)
-            println "Dados de empresa salvo!\n"
-        } catch (IllegalArgumentException e) {
-            println "\nErro na atualizanao: ${e.message}\n"
-        }
+        String resposta = empresaController.atualizarEmpresa(empresaSelecionada.id, dto)
+        println "\n${resposta}\n"
     }
 
     def excluirEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarTodos()
+        List<Empresa> empresas = empresaController.listarEmpresas()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -234,12 +225,8 @@ class MenuEmpresa {
 
         Empresa empresaSelecionada = empresas[opcaoEmpresa - 1]
 
-        try {
-            empresaService.excluir(empresaSelecionada.id)
-            println "Dados excluidos!\n"
-        } catch (IllegalArgumentException e) {
-            println "\nErro na exclusao: ${e.message}\n"
-        }
+        String resposta = empresaController.excluirEmpresa(empresaSelecionada.id)
+        println "\n${resposta}\n"
     }
 
     def buscarIdEmpresa(reader) {
@@ -247,7 +234,7 @@ class MenuEmpresa {
         print "Digite o id da empresa: "
         int id = Util.leInteiroConsole(reader)
 
-        Empresa empresa = empresaService.buscarPorId(id)
+        Empresa empresa = empresaController.buscarPorId(id)
 
         if (empresa == null) {
             println "\nEmpresa nao encontrada!\n"
@@ -271,7 +258,7 @@ class MenuEmpresa {
         print "Digite o email da empresa: "
         String email = Util.leStringConsole(reader)
 
-        Empresa empresa = empresaService.buscarEmailEmpresa(email)
+        Empresa empresa = empresaController.buscarPorEmail(email)
 
         if (empresa == null) {
             println "\nEmpresa nao encontrada!\n"
@@ -295,7 +282,7 @@ class MenuEmpresa {
         print "Digite o CNPJ da empresa: "
         String cnpj = Util.leStringConsole(reader)
 
-        Empresa empresa = empresaService.buscarCnpjEmpresa(cnpj)
+        Empresa empresa = empresaController.buscarPorCnpj(cnpj)
 
         if (empresa == null) {
             println "\nEmpresa nao encontrada!\n"
@@ -315,7 +302,7 @@ class MenuEmpresa {
     }
 
     def cadastrarVagaEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarTodos()
+        List<Empresa> empresas = empresaController.listarEmpresas()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -348,22 +335,18 @@ class MenuEmpresa {
         print "Cidade: "
         String cidade = Util.leStringConsole(reader)
 
-        Vaga novaVaga = new Vaga(nome: nome, descricao: descricao, endereco: new Endereco(pais: pais, estado: estado, cidade: cidade), empresa: empresaSelecionada)
-        if (novaVaga == null) {
-            println "\nVaga nao encontrada!\n"
-            return
-        }
+        VagaDTO dto = new VagaDTO(
+                nome: nome, descricao: descricao,
+                pais: pais, estado: estado, cidade: cidade,
+                empresa: empresaSelecionada
+        )
 
-        try {
-            vagaService.salvar(novaVaga)
-            println "Dados de vaga salvo!\n"
-        } catch (IllegalArgumentException e) {
-            println "\nErro no cadastro: ${e.message}\n"
-        }
+        String resposta = vagaController.cadastrarVaga(dto)
+        println "\n${resposta}\n"
     }
 
     def atualizarVagaEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarTodos()
+        List<Empresa> empresas = empresaController.listarEmpresas()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -384,7 +367,7 @@ class MenuEmpresa {
 
         Empresa empresaSelecionada = empresas[opcaoEmpresa - 1]
 
-        List<Vaga> vagas = vagaService.listarVagaEmpresa(empresaSelecionada.id)
+        List<Vaga> vagas = vagaController.listarVagasEmpresa(empresaSelecionada.id)
         if (vagas.isEmpty()) {
             println "Esta empresa nao possui vagas cadastradas.\n"
             return
@@ -416,23 +399,18 @@ class MenuEmpresa {
         print "Nova Cidade: "
         String cidade = Util.leStringConsole(reader)
 
-        Vaga vagaAtualizada = new Vaga(id: vagaSelecionada.id, nome: nome, descricao: descricao,
-                endereco: new Endereco(pais: pais, estado: estado, cidade: cidade), empresa: empresaSelecionada)
-        if (vagaAtualizada == null) {
-            println "\nVaga nao encontrada!\n"
-            return
-        }
+        VagaDTO dto = new VagaDTO(
+                id: vagaSelecionada.id, nome: nome, descricao: descricao,
+                pais: pais, estado: estado, cidade: cidade,
+                empresa: empresaSelecionada
+        )
 
-        try {
-            vagaService.atualizar(vagaSelecionada.id, vagaAtualizada)
-            println "Dados de vaga salvo!\n"
-        } catch (IllegalArgumentException e) {
-            println "\nErro na atualizanao: ${e.message}\n"
-        }
+        String resposta = vagaController.atualizarVaga(vagaSelecionada.id, dto)
+        println "\n${resposta}\n"
     }
 
     def excluirVagaEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarTodos()
+        List<Empresa> empresas = empresaController.listarEmpresas()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -453,7 +431,7 @@ class MenuEmpresa {
 
         Empresa empresaSelecionada = empresas[opcaoEmpresa - 1]
 
-        List<Vaga> vagas = vagaService.listarVagaEmpresa(empresaSelecionada.id)
+        List<Vaga> vagas = vagaController.listarVagasEmpresa(empresaSelecionada.id)
         if (vagas.isEmpty()) {
             println "Esta empresa nao possui vagas cadastradas.\n"
             return
@@ -473,16 +451,12 @@ class MenuEmpresa {
 
         Vaga vagaSelecionada = vagas[opcaoVaga - 1]
 
-        try {
-            vagaService.excluirVagaDaEmpresa(empresaSelecionada.id, vagaSelecionada.id)
-            println "Dados excluidos!\n"
-        } catch (IllegalArgumentException e) {
-            println "\nErro na exclusao: ${e.message}\n"
-        }
+        String resposta = vagaController.excluirVaga(empresaSelecionada.id, vagaSelecionada.id)
+        println "\n${resposta}\n"
     }
 
     def listarVagasEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarTodos()
+        List<Empresa> empresas = empresaController.listarEmpresas()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -501,7 +475,7 @@ class MenuEmpresa {
             return
         }
 
-        List<Vaga> vagas = vagaService.listarVagaEmpresa(empresas[opcaoEmpresa - 1].id)
+        List<Vaga> vagas = vagaController.listarVagasEmpresa(empresas[opcaoEmpresa - 1].id)
 
         if (vagas.isEmpty()) {
             println "Nenhuma vaga encontrada para esta empresa.\n"
@@ -518,7 +492,7 @@ class MenuEmpresa {
     }
 
     def buscarIdVagasEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarTodos()
+        List<Empresa> empresas = empresaController.listarEmpresas()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -540,7 +514,7 @@ class MenuEmpresa {
         print "Digite o id exato da vaga: "
         int id_vaga = Util.leInteiroConsole(reader)
 
-        Vaga vaga = vagaService.buscarIdVagaEmpresa(empresas[opcaoEmpresa - 1].id, id_vaga)
+        Vaga vaga = vagaController.buscarIdVagaEmpresa(empresas[opcaoEmpresa - 1].id, id_vaga)
 
         if (vaga == null) {
             println "\nVaga nao encontrada!\n"
@@ -560,7 +534,7 @@ class MenuEmpresa {
     }
 
     def buscarNomeVagasEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarTodos()
+        List<Empresa> empresas = empresaController.listarEmpresas()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -582,7 +556,7 @@ class MenuEmpresa {
         print "Digite o nome exato da vaga: "
         String nome = Util.leStringConsole(reader)
 
-        Vaga vaga = vagaService.buscarNomeVagaEmpresa(empresas[opcaoEmpresa - 1].id, nome)
+        Vaga vaga = vagaController.buscarNomeVagaEmpresa(empresas[opcaoEmpresa - 1].id, nome)
 
         if (vaga == null) {
             println "\nVaga nao encontrada!\n"
@@ -602,7 +576,7 @@ class MenuEmpresa {
     }
 
     def cadastrarCompetenciaVagaEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarTodos()
+        List<Empresa> empresas = empresaController.listarEmpresas()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -623,7 +597,7 @@ class MenuEmpresa {
 
         Empresa empresa = empresas[opcaoEmpresa - 1]
 
-        List<Vaga> vagas = vagaService.listarVagaEmpresa(empresa.id)
+        List<Vaga> vagas = vagaController.listarVagasEmpresa(empresa.id)
         if (vagas.isEmpty()) {
             println "\nEsta empresa nao possui vagas cadastradas.\n"
             return
@@ -643,7 +617,7 @@ class MenuEmpresa {
 
         Vaga vaga = vagas[opcaoVaga - 1]
 
-        List<Competencia> competencias = competenciaService.listarTodos()
+        List<Competencia> competencias = competenciaController.listarTodas()
 
         print "Competencias: "
         competencias.eachWithIndex { competencia, index ->
@@ -659,16 +633,12 @@ class MenuEmpresa {
 
         Competencia competencia = competencias[opcaoCompetencia - 1]
 
-        try {
-            competenciaService.adicionarCompetenciaVaga(vaga.id, competencia.id)
-            println "Dados salvo!\n"
-        } catch (IllegalArgumentException e) {
-            println "\nErro no salvamento: ${e.message}\n"
-        }
+        String resposta = competenciaController.adicionarCompetenciaVaga(vaga.id, competencia.id)
+        println "\n${resposta}\n"
     }
 
     def excluirCompetenciaVagaEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarTodos()
+        List<Empresa> empresas = empresaController.listarEmpresas()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -689,7 +659,7 @@ class MenuEmpresa {
 
         Empresa empresaSelecionada = empresas[opcaoEmpresa - 1]
 
-        List<Vaga> vagas = vagaService.listarVagaEmpresa(empresaSelecionada.id)
+        List<Vaga> vagas = vagaController.listarVagasEmpresa(empresaSelecionada.id)
         if (vagas.isEmpty()) {
             println "Esta empresa nao possui vagas cadastradas.\n"
             return
@@ -709,7 +679,7 @@ class MenuEmpresa {
 
         Vaga vagaSelecionada = vagas[opcaoVaga - 1]
 
-        List<Competencia> competencias = competenciaService.listarCompetenciasVaga(vagaSelecionada.id)
+        List<Competencia> competencias = competenciaController.listarCompetenciasVaga(vagaSelecionada.id)
         if (competencias.isEmpty()) {
             println "Esta vaga nao possui competencias cadastradas!\n"
             return
@@ -729,16 +699,12 @@ class MenuEmpresa {
 
         Competencia comp = competencias[opcaoCompetencia - 1]
 
-        try {
-            competenciaService.excluirCompetenciaVaga(vagaSelecionada.id, comp.id)
-            println "Dados excluidos!\n"
-        } catch (IllegalArgumentException e) {
-            println "\nErro na exclusao: ${e.message}\n"
-        }
+        String resposta = competenciaController.excluirCompetenciaVaga(vagaSelecionada.id, comp.id)
+        println "\n${resposta}\n"
     }
 
     def listarCompetenciasVagaEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarTodos()
+        List<Empresa> empresas = empresaController.listarEmpresas()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -759,7 +725,7 @@ class MenuEmpresa {
 
         Empresa empresaSelecionada = empresas[opcaoEmpresa - 1]
 
-        List<Vaga> vagas = vagaService.listarVagaEmpresa(empresaSelecionada.id)
+        List<Vaga> vagas = vagaController.listarVagasEmpresa(empresaSelecionada.id)
         if (vagas.isEmpty()) {
             println "Esta empresa nao possui vagas cadastradas.\n"
             return
@@ -779,7 +745,7 @@ class MenuEmpresa {
 
         Vaga vagaSelecionada = vagas[opcaoVaga - 1]
 
-        List<Competencia> competencias = competenciaService.listarCompetenciasVaga(vagaSelecionada.id)
+        List<Competencia> competencias = competenciaController.listarCompetenciasVaga(vagaSelecionada.id)
         if (competencias.isEmpty()) {
             println "Nenhuma competencia encontrada para esta vaga.\n"
             return
@@ -801,8 +767,8 @@ class MenuEmpresa {
         print "Digite o id da vaga: "
         int id_vaga = Util.leInteiroConsole(reader)
 
-        Competencia competencia = competenciaService.buscarIdCompetenciaVaga(id_vaga, id_competencia)
-        Vaga vaga = vagaService.buscarPorId(id_vaga)
+        Competencia competencia = competenciaController.buscarIdCompetenciaVaga(id_vaga, id_competencia)
+        Vaga vaga = vagaController.buscarPorId(id_vaga)
 
         if (vaga == null) {
             println "\nVaga nao encontrada!\n"
@@ -827,8 +793,8 @@ class MenuEmpresa {
         print "Digite o id da vaga: "
         int id_vaga = Util.leInteiroConsole(reader)
 
-        Competencia competencia = competenciaService.buscarNomeCompetenciaVaga(id_vaga, nome_competencia)
-        Vaga vaga = vagaService.buscarPorId(id_vaga)
+        Competencia competencia = competenciaController.buscarNomeCompetenciaVaga(id_vaga, nome_competencia)
+        Vaga vaga = vagaController.buscarPorId(id_vaga)
 
         if (vaga == null) {
             println "\nVaga nao encontrada!\n"
@@ -845,7 +811,7 @@ class MenuEmpresa {
     }
 
     def listarCandidatosAnonimos(reader) {
-        List<Empresa> empresas = empresaService.listarTodos()
+        List<Empresa> empresas = empresaController.listarEmpresas()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -866,7 +832,7 @@ class MenuEmpresa {
 
         Empresa empresaSelecionada = empresas[opcaoEmpresa - 1]
 
-        List<Candidato> candidatos = candidatoService.listarCandidatoEmpresa(empresaSelecionada.id)
+        List<Candidato> candidatos = candidatoController.listarCandidatoEmpresa(empresaSelecionada.id)
         if (candidatos.isEmpty()) {
             println "\nNenhum candidato anonimo curtiu as vagas dessa empresa!\n"
             return
@@ -892,7 +858,7 @@ class MenuEmpresa {
     }
 
     def salvarCurtidaEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarTodos()
+        List<Empresa> empresas = empresaController.listarEmpresas()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -913,7 +879,7 @@ class MenuEmpresa {
 
         Empresa empresa = empresas[opcaoEmpresa - 1]
 
-        List<Vaga> vagas = vagaService.listarVagaEmpresa(empresa.id)
+        List<Vaga> vagas = vagaController.listarVagasEmpresa(empresa.id)
 
         if (vagas.isEmpty()) {
             println "\nEsta empresa nao possui vagas cadastradas.\n"
@@ -927,7 +893,7 @@ class MenuEmpresa {
                             "Nome: ${vaga.nome}\n" +
                             "Empresa: ${vaga.empresa.nome}\n" +
                             "Descricao: ${vaga.descricao}\n" +
-                            "Competencias: ${vaga.descricao}"
+                            "Competencias: "
             )
             vaga.competencias?.forEach { comp ->
                 println("${comp.nome}, ")
@@ -944,7 +910,7 @@ class MenuEmpresa {
 
         Vaga vaga = vagas[opcaoVaga - 1]
 
-        List<Candidato> candidatos = candidatoService.listarTodos()
+        List<Candidato> candidatos = candidatoController.listarCandidatos()
 
         if (candidatos.isEmpty()) {
             println "Nenhum candidato cadastrado!\n"
@@ -965,16 +931,12 @@ class MenuEmpresa {
 
         Candidato candidato = candidatos[opcaoCandidato - 1]
 
-        try {
-            curtidaService.curtirVagaComoEmpresa(empresa, candidato, vaga, true)
-            println "Dados salvo!\n"
-        } catch (IllegalArgumentException e) {
-            println "\nErro no salvamento: ${e.message}\n"
-        }
+        String resposta = curtidaController.curtirCandidatoComoEmpresa(empresa.id, candidato.id, vaga.id)
+        println "\n${resposta}\n"
     }
 
     def listarCurtidasEmpresa() {
-        List<CurtidaEmpresa> curtidas = curtidaService.listarCurtidasEmpresa()
+        List<CurtidaEmpresa> curtidas = curtidaController.listarCurtidasEmpresa()
 
         if (curtidas.isEmpty()) {
             println "\nNenhuma curtida encontrado\n"
@@ -989,7 +951,7 @@ class MenuEmpresa {
     }
 
     def listarMatchesEmpresa(reader) {
-        List<Empresa> empresas = empresaService.listarTodos()
+        List<Empresa> empresas = empresaController.listarEmpresas()
 
         if (empresas.isEmpty()) {
             println "Nenhuma empresa cadastrada!\n"
@@ -1010,18 +972,18 @@ class MenuEmpresa {
 
         Empresa empresaSelecionada = empresas[opcaoEmpresa - 1]
 
-        List<Match> matches = curtidaService.listarMatchEmpresa(empresaSelecionada.id)
+        List<Match> matches = curtidaController.listarMatchesEmpresa(empresaSelecionada.id)
 
         if (matches.isEmpty()) {
             println "\nNenhum match encontrado\n"
             return
         }
 
-        println "\nMatchs"
+        println "\nMatches"
         matches.each {
             println "Candidato: ${it.candidato.nome}"
-            println"Vaga: ${it.vaga.nome}"
-            println"Empresa: ${it.empresa.nome}\n"
+            println "Vaga: ${it.vaga.nome}"
+            println "Empresa: ${it.empresa.nome}\n"
         }
     }
 }

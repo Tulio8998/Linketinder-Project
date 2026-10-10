@@ -80,6 +80,11 @@ O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) s
 - **Adaptação de DAOs:** Refatoração nos parâmetros de Inserção e Atualização dos DAOs para descompactar os atributos dos VOs (ex: `candidato.cpf.valor`) corretamente na base de dados relacional e remontá-los de forma transparente na leitura.
 - **Refatoração de Testes (DaoIntegrationSpec):** Atualização da suíte de testes de integração para utilizar a Injeção de Dependência da Factory (`PostgresTestFactory`) direto no Singleton `ConexaoDB`, garantindo que os DAOs e o ambiente de teste rodem exatamente sobre a mesma transação, permitindo o rollback seguro entre os testes.
 
+### Versão 1.9.0
+
+* **Arquitetura MVC e DTOs:** Criação de `Controllers` e `DTOs` para isolar completamente a interface (CLI) das regras de negócio (`Services`) e Entidades/VOs.
+* **Desacoplamento da CLI:** Refatoração dos menus interativos, que agora apenas trafegam dados simples e exibem respostas textuais, sem acoplamento com o banco ou serviços.
+* **Testes com Mocks:** Implementação de testes unitários isolados para os Controllers usando Spock e Mocks, além da correção dos testes de exceções de validação dos VOs.
 ## Execução pela IDE
 1. Abra o projeto no IntelliJ IDEA.
 2. Aguarde o Gradle sincronizar o projeto.

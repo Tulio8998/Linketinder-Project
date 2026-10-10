@@ -1,8 +1,9 @@
-
 package com.zg.linketinder.service
 
 import com.zg.linketinder.dao.CandidatoDAO
 import com.zg.linketinder.model.Candidato
+import com.zg.linketinder.vo.CpfVO
+import com.zg.linketinder.vo.EmailVO
 import spock.lang.Specification
 
 class CandidatoServiceSpec extends Specification {
@@ -11,30 +12,28 @@ class CandidatoServiceSpec extends Specification {
     CandidatoService candidatoService = new CandidatoService(candidatoDAO)
 
     def "deve validar antes de salvar"() {
-        given: "um candidato com dados inválidos"
+        when: "tento instanciar e salvar o candidato com dados inválidos"
         Candidato candidato = new Candidato(
-                cpf: '',
+                cpf: new CpfVO(''),
                 nome: '',
-                email: '',
+                email: new EmailVO(''),
                 senha: '',
                 competencias: []
         )
-
-        when: "tento salvar o candidato"
-        candidatoService.salvarCandidato(candidato)
+        candidatoService.salvar(candidato)
 
         then: "a validação impede o cadastro"
-        thrown(Exception)
-        0 * candidatoDAO.salvarCandidato(_)
+        thrown(IllegalArgumentException)
+        0 * candidatoDAO.salvar(_)
     }
 
     def "deve buscar cpf candidato"() {
         given: "um candidato cadastrado"
         String cpf = '111.111.111-11'
         Candidato candidato = new Candidato(
-                cpf: cpf,
+                cpf: new CpfVO(cpf),
                 nome: 'Tulio',
-                email: 't@email.com'
+                email: new EmailVO('t@email.com')
         )
 
         when: "busco o candidato pelo CPF"
@@ -48,10 +47,12 @@ class CandidatoServiceSpec extends Specification {
     def "deve buscar email candidato"() {
         given: "um candidato cadastrado"
         String email = 't@email.com'
+        String cpf = '111.111.111-11'
+
         Candidato candidato = new Candidato(
-                cpf: '111.111.111-11',
+                cpf: new CpfVO(cpf),
                 nome: 'Tulio',
-                email: email
+                email: new EmailVO(email)
         )
 
         when: "busco o candidato pelo e-mail"
