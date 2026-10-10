@@ -23,8 +23,8 @@ class EmpresaService extends CrudService<Empresa> {
 
     @Override
     protected void validarAntesSalvar(Empresa empresa) {
-        if (empresaDAO.buscarCnpjEmpresa(empresa.cnpj)) throw new IllegalArgumentException("CNPJ ja cadastrado")
-        if (empresaDAO.buscarEmailEmpresa(empresa.email)) throw new IllegalArgumentException("Email ja cadastrado")
+        if (empresaDAO.buscarCnpjEmpresa(empresa.cnpj.valor)) throw new IllegalArgumentException("CNPJ ja cadastrado")
+        if (empresaDAO.buscarEmailEmpresa(empresa.email.valor)) throw new IllegalArgumentException("Email ja cadastrado")
     }
 
     Empresa buscarCnpjEmpresa(String cnpj) {

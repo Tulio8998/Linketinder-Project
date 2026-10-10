@@ -4,10 +4,13 @@ import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.CurtidaEmpresa
 import com.zg.linketinder.model.Empresa
+import com.zg.linketinder.model.Endereco
 import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.model.curtida.Match
 import com.zg.linketinder.service.*
 import com.zg.linketinder.util.Util
+import com.zg.linketinder.vo.CnpjVO
+import com.zg.linketinder.vo.EmailVO
 
 class MenuEmpresa {
     EmpresaService empresaService = new EmpresaService()
@@ -137,7 +140,8 @@ class MenuEmpresa {
         print "Descricao: "
         String descricao = Util.leStringConsole(reader)
 
-        Empresa empresa = new Empresa(cnpj: cnpj, nome: nome, email: email, senha: senha, pais: pais, estado: estado, cidade: cidade, cep: cep, descricao: descricao)
+        Empresa empresa = new Empresa(cnpj: new CnpjVO(cnpj), nome: nome, email: new EmailVO(email), senha: senha,
+                endereco: new Endereco(pais: pais, estado: estado, cidade: cidade, cep: cep), descricao: descricao)
         if (empresa == null) {
             println "\nEmpresa nao encontrada!\n"
             return
@@ -161,7 +165,7 @@ class MenuEmpresa {
 
         println "\nEmpresas"
         empresas.eachWithIndex { empresa, index ->
-            println "${index + 1}. ${empresa.nome} - ${empresa.cnpj}"
+            println "${index + 1}. ${empresa.nome} - ${empresa.cnpj.valor}"
         }
 
         print "Escolha a empresa: "
@@ -193,7 +197,8 @@ class MenuEmpresa {
         print "Descricao: "
         String descricao = Util.leStringConsole(reader)
 
-        Empresa emp = new Empresa(cnpj: cnpj, nome: nome, email: email, senha: senha, pais: pais, estado: estado, cidade: cidade, cep: cep, descricao: descricao)
+        Empresa emp = new Empresa(cnpj: new CnpjVO(cnpj), nome: nome, email: new EmailVO(email), senha: senha,
+                endereco: new Endereco(pais: pais, estado: estado, cidade: cidade, cep: cep), descricao: descricao)
         if (emp == null) {
             println "\nEmpresa nao encontrada!\n"
             return
@@ -217,7 +222,7 @@ class MenuEmpresa {
 
         println "\nEmpresas"
         empresas.eachWithIndex { empresa, index ->
-            println "${index + 1}. ${empresa.nome} - ${empresa.cnpj}"
+            println "${index + 1}. ${empresa.nome} - ${empresa.cnpj.valor}"
         }
 
         print "Escolha a empresa: "
@@ -250,13 +255,13 @@ class MenuEmpresa {
         }
 
         println(
-                "Cnpj: ${empresa.cnpj}\n" +
+                "Cnpj: ${empresa.cnpj.valor}\n" +
                         "Nome: ${empresa.nome}\n" +
-                        "Email: ${empresa.email}\n" +
-                        "Pais: ${empresa.pais}\n" +
-                        "Estado: ${empresa.estado}\n" +
-                        "Cidade: ${empresa.cidade}\n" +
-                        "Cep: ${empresa.cep}\n" +
+                        "Email: ${empresa.email.valor}\n" +
+                        "Pais: ${empresa.endereco.pais}\n" +
+                        "Estado: ${empresa.endereco.estado}\n" +
+                        "Cidade: ${empresa.endereco.cidade}\n" +
+                        "Cep: ${empresa.endereco.cep}\n" +
                         "Descricao: ${empresa.descricao}\n"
         )
     }
@@ -274,13 +279,13 @@ class MenuEmpresa {
         }
 
         println(
-                "Cnpj: ${empresa.cnpj}\n" +
+                "Cnpj: ${empresa.cnpj.valor}\n" +
                         "Nome: ${empresa.nome}\n" +
-                        "Email: ${empresa.email}\n" +
-                        "Pais: ${empresa.pais}\n" +
-                        "Estado: ${empresa.estado}\n" +
-                        "Cidade: ${empresa.cidade}\n" +
-                        "Cep: ${empresa.cep}\n" +
+                        "Email: ${empresa.email.valor}\n" +
+                        "Pais: ${empresa.endereco.pais}\n" +
+                        "Estado: ${empresa.endereco.estado}\n" +
+                        "Cidade: ${empresa.endereco.cidade}\n" +
+                        "Cep: ${empresa.endereco.cep}\n" +
                         "Descricao: ${empresa.descricao}\n"
         )
     }
@@ -298,13 +303,13 @@ class MenuEmpresa {
         }
 
         println(
-                "Cnpj: ${empresa.cnpj}\n" +
+                "Cnpj: ${empresa.cnpj.valor}\n" +
                         "Nome: ${empresa.nome}\n" +
-                        "Email: ${empresa.email}\n" +
-                        "Pais: ${empresa.pais}\n" +
-                        "Estado: ${empresa.estado}\n" +
-                        "Cidade: ${empresa.cidade}\n" +
-                        "Cep: ${empresa.cep}\n" +
+                        "Email: ${empresa.email.valor}\n" +
+                        "Pais: ${empresa.endereco.pais}\n" +
+                        "Estado: ${empresa.endereco.estado}\n" +
+                        "Cidade: ${empresa.endereco.cidade}\n" +
+                        "Cep: ${empresa.endereco.cep}\n" +
                         "Descricao: ${empresa.descricao}\n"
         )
     }
@@ -343,7 +348,7 @@ class MenuEmpresa {
         print "Cidade: "
         String cidade = Util.leStringConsole(reader)
 
-        Vaga novaVaga = new Vaga(nome: nome, descricao: descricao, pais: pais, estado: estado, cidade: cidade, empresa: empresaSelecionada)
+        Vaga novaVaga = new Vaga(nome: nome, descricao: descricao, endereco: new Endereco(pais: pais, estado: estado, cidade: cidade), empresa: empresaSelecionada)
         if (novaVaga == null) {
             println "\nVaga nao encontrada!\n"
             return
@@ -411,7 +416,8 @@ class MenuEmpresa {
         print "Nova Cidade: "
         String cidade = Util.leStringConsole(reader)
 
-        Vaga vagaAtualizada = new Vaga(id: vagaSelecionada.id, nome: nome, descricao: descricao, pais: pais, estado: estado, cidade: cidade, empresa: empresaSelecionada)
+        Vaga vagaAtualizada = new Vaga(id: vagaSelecionada.id, nome: nome, descricao: descricao,
+                endereco: new Endereco(pais: pais, estado: estado, cidade: cidade), empresa: empresaSelecionada)
         if (vagaAtualizada == null) {
             println "\nVaga nao encontrada!\n"
             return
@@ -868,13 +874,13 @@ class MenuEmpresa {
 
         candidatos.forEach {
             println(
-                    "Cpf: ${it.cpf}\n" +
+                    "Cpf: ${it.cpf.valor}\n" +
                             "Nome: ${it.nome}\n" +
-                            "Email: ${it.email}\n" +
-                            "Pais: ${it.pais}\n" +
-                            "Estado: ${it.estado}\n" +
-                            "Cidade: ${it.cidade}\n" +
-                            "Cep: ${it.cep}\n" +
+                            "Email: ${it.email.valor}\n" +
+                            "Pais: ${it.endereco.pais}\n" +
+                            "Estado: ${it.endereco.estado}\n" +
+                            "Cidade: ${it.endereco.cidade}\n" +
+                            "Cep: ${it.endereco.cep}\n" +
                             "Descricao: ${it.descricao}\n" +
                             "Competencias:"
             )

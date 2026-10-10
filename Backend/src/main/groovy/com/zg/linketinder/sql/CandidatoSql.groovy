@@ -47,7 +47,7 @@ class CandidatoSql {
     '''
 
     static final String LISTAR_POR_EMPRESA = '''
-        SELECT ct.id, '***.***.***-**' AS cpf, 'anonimo' || ct.id AS nome, 'anonimo@email.com' AS email,
+        SELECT ct.id, '000.000.000-00' AS cpf, 'anonimo' || ct.id AS nome, 'anonimo@email.com' AS email,
                ct.senha, ct.pais, ct.estado, ct.cidade, ct.cep, ct.data_nascimento, ct.descricao,
                cm.id AS id_competencia, cm.nome AS nome_competencia
         FROM candidatos ct

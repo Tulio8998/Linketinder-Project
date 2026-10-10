@@ -8,6 +8,7 @@ import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.model.curtida.Match
 import com.zg.linketinder.sql.CurtidaSql
 import com.zg.linketinder.factory.ConexaoDB
+import com.zg.linketinder.vo.EmailVO
 
 class CurtidaDAOImpl implements CurtidaDAO {
 
@@ -55,7 +56,7 @@ class CurtidaDAOImpl implements CurtidaDAO {
                 Candidato cand = new Candidato(
                         id: row.id_candidato,
                         nome: row.nome_candidato,
-                        email: row.email_candidato
+                        email: new EmailVO(row.email_candidato)
                 )
                 Empresa emp = new Empresa(id: row.id_empresa, nome: row.nome_empresa)
                 Vaga vaga = new Vaga(id: row.id_vaga, nome: row.nome_vaga, empresa: emp)
@@ -71,7 +72,7 @@ class CurtidaDAOImpl implements CurtidaDAO {
                 Candidato cand = new Candidato(
                         id: row.id_candidato,
                         nome: row.nome_candidato,
-                        email: row.email_candidato
+                        email: new EmailVO(row.email_candidato)
                 )
                 Empresa emp = new Empresa(id: row.id_empresa, nome: row.nome_empresa)
                 Vaga vaga = new Vaga(id: row.id_vaga, nome: row.nome_vaga, empresa: emp)
