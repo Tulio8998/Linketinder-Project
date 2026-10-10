@@ -3,10 +3,13 @@ package com.zg.linketinder.cli
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.CurtidaCandidato
+import com.zg.linketinder.model.Endereco
 import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.model.curtida.Match
 import com.zg.linketinder.service.*
 import com.zg.linketinder.util.Util
+import com.zg.linketinder.vo.CpfVO
+import com.zg.linketinder.vo.EmailVO
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -135,7 +138,9 @@ class MenuCandidato {
         print "Descricao: "
         String descricao = Util.leStringConsole(reader)
 
-        Candidato candidato = new Candidato(cpf: cpf, idade: idade, dataNascimento: dataNascimento, nome: nome, email: email, senha: senha, pais: pais, cidade: cidade, estado: estado, cep: cep, descricao: descricao)
+        Candidato candidato = new Candidato(cpf: new CpfVO(cpf), idade: idade, dataNascimento: dataNascimento, nome: nome,
+                email: new EmailVO(email), senha: senha, endereco: new Endereco(pais: pais, cidade: cidade, estado: estado, cep: cep), descricao: descricao)
+
         if (candidato == null) {
             println "\nCandidato nao encontrado!\n"
             return
@@ -191,7 +196,8 @@ class MenuCandidato {
         print "Descricao: "
         String descricao = Util.leStringConsole(reader)
 
-        Candidato cand = new Candidato(cpf: cpf, idade: idade, dataNascimento: dataNascimento, nome: nome, email: email, senha: senha, pais: pais, cidade: cidade, estado: estado, cep: cep, descricao: descricao)
+        Candidato cand = new Candidato(cpf: new CpfVO(cpf), idade: idade, dataNascimento: dataNascimento, nome: nome,
+                email: new EmailVO(email), senha: senha, endereco: new Endereco(pais: pais, cidade: cidade, estado: estado, cep: cep), descricao: descricao)
         if (cand == null) {
             println "\nCandidato nao encontrado!\n"
             return
@@ -232,13 +238,13 @@ class MenuCandidato {
         List<Candidato> candidatos = candidatoService.listarTodos()
         candidatos.forEach {
             println(
-                    "Cpf: ${it.cpf}\n" +
+                    "Cpf: ${it.cpf.valor}\n" +
                             "Nome: ${it.nome}\n" +
-                            "Email: ${it.email}\n" +
-                            "Pais: ${it.pais}\n" +
-                            "Estado: ${it.estado}\n" +
-                            "Cidade: ${it.cidade}\n" +
-                            "Cep: ${it.cep}\n" +
+                            "Email: ${it.email.valor}\n" +
+                            "Pais: ${it.endereco.pais}\n" +
+                            "Estado: ${it.endereco.estado}\n" +
+                            "Cidade: ${it.endereco.cidade}\n" +
+                            "Cep: ${it.endereco.cep}\n" +
                             "Descrinao: ${it.descricao}\n" +
                             "Competencias:"
 
@@ -263,13 +269,13 @@ class MenuCandidato {
         }
 
         println(
-                "Cpf: ${candidato.cpf}\n" +
+                "Cpf: ${candidato.cpf.valor}\n" +
                         "Nome: ${candidato.nome}\n" +
-                        "Email: ${candidato.email}\n" +
-                        "Pais: ${candidato.pais}\n" +
-                        "Estado: ${candidato.estado}\n" +
-                        "Cidade: ${candidato.cidade}\n" +
-                        "Cep: ${candidato.cep}\n" +
+                        "Email: ${candidato.email.valor}\n" +
+                        "Pais: ${candidato.endereco.pais}\n" +
+                        "Estado: ${candidato.endereco.estado}\n" +
+                        "Cidade: ${candidato.endereco.cidade}\n" +
+                        "Cep: ${candidato.endereco.cep}\n" +
                         "Descrinao: ${candidato.descricao}\n" +
                         "Competencias:"
 
@@ -293,13 +299,13 @@ class MenuCandidato {
         }
 
         println(
-                "Cpf: ${candidato.cpf}\n" +
+                "Cpf: ${candidato.cpf.valor}\n" +
                         "Nome: ${candidato.nome}\n" +
-                        "Email: ${candidato.email}\n" +
-                        "Pais: ${candidato.pais}\n" +
-                        "Estado: ${candidato.estado}\n" +
-                        "Cidade: ${candidato.cidade}\n" +
-                        "Cep: ${candidato.cep}\n" +
+                        "Email: ${candidato.email.valor}\n" +
+                        "Pais: ${candidato.endereco.pais}\n" +
+                        "Estado: ${candidato.endereco.estado}\n" +
+                        "Cidade: ${candidato.endereco.cidade}\n" +
+                        "Cep: ${candidato.endereco.cep}\n" +
                         "Descrinao: ${candidato.descricao}\n" +
                         "Competencias:"
 
@@ -323,13 +329,13 @@ class MenuCandidato {
         }
 
         println(
-                "Cpf: ${candidato.cpf}\n" +
+                "Cpf: ${candidato.cpf.valor}\n" +
                         "Nome: ${candidato.nome}\n" +
-                        "Email: ${candidato.email}\n" +
-                        "Pais: ${candidato.pais}\n" +
-                        "Estado: ${candidato.estado}\n" +
-                        "Cidade: ${candidato.cidade}\n" +
-                        "Cep: ${candidato.cep}\n" +
+                        "Email: ${candidato.email.valor}\n" +
+                        "Pais: ${candidato.endereco.pais}\n" +
+                        "Estado: ${candidato.endereco.estado}\n" +
+                        "Cidade: ${candidato.endereco.cidade}\n" +
+                        "Cep: ${candidato.endereco.cep}\n" +
                         "Descrinao: ${candidato.descricao}\n" +
                         "Competencias:"
 
