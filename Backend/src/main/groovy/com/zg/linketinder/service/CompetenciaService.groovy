@@ -110,7 +110,7 @@ class CompetenciaService {
         }
     }
 
-    List<Competencia> listarCompetencia() {
+    List<Competencia> listarTodos() {
         try {
             return  competenciaDAO.listarTodos()
         } catch (Exception e) {
