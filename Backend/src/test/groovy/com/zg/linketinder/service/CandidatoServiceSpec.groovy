@@ -20,11 +20,11 @@ class CandidatoServiceSpec extends Specification {
                 senha: '',
                 competencias: []
         )
-        candidatoService.salvarCandidato(candidato)
+        candidatoService.salvar(candidato)
 
         then: "a validação impede o cadastro"
         thrown(IllegalArgumentException)
-        0 * candidatoDAO.salvarCandidato(_)
+        0 * candidatoDAO.salvar(_)
     }
 
     def "deve buscar cpf candidato"() {

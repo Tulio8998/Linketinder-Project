@@ -19,11 +19,11 @@ class EmpresaServiceSpec extends Specification {
                 email: new EmailVO(''),
                 senha: ''
         )
-        empresaService.salvarEmpresa(empresa)
+        empresaService.salvar(empresa)
 
         then: "a validação impede o cadastro"
         thrown(IllegalArgumentException)
-        0 * empresaDAO.salvarEmpresa(_)
+        0 * empresaDAO.salvar(_)
     }
 
     def "deve buscar cnpj da empresa"() {
