@@ -1,4 +1,4 @@
-package com.zg.linketinder.cli
+package com.zg.linketinder.view
 
 import com.zg.linketinder.util.Util
 
