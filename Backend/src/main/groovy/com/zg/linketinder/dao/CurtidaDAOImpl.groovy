@@ -1,5 +1,6 @@
 package com.zg.linketinder.dao
 
+import com.zg.linketinder.dao.interfaces.CurtidaDAO
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.CurtidaCandidato
 import com.zg.linketinder.model.CurtidaEmpresa

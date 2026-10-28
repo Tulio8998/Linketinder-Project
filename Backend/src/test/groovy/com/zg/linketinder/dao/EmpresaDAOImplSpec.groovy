@@ -1,13 +1,10 @@
 package com.zg.linketinder.dao
 
-import com.zg.linketinder.model.Candidato
+import com.zg.linketinder.dao.interfaces.EmpresaDAO
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Endereco
 import com.zg.linketinder.vo.CnpjVO
 import com.zg.linketinder.vo.EmailVO
-import spock.lang.Specification
-
-import java.time.LocalDate
 
 class EmpresaDAOImplSpec extends DaoIntegrationSpec {
     EmpresaDAO empresaDAO = new EmpresaDAOImpl()

@@ -1,6 +1,6 @@
 package com.zg.linketinder.service
 
-import com.zg.linketinder.dao.EmpresaDAO
+import com.zg.linketinder.dao.interfaces.EmpresaDAO
 import com.zg.linketinder.dao.EmpresaDAOImpl
 import com.zg.linketinder.dao.base.CrudDAO
 import com.zg.linketinder.model.Empresa

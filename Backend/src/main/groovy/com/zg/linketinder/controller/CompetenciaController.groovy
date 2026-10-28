@@ -10,7 +10,6 @@ class CompetenciaController {
         return competenciaService.listarTodos()
     }
 
-    // Ações para Candidato
     String adicionarCompetenciaCandidato(Integer idCandidato, Integer idCompetencia) {
         try {
             competenciaService.adicionarCompetenciaCandidato(idCandidato, idCompetencia)
@@ -41,7 +40,6 @@ class CompetenciaController {
         return competenciaService.buscarNomeCompetenciaCandidato(idCandidato, nome)
     }
 
-    // Ações para Vaga
     String adicionarCompetenciaVaga(Integer idVaga, Integer idCompetencia) {
         try {
             competenciaService.adicionarCompetenciaVaga(idVaga, idCompetencia)
