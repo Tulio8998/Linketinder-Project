@@ -16,10 +16,13 @@ abstract class CrudDAOImpl<T> implements CrudDAO<T> {
     @Override
     void salvar(T entidade) {
         ConexaoDB.emTransacao { sql ->
-            sql.executeInsert(
+            def chaves = sql.executeInsert(
                     getSqlInserir(),
                     getParametrosInserir(entidade)
             )
+            if (chaves && chaves[0] && chaves[0][0] != null) {
+                entidade.id = chaves[0][0] as Integer
+            }
         }
     }
 

@@ -117,8 +117,6 @@ class MenuCandidato {
         println "Cadastro de candidato"
         print "Cpf: "
         String cpf = Util.leStringConsole(reader)
-        print "Idade: "
-        int idade = Util.leInteiroConsole(reader)
         print "Data de Nascimento (YYYY-MM-DD): "
         String dataNascimentoStr = Util.leStringConsole(reader)
         LocalDate dataNascimento = LocalDate.parse(dataNascimentoStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
@@ -140,7 +138,7 @@ class MenuCandidato {
         String descricao = Util.leStringConsole(reader)
 
         CandidatoDTO dto = new CandidatoDTO(
-                cpf: cpf, idade: idade, dataNascimento: dataNascimento,
+                cpf: cpf, dataNascimento: dataNascimento,
                 nome: nome, email: email, senha: senha, pais: pais,
                 estado: estado, cidade: cidade, cep: cep, descricao: descricao
         )
@@ -169,8 +167,6 @@ class MenuCandidato {
         println "Atualizar cadastro de candidato"
         print "Cpf: "
         String cpf = Util.leStringConsole(reader)
-        print "Idade: "
-        int idade = Util.leInteiroConsole(reader)
         print "Data de Nascimento (YYYY-MM-DD): "
         String dataNascimentoStr = Util.leStringConsole(reader)
         LocalDate dataNascimento = LocalDate.parse(dataNascimentoStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
@@ -192,7 +188,7 @@ class MenuCandidato {
         String descricao = Util.leStringConsole(reader)
 
         CandidatoDTO dto = new CandidatoDTO(
-                cpf: cpf, idade: idade, dataNascimento: dataNascimento,
+                cpf: cpf, dataNascimento: dataNascimento,
                 nome: nome, email: email, senha: senha, pais: pais,
                 estado: estado, cidade: cidade, cep: cep, descricao: descricao
         )
