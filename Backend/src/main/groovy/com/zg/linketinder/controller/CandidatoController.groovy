@@ -17,7 +17,6 @@ class CandidatoController {
                     nome: candidatoDTO.nome,
                     email: new EmailVO(candidatoDTO.email),
                     senha: candidatoDTO.senha,
-                    idade: candidatoDTO.idade,
                     dataNascimento: candidatoDTO.dataNascimento,
                     descricao: candidatoDTO.descricao,
                     endereco: new Endereco(
@@ -41,7 +40,6 @@ class CandidatoController {
                     nome: candidatoDTO.nome,
                     email: new EmailVO(candidatoDTO.email),
                     senha: candidatoDTO.senha,
-                    idade: candidatoDTO.idade,
                     dataNascimento: candidatoDTO.dataNascimento,
                     descricao: candidatoDTO.descricao,
                     endereco: new Endereco(

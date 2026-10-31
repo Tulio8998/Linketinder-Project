@@ -1,7 +1,7 @@
 package com.zg.linketinder.service
 
 import com.zg.linketinder.dao.base.CrudDAO
-import com.zg.linketinder.dao.VagaDAO
+import com.zg.linketinder.dao.interfaces.VagaDAO
 import com.zg.linketinder.dao.VagaDAOImpl
 import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.service.base.CrudService

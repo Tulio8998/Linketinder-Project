@@ -1,4 +1,4 @@
-package com.zg.linketinder.dao
+package com.zg.linketinder.dao.interfaces
 
 import com.zg.linketinder.model.CurtidaCandidato
 import com.zg.linketinder.model.CurtidaEmpresa

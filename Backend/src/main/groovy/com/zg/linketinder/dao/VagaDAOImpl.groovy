@@ -1,6 +1,7 @@
 package com.zg.linketinder.dao
 
 import com.zg.linketinder.dao.base.CrudDAOImpl
+import com.zg.linketinder.dao.interfaces.VagaDAO
 import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Endereco
@@ -100,18 +101,8 @@ class VagaDAOImpl extends CrudDAOImpl<Vaga> implements VagaDAO {
 
     @Override
     Vaga buscarNomeVaga(String nome) {
-        String query = '''
-            SELECT v.id, v.nome, v.descricao, v.pais, v.estado, v.cidade,   
-                   v.id_empresa AS id_empresa, e.nome AS nome_empresa, 
-                   cm.id AS id_competencia, cm.nome AS nome_competencia 
-            FROM vagas v
-            LEFT JOIN empresas e ON v.id_empresa = e.id
-            LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
-            LEFT JOIN competencias cm ON cm.id = vc.id_competencia
-            WHERE v.nome = ?
-        '''
         return ConexaoDB.consultar { Sql sql ->
-            def lista = agruparPorId(sql.rows(query, [nome]))
+            def lista = agruparPorId(sql.rows(VagaSql.BUSCAR_POR_NOME, [nome]))
             return lista.isEmpty() ? null : lista.first()
         }
     }

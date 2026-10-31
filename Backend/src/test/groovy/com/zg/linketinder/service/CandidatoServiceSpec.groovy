@@ -1,6 +1,6 @@
 package com.zg.linketinder.service
 
-import com.zg.linketinder.dao.CandidatoDAO
+import com.zg.linketinder.dao.interfaces.CandidatoDAO
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.vo.CpfVO
 import com.zg.linketinder.vo.EmailVO

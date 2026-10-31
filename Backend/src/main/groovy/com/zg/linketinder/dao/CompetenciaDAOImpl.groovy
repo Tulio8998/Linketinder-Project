@@ -1,6 +1,7 @@
 package com.zg.linketinder.dao
 
 import com.zg.linketinder.dao.base.CrudDAOImpl
+import com.zg.linketinder.dao.interfaces.CompetenciaDAO
 import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.sql.CompetenciaSql
 import com.zg.linketinder.factory.ConexaoDB

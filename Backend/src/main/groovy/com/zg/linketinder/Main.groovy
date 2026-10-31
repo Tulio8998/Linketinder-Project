@@ -1,6 +1,6 @@
 package com.zg.linketinder
 
-import com.zg.linketinder.cli.MenuTerminal
+import com.zg.linketinder.view.MenuTerminal
 
 /**
  * Projeto: Linketinder (MVP)
