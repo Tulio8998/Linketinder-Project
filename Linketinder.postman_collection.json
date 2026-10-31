@@ -1,0 +1,890 @@
+{
+	"info": {
+		"_postman_id": "11a26b29-670f-4e89-ad12-8207677c5d81",
+		"name": "Linketinder",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41280511"
+	},
+	"item": [
+		{
+			"name": "Candidato",
+			"item": [
+				{
+					"name": "CriarCandidato",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"teste\",\n    \"email\": \"3teste@teste.teste\",\n    \"senha\": \"124253465\",\n    \"pais\": \"teste\",\n    \"cidade\": \"teste\",\n    \"estado\": \"teste\",\n    \"cep\": \"12453-535\",\n    \"descricao\": \"teste\",\n    \"cpf\":\"124.424.427-56\",\n    \"dataNascimento\": \"1999-12-12\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/candidatos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"candidatos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarCandidato",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/candidatos/15",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"candidatos",
+								"15"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AtualizarCandidato",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"teste\",\n    \"email\": \"teste@teste.teste\",\n    \"senha\": \"124253465\",\n    \"pais\": \"teste\",\n    \"cidade\": \"teste\",\n    \"estado\": \"teste\",\n    \"cep\": \"12453-535\",\n    \"descricao\": \"teste\",\n    \"cpf\":\"124.124.427-56\",\n    \"dataNascimento\": \"1999-12-12\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/candidatos/16",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"candidatos",
+								"16"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarCandidato",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/candidatos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"candidatos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarCandidato",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/candidatos/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"candidatos",
+								""
+							],
+							"query": [
+								{
+									"key": "cpf",
+									"value": "124.124.427-56",
+									"disabled": true
+								},
+								{
+									"key": "empresaId",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "teste@teste.teste",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Empresa",
+			"item": [
+				{
+					"name": "CriarEmpresa",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"teste\",\n    \"email\": \"teste@gmail.com\",\n    \"senha\": \"12345678\",\n    \"pais\": \"Brasil\",\n    \"cidade\": \"teste Horizonte\",\n    \"estado\": \"Minas teste\",\n    \"cep\": \"11111-11\",\n    \"descricao\": \"Minha descricao de teste é...\",\n    \"cnpj\": \"14.111.111/1111-11\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/empresas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"empresas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarEmpresa",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/empresas/9",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"empresas",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AtualizarEmpresa",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"tesssste\",\n    \"email\": \"teste@gmail.com\",\n    \"senha\": \"12345678\",\n    \"pais\": \"Brasil\",\n    \"cidade\": \"teste Horizonte\",\n    \"estado\": \"Minas teste\",\n    \"cep\": \"11111-11\",\n    \"descricao\": \"Minha descricao de teste é...\",\n    \"cnpj\": \"14.111.111/1111-11\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/empresas/9",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"empresas",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarEmpresa",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/empresas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"empresas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarEmpresa",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/empresas/?cnpj=11.111.111/1111-11",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"empresas",
+								""
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "devcorp@gmail.com",
+									"disabled": true
+								},
+								{
+									"key": "cnpj",
+									"value": "11.111.111/1111-11"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vaga",
+			"item": [
+				{
+					"name": "CriarVaga",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Desenvolvedor Backend 2\",\n    \"descricao\": \"Java\",\n    \"pais\": \"Brasil\",\n    \"estado\": \"MG\",\n    \"cidade\": \"BH\",\n    \"empresa\": { \n        \"id\": 1\n    }\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/vagas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vagas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarVaga",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/vagas/8",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vagas",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AtualizarVaga",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Dev Backend Senior\",\n    \"descricao\": \"Java + Groovy + Spring\",\n    \"pais\": \"Brasil\",\n    \"estado\": \"SP\",\n    \"cidade\": \"São Paulo\",\n    \"empresa\": { \n        \"id\": 1\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/vagas/5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vagas",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarVaga",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/vagas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vagas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarVaga",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/vagas/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vagas",
+								""
+							],
+							"query": [
+								{
+									"key": "empresaId",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "vagaId",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "nome",
+									"value": "Desenvolvedor Backend",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Competencia",
+			"item": [
+				{
+					"name": "CriarCompetenciaCandidato",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"candidatoId\": 1, \n    \"competenciaId\": 6\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/competencias/candidato",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"candidato"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CriarCompetenciaVaga",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vagaId\": 1, \n    \"competenciaId\": 6\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/competencias/vaga",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"vaga"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarCompetenciaCandidato",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/8",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarCompetenciaEmpresa",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/8",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarCompetencia",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarCompetenciaCandidato",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/candidato/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"candidato",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarCompetenciaVaga",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/vaga/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"vaga",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarCompetenciaCandidato",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/candidato/1?nome=Java",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"candidato",
+								"1"
+							],
+							"query": [
+								{
+									"key": "nome",
+									"value": "Java"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarCompetenciaVaga",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/vaga/1?nome=JavaScript",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"vaga",
+								"1"
+							],
+							"query": [
+								{
+									"key": "nome",
+									"value": "JavaScript"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarCompetenciaCandidatoIDs",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/candidato/1/3",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"candidato",
+								"1",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarCompetenciaVagaIDs",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/vaga/1/6",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"vaga",
+								"1",
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Curtida",
+			"item": [
+				{
+					"name": "CriarCurtidaCandidato",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"candidatoId\": 1, \n    \"vagaId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/curtidas/candidato",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"curtidas",
+								"candidato"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CriarCurtidaEmpresa",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"empresaId\": 1, \n    \"candidatoId\": 1, \n    \"vagaId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/curtidas/empresa",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"curtidas",
+								"empresa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarCurtidaCandidato",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/curtidas/candidato",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"curtidas",
+								"candidato"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarCurtidaEmpresa",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/curtidas/empresa",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"curtidas",
+								"empresa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MatchCandidato",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/curtidas/matches/candidato/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"curtidas",
+								"matches",
+								"candidato",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MatchEmpresa",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/curtidas/matches/empresa/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"curtidas",
+								"matches",
+								"empresa",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CalcularAfinidadeCandidato",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/curtidas/afinidade?candidatoId=1&vagaId=2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"curtidas",
+								"afinidade"
+							],
+							"query": [
+								{
+									"key": "candidatoId",
+									"value": "1"
+								},
+								{
+									"key": "vagaId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

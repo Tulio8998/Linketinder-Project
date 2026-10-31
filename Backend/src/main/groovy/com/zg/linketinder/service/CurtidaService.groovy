@@ -1,9 +1,8 @@
 package com.zg.linketinder.service
 
-import com.zg.linketinder.dao.CurtidaDAO
+import com.zg.linketinder.dao.interfaces.CurtidaDAO
 import com.zg.linketinder.dao.CurtidaDAOImpl
 import com.zg.linketinder.model.Candidato
-import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.CurtidaCandidato
 import com.zg.linketinder.model.CurtidaEmpresa
 import com.zg.linketinder.model.Empresa

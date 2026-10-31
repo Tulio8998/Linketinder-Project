@@ -1,6 +1,7 @@
 package com.zg.linketinder.dao
 
 import com.zg.linketinder.dao.base.CrudDAOImpl
+import com.zg.linketinder.dao.interfaces.CandidatoDAO
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.Endereco

@@ -1,5 +1,6 @@
 package com.zg.linketinder.dao
 
+import com.zg.linketinder.dao.interfaces.CandidatoDAO
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Endereco
 import com.zg.linketinder.vo.CpfVO

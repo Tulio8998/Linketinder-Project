@@ -1,7 +1,7 @@
 package com.zg.linketinder.service
 
 import com.zg.linketinder.dao.base.CrudDAO
-import com.zg.linketinder.dao.CandidatoDAO
+import com.zg.linketinder.dao.interfaces.CandidatoDAO
 import com.zg.linketinder.dao.CandidatoDAOImpl
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.service.base.CrudService

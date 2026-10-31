@@ -1,4 +1,4 @@
-package com.zg.linketinder.dao
+package com.zg.linketinder.dao.interfaces
 
 import com.zg.linketinder.dao.base.CrudDAO
 import com.zg.linketinder.model.Empresa

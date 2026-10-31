@@ -81,7 +81,6 @@ O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) s
 - **Refatoração de Testes (DaoIntegrationSpec):** Atualização da suíte de testes de integração para utilizar a Injeção de Dependência da Factory (`PostgresTestFactory`) direto no Singleton `ConexaoDB`, garantindo que os DAOs e o ambiente de teste rodem exatamente sobre a mesma transação, permitindo o rollback seguro entre os testes.
 
 ### Versão 1.9.0
-
 * **Arquitetura MVC e DTOs:** Criação de `Controllers` e `DTOs` para isolar completamente a interface (CLI) das regras de negócio (`Services`) e Entidades/VOs.
 * **Desacoplamento da CLI:** Refatoração dos menus interativos, que agora apenas trafegam dados simples e exibem respostas textuais, sem acoplamento com o banco ou serviços.
 * **Testes com Mocks:** Implementação de testes unitários isolados para os Controllers usando Spock e Mocks, além da correção dos testes de exceções de validação dos VOs.
@@ -91,6 +90,51 @@ O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) s
 3. Localize a classe Main.groovy dentro do pacote com.zg.linketinder.
 4. Clique no botão Run ao lado do método main.
 5. Siga as instruções do menu interativo no terminal.
+
+### Versão 2.0.0
+* **API REST:** Implementação de endpoints REST no backend seguindo os princípios arquiteturais de REST/RESTful, utilizando apenas Apache Tomcat embutido e a especificação Jakarta Servlet.
+* **Endpoints Implementados:** [Linketinder](Linketinder.postman_collection.json)
+* **Servlets Mapeados Programaticamente:** Cada recurso tem seu `HttpServlet` registrado via `Tomcat.addServlet` e `addServletMappingDecoded`, mantendo a separação entre controller (HTTP), service (negócio) e DAO (persistência).
+* **Coexistência com o CLI:** A API REST é um acréscimo isolado. A CLI original continua funcionando normalmente via `./gradlew run`, e a API sobe via `./gradlew runApi`, ambas compartilhando a mesma camada de Service e DAO.
+* **DTOs na Requisição:** Os DTOs (`CandidatoDTO`, `EmpresaDTO`, `VagaDTO`) isolam a API dos models internos, recebendo apenas os campos que o cliente pode enviar.
+
+### Tutorial: Implementando API REST
+
+#### Recursos Utilizados
+
+| Recurso | Função |
+|---------|--------|
+| **Apache Tomcat 10 (embutido)** | Container de Servlets e servidor HTTP, incluído como dependência do projeto |
+| **Jakarta Servlet API** | Especificação de Servlets, trazida transitivamente pelo Tomcat |
+| **Jackson (databind + jsr310)** | Serialização e desserialização JSON, com suporte a `LocalDate` |
+| **Gradle** | Build e execução (`runApi` task customizada) |
+
+#### Estratégia Adotada
+
+A implementação seguiu três princípios:
+
+1. **Isolamento total do sistema existente:** A API foi criada como um módulo paralelo. Os pacotes `service`, `dao`, `model`, `vo` e `dto` já existentes são reutilizados sem qualquer alteração. O CLI continua funcionando normalmente via `./gradlew run`.
+2. **Ponto de entrada separado:** Foi criado um `ApiServer` com `main` próprio, executado via `./gradlew runApi`. O `Main.groovy` original da CLI permanece intocado.
+3. **Camadas:** O fluxo é `Servlet (HTTP) → DTO (transporte) → Model/VO (domínio) → Service (negócio) → DAO (persistência)`, mantendo o padrão MVC.
+
+#### Configurações
+
+No `build.gradle`:
+
+```groovy
+dependencies {
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.28'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2'
+}
+
+tasks.register('runApi', JavaExec) {
+    group = 'application'
+    description = 'Inicia a API REST - porta: 8080'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.zg.linketinder.api.ApiServer'
+}
+```
 
 ## Execução via Gradle
 1. Abra o terminal na pasta Backend.

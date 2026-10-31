@@ -1,8 +1,8 @@
 package com.zg.linketinder.service
 
-import com.zg.linketinder.dao.CandidatoDAO
+import com.zg.linketinder.dao.interfaces.CandidatoDAO
 import com.zg.linketinder.dao.CandidatoDAOImpl
-import com.zg.linketinder.dao.CompetenciaDAO
+import com.zg.linketinder.dao.interfaces.CompetenciaDAO
 import com.zg.linketinder.dao.CompetenciaDAOImpl
 import com.zg.linketinder.model.Competencia
 
