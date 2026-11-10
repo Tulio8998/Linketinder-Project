@@ -136,6 +136,26 @@ tasks.register('runApi', JavaExec) {
 }
 ```
 
+## Lógica de Match no Banco de Dados (Desafio K1-T9)
+
+Para viabilizar o sistema de interações e a ocorrência de "Matches" no Linketinder, o banco de dados relacional foi arquitetado com tabelas de suporte para rastrear o interesse mútuo. A lógica funciona da seguinte forma:
+
+1. **Rastreio de Interações (Tabelas de Curtidas):**
+   Foram criadas duas tabelas associativas independentes:
+- `curtidas_candidato`: Armazena o `id_candidato`, o `id_vaga` que ele avaliou e o status booleano `curtiu` (TRUE para like, FALSE para dislike).
+- `curtidas_empresa`: Armazena o `id_empresa`, o `id_candidato` avaliado, o `id_vaga` de origem e o status booleano `curtiu`.
+
+2. **O Evento de Match (Inner Join):**
+   O sistema não salva o "Match" de forma estática, ele o calcula dinamicamente cruzando os rastreios. Um Match ocorre quando a condição de interesse mútuo é satisfeita para a *mesma vaga*.
+   Na camada de banco de dados (DAO), isso é processado por meio de uma query SQL com `INNER JOIN` entre as duas tabelas de curtidas:
+   ```sql
+   SELECT c.nome AS candidato, e.nome AS empresa, v.nome AS vaga 
+   FROM curtidas_candidato cc
+   INNER JOIN curtidas_empresa ce 
+       ON cc.id_candidato = ce.id_candidato AND cc.id_vaga = ce.id_vaga
+   WHERE cc.curtiu = TRUE AND ce.curtiu = TRUE;
+
+
 ## Execução via Gradle
 1. Abra o terminal na pasta Backend.
 2. Execute o comando correspondente ao seu sistema: ./gradlew run
