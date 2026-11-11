@@ -7,7 +7,7 @@ e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 ## [Unreleased]
 
 ### Adicionado
-- Nenhuma alteração registrada.
+- Spec funcional da feature Recrutador em `docs/specs/recrutador/spec.md`.
 
 ### Modificado
 - Nenhuma alteração registrada.
