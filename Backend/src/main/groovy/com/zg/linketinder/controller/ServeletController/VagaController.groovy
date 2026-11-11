@@ -1,6 +1,10 @@
 package com.zg.linketinder.controller.ServeletController
 
 import com.zg.linketinder.api.JsonHelper
+import com.zg.linketinder.api.AnonymousVagaTokenStore
+import com.zg.linketinder.api.ServletIdentity
+import com.zg.linketinder.dto.VagaGestaoDTO
+import com.zg.linketinder.dto.VagaPublicaDTO
 import com.zg.linketinder.dto.VagaDTO
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Endereco
@@ -13,28 +17,38 @@ import jakarta.servlet.http.HttpServletResponse
 
 class VagaController extends HttpServlet {
 
-    private final VagaService vagaService = new VagaService()
-    private final EmpresaService empresaService = new EmpresaService()
+    private final VagaService vagaService
+    private final EmpresaService empresaService
+
+    VagaController() {
+        this(new VagaService(), new EmpresaService())
+    }
+
+    VagaController(VagaService vagaService, EmpresaService empresaService) {
+        this.vagaService = vagaService
+        this.empresaService = empresaService
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         try {
+            Empresa empresa = empresaAutenticada(req, resp)
+            if (empresa == null) return
             VagaDTO dto = JsonHelper.read(req.inputStream, VagaDTO)
-
-            if (dto.empresa?.id == null) {
-                JsonHelper.error(resp, 400, 'Campo obrigatório: empresa.id')
+            if (dto == null) {
+                JsonHelper.error(resp, 400, 'Dados da vaga obrigatórios')
                 return
             }
 
-            Empresa empresa = empresaService.buscarPorId(dto.empresa.id)
-            if (empresa == null) {
-                JsonHelper.error(resp, 404, "Empresa ${dto.empresa.id} não encontrada")
+            if (dto.empresa?.id != null && dto.empresa.id != empresa.id) {
+                JsonHelper.error(resp, 403, 'A empresa autenticada não pode cadastrar vagas para outra empresa')
                 return
             }
 
             Vaga vaga = new Vaga(
                     nome: dto.nome,
                     descricao: dto.descricao,
+                    area: dto.area,
                     empresa: empresa,
                     endereco: new Endereco(
                             pais: dto.pais,
@@ -44,13 +58,12 @@ class VagaController extends HttpServlet {
             )
             vagaService.salvar(vaga)
             resp.setHeader('Location', "/api/vagas/${vaga.id}")
-            JsonHelper.respond(resp, 201, vaga)
+            JsonHelper.respond(resp, 201, gestao(vaga))
 
         } catch (IllegalArgumentException e) {
             JsonHelper.error(resp, 400, e.message)
         } catch (Exception e) {
-            e.printStackTrace()
-            JsonHelper.error(resp, 500, 'Erro interno do servidor')
+            JsonHelper.internalError(resp, e)
         }
     }
 
@@ -59,23 +72,27 @@ class VagaController extends HttpServlet {
         try {
             Integer id = extrairId(req, resp)
             if (id == null) return
+            Empresa empresaAutenticada = empresaAutenticada(req, resp)
+            if (empresaAutenticada == null) return
 
             Vaga vaga = vagaService.buscarPorId(id)
             if (vaga == null) {
                 JsonHelper.error(resp, 404, "Vaga ${id} não encontrada")
                 return
             }
-
-            VagaDTO dto = JsonHelper.read(req.inputStream, VagaDTO)
-
-            if (dto.empresa?.id == null) {
-                JsonHelper.error(resp, 400, 'Campo obrigatório: empresa.id')
+            if (vaga.empresa?.id != empresaAutenticada.id) {
+                JsonHelper.error(resp, 404, 'Vaga não encontrada')
                 return
             }
 
-            Empresa empresa = empresaService.buscarPorId(dto.empresa.id)
-            if (empresa == null) {
-                JsonHelper.error(resp, 404, "Empresa ${dto.empresa.id} não encontrada")
+            VagaDTO dto = JsonHelper.read(req.inputStream, VagaDTO)
+            if (dto == null) {
+                JsonHelper.error(resp, 400, 'Dados da vaga obrigatórios')
+                return
+            }
+
+            if (dto.empresa?.id != null && dto.empresa.id != empresaAutenticada.id) {
+                JsonHelper.error(resp, 403, 'A empresa autenticada não pode editar vagas de outra empresa')
                 return
             }
 
@@ -83,7 +100,8 @@ class VagaController extends HttpServlet {
                     id: id,
                     nome: dto.nome,
                     descricao: dto.descricao,
-                    empresa: empresa,
+                    area: dto.area,
+                    empresa: empresaAutenticada,
                     endereco: new Endereco(
                             pais: dto.pais,
                             estado: dto.estado,
@@ -91,13 +109,12 @@ class VagaController extends HttpServlet {
                     )
             )
             vagaService.atualizar(id, vaga)
-            JsonHelper.respond(resp, 200, vaga)
+            JsonHelper.respond(resp, 200, gestao(vaga))
 
         } catch (IllegalArgumentException e) {
             JsonHelper.error(resp, 400, e.message)
         } catch (Exception e) {
-            e.printStackTrace()
-            JsonHelper.error(resp, 500, 'Erro interno do servidor')
+            JsonHelper.internalError(resp, e)
         }
     }
 
@@ -109,13 +126,19 @@ class VagaController extends HttpServlet {
             if (pathInfo != null && !pathInfo.isEmpty() && pathInfo != '/') {
                 Integer id = extrairId(req, resp)
                 if (id == null) return
+                Empresa empresa = empresaAutenticada(req, resp)
+                if (empresa == null) return
 
                 Vaga vaga = vagaService.buscarPorId(id)
                 if (vaga == null) {
                     JsonHelper.error(resp, 404, "Vaga ${id} não encontrada")
                     return
                 }
-                vagaService.excluirVagaDaEmpresa(vaga.empresa.id, id)
+                if (vaga.empresa?.id != empresa.id) {
+                    JsonHelper.error(resp, 404, 'Vaga não encontrada')
+                    return
+                }
+                vagaService.excluirVagaDaEmpresa(empresa.id, id)
                 resp.status = 204
             } else {
                 JsonHelper.error(resp, 400, 'ID é obrigatório na URL')
@@ -124,8 +147,7 @@ class VagaController extends HttpServlet {
         } catch (NumberFormatException ignored) {
             JsonHelper.error(resp, 400, "ID inválido")
         } catch (Exception e) {
-            e.printStackTrace()
-            JsonHelper.error(resp, 500, 'Erro interno do servidor')
+            JsonHelper.internalError(resp, e)
         }
     }
 
@@ -136,13 +158,19 @@ class VagaController extends HttpServlet {
             if (pathInfo != null && !pathInfo.isEmpty() && pathInfo != '/') {
                 Integer id = extrairId(req, resp)
                 if (id == null) return
+                Empresa empresa = empresaAutenticada(req, resp)
+                if (empresa == null) return
 
                 Vaga vaga = vagaService.buscarPorId(id)
                 if (vaga == null) {
                     JsonHelper.error(resp, 404, "Vaga ${id} não encontrada")
                     return
                 }
-                JsonHelper.respond(resp, 200, vaga)
+                if (vaga.empresa?.id != empresa.id) {
+                    JsonHelper.error(resp, 404, 'Vaga não encontrada')
+                    return
+                }
+                JsonHelper.respond(resp, 200, gestao(vaga))
                 return
             }
 
@@ -151,8 +179,14 @@ class VagaController extends HttpServlet {
             String nome = req.getParameter('nome')
 
             if (empresaIdStr && vagaIdStr) {
+                Empresa empresa = empresaAutenticada(req, resp)
+                if (empresa == null) return
                 Integer empresaId = parseInteger(resp, empresaIdStr, 'empresaId')
                 if (empresaId == null) return
+                if (empresaId != empresa.id) {
+                    JsonHelper.error(resp, 404, 'Vaga não encontrada')
+                    return
+                }
                 Integer vagaId = parseInteger(resp, vagaIdStr, 'vagaId')
                 if (vagaId == null) return
 
@@ -162,13 +196,19 @@ class VagaController extends HttpServlet {
                             "Vaga ${vagaId} não encontrada para a empresa ${empresaId}")
                     return
                 }
-                JsonHelper.respond(resp, 200, vaga)
+                JsonHelper.respond(resp, 200, gestao(vaga))
                 return
             }
 
             if (empresaIdStr && nome && !nome.isBlank()) {
+                Empresa empresa = empresaAutenticada(req, resp)
+                if (empresa == null) return
                 Integer empresaId = parseInteger(resp, empresaIdStr, 'empresaId')
                 if (empresaId == null) return
+                if (empresaId != empresa.id) {
+                    JsonHelper.error(resp, 404, 'Vaga não encontrada')
+                    return
+                }
 
                 Vaga vaga = vagaService.buscarNomeVagaEmpresa(empresaId, nome)
                 if (vaga == null) {
@@ -176,16 +216,22 @@ class VagaController extends HttpServlet {
                             "Vaga '${nome}' não encontrada para a empresa ${empresaId}")
                     return
                 }
-                JsonHelper.respond(resp, 200, vaga)
+                JsonHelper.respond(resp, 200, gestao(vaga))
                 return
             }
 
             if (empresaIdStr) {
+                Empresa empresa = empresaAutenticada(req, resp)
+                if (empresa == null) return
                 Integer empresaId = parseInteger(resp, empresaIdStr, 'empresaId')
                 if (empresaId == null) return
+                if (empresaId != empresa.id) {
+                    JsonHelper.error(resp, 404, 'Vagas não encontradas')
+                    return
+                }
 
                 List<Vaga> lista = vagaService.listarVagaEmpresa(empresaId)
-                JsonHelper.respond(resp, 200, lista)
+                JsonHelper.respond(resp, 200, lista.collect { gestao(it) })
                 return
             }
 
@@ -195,17 +241,53 @@ class VagaController extends HttpServlet {
                     JsonHelper.error(resp, 404, "Vaga com nome '${nome}' não encontrada")
                     return
                 }
-                JsonHelper.respond(resp, 200, vaga)
+                JsonHelper.respond(resp, 200, publica(vaga))
                 return
             }
 
             List<Vaga> lista = vagaService.listarTodos()
-            JsonHelper.respond(resp, 200, lista)
+            JsonHelper.respond(resp, 200, lista.collect { publica(it) })
 
         } catch (Exception e) {
-            e.printStackTrace()
-            JsonHelper.error(resp, 500, 'Erro interno do servidor')
+            JsonHelper.internalError(resp, e)
         }
+    }
+
+    private Empresa empresaAutenticada(HttpServletRequest req, HttpServletResponse resp) {
+        String email = ServletIdentity.requirePrincipalEmail(req, resp)
+        if (email == null) return null
+        try {
+            Empresa empresa = empresaService.buscarEmailEmpresaParaAutorizacao(email)
+            if (empresa == null) {
+                JsonHelper.error(resp, 403, 'Identidade autenticada não corresponde a uma empresa')
+            }
+            return empresa
+        } catch (Exception e) {
+            JsonHelper.internalError(resp, e)
+            return null
+        }
+    }
+
+    private static VagaPublicaDTO publica(Vaga vaga) {
+        return new VagaPublicaDTO(
+                token: AnonymousVagaTokenStore.INSTANCE.criar(vaga.id),
+                nome: vaga.nome,
+                descricao: vaga.descricao,
+                area: vaga.area,
+                competencias: vaga.competencias?.collect { it.nome } ?: []
+        )
+    }
+
+    private static VagaGestaoDTO gestao(Vaga vaga) {
+        return new VagaGestaoDTO(
+                id: vaga.id,
+                nome: vaga.nome,
+                descricao: vaga.descricao,
+                area: vaga.area,
+                pais: vaga.endereco?.pais,
+                estado: vaga.endereco?.estado,
+                cidade: vaga.endereco?.cidade
+        )
     }
 
     private Integer parseInteger(HttpServletResponse resp, String valor, String campo) {

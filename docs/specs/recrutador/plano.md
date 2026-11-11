@@ -85,7 +85,7 @@ o schema nem implementa a feature.
 
 ### BE-1 — Adicionar modelos e contratos de transporte
 
-- [ ] Criar `Recrutador` com empresa, área, descrição, dados cadastrais e
+- [x] Criar `Recrutador` com empresa, área, descrição, dados cadastrais e
   estado ativo; adicionar `area` a `Vaga` e referência do autor a
   `CurtidaEmpresa`. Criar DTOs de entrada/saída necessários, separando dados
   cadastrais de representações anônimas e de contato pós-match. Reutilizar os
@@ -104,14 +104,14 @@ o schema nem implementa a feature.
 - **Teste:** `cd Backend && ./gradlew test --tests '*Recrutador*Spec'`; incluir
   testes de construção/validação e serialização dos DTOs sem senha.
 - **Checklist de anonimato:**
-  - [ ] DTO anônimo do candidato contém somente competências, formação (se
+  - [x] DTO anônimo do candidato contém somente competências, formação (se
     disponível) e descrição, sem identificadores estáveis.
-  - [ ] DTO de contato pós-match contém nome/e-mail corporativo do autor e
+  - [x] DTO de contato pós-match contém nome/e-mail corporativo do autor e
     informações da empresa, excluindo CPF, data de nascimento e senha.
 
 ### BE-2 — Implementar SQL e DAOs de recrutadores e vagas por área
 
-- [ ] Implementar persistência de cadastro, listagem e desativação lógica de
+- [x] Implementar persistência de cadastro, listagem e desativação lógica de
   recrutadores, leitura de vagas limitadas à empresa e área, histórico de
   avaliações e match com o autor. Novas avaliações devem ser insert-only:
   conflito na chave empresa/candidato/vaga não pode atualizar `curtiu` nem
@@ -137,15 +137,15 @@ o schema nem implementa a feature.
   `cd Backend && ./gradlew test --tests '*Recrutador*IntegrationSpec'`, após
   aplicar migration no `linketinder_test` preparado com o DDL base.
 - **Checklist de anonimato:**
-  - [ ] Consultas pré-match selecionam apenas campos anônimos permitidos e não
+  - [x] Consultas pré-match selecionam apenas campos anônimos permitidos e não
     identificadores estáveis.
-  - [ ] Consulta de match restringe candidato, empresa e vaga participantes e
+  - [x] Consulta de match restringe candidato, empresa e vaga participantes e
     não retorna CPF, data de nascimento ou senha.
-  - [ ] Cenários legados sem `id_recrutador` permanecem sem contato atribuído.
+  - [x] Cenários legados sem `id_recrutador` permanecem sem contato atribuído.
 
 ### BE-3 — Implementar regras de negócio nos Services
 
-- [ ] Criar `RecrutadorService` para cadastro pela empresa e desativação lógica.
+- [x] Criar `RecrutadorService` para cadastro pela empresa e desativação lógica.
   Atualizar Services de vaga/curtida para validar recrutador ativo, vínculo à
   empresa dona da vaga e igualdade de área antes de listar/avaliar. Resolver
   concorrência pelo primeiro registro sem sobrescrever ação ou autoria; manter
@@ -163,16 +163,16 @@ o schema nem implementa a feature.
     (novo ou existente)
 - **Teste:** `cd Backend && ./gradlew test --tests '*RecrutadorServiceSpec' --tests '*VagaServiceSpec' --tests '*CurtidaServiceSpec'`.
 - **Checklist de anonimato:**
-  - [ ] Rejeitar leitura/avaliação fora da empresa/área ou por recrutador
+  - [x] Rejeitar leitura/avaliação fora da empresa/área ou por recrutador
     inativo sem revelar dados do candidato.
-  - [ ] Somente match mútuo para a mesma vaga libera contato, e somente às
+  - [x] Somente match mútuo para a mesma vaga libera contato, e somente às
     partes envolvidas.
-  - [ ] CPF, data de nascimento e senha não são incluídos nos retornos/logs dos
+  - [x] CPF, data de nascimento e senha não são incluídos nos retornos/logs dos
     Services.
 
 ### BE-4 — Expor operações HTTP e autorização no backend
 
-- [ ] Adicionar endpoints para a empresa cadastrar/listar/desativar recrutadores
+- [x] Adicionar endpoints para a empresa cadastrar/listar/desativar recrutadores
   e para recrutadores elegíveis listar vagas/candidatos anônimos, consultar
   histórico e registrar avaliação. Atualizar consulta de match para devolver
   contato do autor somente ao candidato participante. Reutilizar DTOs explícitos
@@ -187,22 +187,26 @@ o schema nem implementa a feature.
   - `Backend/src/main/groovy/com/zg/linketinder/controller/ServeletController/CurtidaController.groovy`
   - `Backend/src/main/groovy/com/zg/linketinder/controller/ServeletController/VagaController.groovy`
   - `Backend/src/main/groovy/com/zg/linketinder/controller/ServeletController/EmpresaController.groovy`
+  - `Backend/src/main/groovy/com/zg/linketinder/controller/ServeletController/CandidatoController.groovy`
+  - `Backend/src/main/groovy/com/zg/linketinder/controller/ServeletController/CompetenciaController.groovy`
   - `Backend/src/main/groovy/com/zg/linketinder/api/ApiServer.groovy`
+  - `Backend/src/main/groovy/com/zg/linketinder/api/ServletIdentity.groovy`
+  - `Backend/src/main/groovy/com/zg/linketinder/api/AnonymousVagaTokenStore.groovy`
   - testes dos controllers em
     `Backend/src/test/groovy/com/zg/linketinder/controller/`
-- **Teste:** `cd Backend && ./gradlew test --tests '*RecrutadorControllerSpec' --tests '*CurtidaControllerSpec' --tests '*VagaControllerSpec'`.
+- **Teste:** `cd Backend && ./gradlew test --tests '*ControllerSpec' --tests '*LegacyApiPrivacySpec'`.
 - **Checklist de anonimato:**
-  - [ ] Testar serialização de listagem, busca, avaliações, afinidade e match:
+  - [x] Testar serialização de listagem, busca, avaliações, afinidade e match:
     nada pessoal antes de match, mesmo em IDs/metadata/respostas de erro.
-  - [ ] Confirmar que após match apenas candidato participante recebe nome e
+  - [x] Confirmar que após match apenas candidato participante recebe nome e
     e-mail corporativo do autor e informações da empresa; CPF, data de
     nascimento e senha nunca são enviados.
-  - [ ] Requests com ID de empresa/recrutador de terceiros não contornam
+  - [x] Requests com ID de empresa/recrutador de terceiros não contornam
     autorização.
 
 ### BE-5 — Cobrir integração e regressões do backend
 
-- [ ] Completar a suíte de integração para cadastro, unicidade, filtro por área,
+- [x] Completar a suíte de integração para cadastro, unicidade, filtro por área,
   pertencimento à empresa, primeira avaliação imutável, likes em vagas
   distintas, soft delete, histórico e matches legados/novos. Corrigir apenas
   incompatibilidades causadas pela migration e garantir que os fluxos antigos
@@ -211,17 +215,25 @@ o schema nem implementa a feature.
   - `Backend/src/test/groovy/com/zg/linketinder/dao/`
   - `Backend/src/test/groovy/com/zg/linketinder/service/`
   - `Backend/src/test/groovy/com/zg/linketinder/controller/`
-  - `Backend/src/test/groovy/com/zg/linketinder/dao/DaoIntegrationSpec.groovy`
-- **Teste:** `cd Backend && ./gradlew test` com PostgreSQL local disponível e
-  `linketinder_test` preparado com schema base e migration. Testar também
-  `cd Backend && ./gradlew test` sem banco somente para confirmar o resultado
-  dos testes unitários, documentando se os testes de integração forem
-  indisponíveis.
+  - `Backend/src/test/groovy/com/zg/linketinder/dao/RecrutadorDaoIntegrationSpec.groovy`
+- **Teste executado:** `cd Backend && ./gradlew test --tests '*ControllerSpec' --tests '*ServiceSpec' --tests '*RecrutadorDaoIntegrationSpec' --tests '*ReviewTokenStoreSpec' --tests '*AnonymousVagaTokenStoreSpec' --tests '*LegacyApiPrivacySpec'`.
+- **Isolamento:** a integração usa schema aleatório temporário em
+  `linketinder_test` e o remove ao terminar. A suíte completa não foi executada,
+  pois os testes de DAO existentes limpam tabelas do schema público
+  (`DaoIntegrationSpec.cleanupSpec()`); não se deve executá-los contra dados
+  compartilhados.
 - **Checklist de anonimato:**
-  - [ ] Testes automatizados confirmam perfil anônimo pré-match em todos os
+  - [x] Testes automatizados confirmam perfil anônimo pré-match em todos os
     caminhos de leitura afetados.
-  - [ ] Testes confirmam revelação pós-match restrita aos participantes e
+  - [x] Testes confirmam revelação pós-match restrita aos participantes e
     ocultação permanente de CPF, data de nascimento e senha.
+
+**Decisão de autenticação:** o backend atual não configura autenticação que
+preencha `HttpServletRequest.userPrincipal`. Endpoints sensíveis exigem um
+`Principal` cujo nome seja o e-mail cadastrado; sem ele, respondem `401` e não
+usam IDs recebidos para autorizar. Até essa autenticação ser configurada, essas
+operações permanecem bloqueadas. A listagem pública de vagas retorna DTOs sem
+IDs nem identidade da empresa e usa tokens opacos temporários para curtidas.
 
 ## 3. Frontend
 

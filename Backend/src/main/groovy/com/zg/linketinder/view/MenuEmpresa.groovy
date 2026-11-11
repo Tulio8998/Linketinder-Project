@@ -334,10 +334,13 @@ class MenuEmpresa {
         String estado = Util.leStringConsole(reader)
         print "Cidade: "
         String cidade = Util.leStringConsole(reader)
+        print "Area (ex: TI, RH, Suporte): "
+        String area = Util.leStringConsole(reader)
 
         VagaDTO dto = new VagaDTO(
                 nome: nome, descricao: descricao,
                 pais: pais, estado: estado, cidade: cidade,
+                area: area,
                 empresa: empresaSelecionada
         )
 
@@ -398,10 +401,13 @@ class MenuEmpresa {
         String estado = Util.leStringConsole(reader)
         print "Nova Cidade: "
         String cidade = Util.leStringConsole(reader)
+        print "Nova Area (ex: TI, RH, Suporte): "
+        String area = Util.leStringConsole(reader)
 
         VagaDTO dto = new VagaDTO(
                 id: vagaSelecionada.id, nome: nome, descricao: descricao,
                 pais: pais, estado: estado, cidade: cidade,
+                area: area,
                 empresa: empresaSelecionada
         )
 

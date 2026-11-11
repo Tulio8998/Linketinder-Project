@@ -5,19 +5,36 @@ import com.zg.linketinder.dao.interfaces.VagaDAO
 import com.zg.linketinder.dao.VagaDAOImpl
 import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.service.base.CrudService
+import com.zg.linketinder.util.AreaAtuacao
 
 class VagaService extends CrudService<Vaga> {
 
-    private VagaDAO vagaDAO = new VagaDAOImpl()
+    private VagaDAO vagaDAO
+
+    VagaService() {
+        this(new VagaDAOImpl())
+    }
+
+    VagaService(VagaDAO vagaDAO) {
+        this.vagaDAO = vagaDAO
+    }
 
     @Override
     protected CrudDAO<Vaga> getDao() { return vagaDAO }
 
     @Override
     protected void validarAntesSalvar(Vaga vaga) {
+        vaga.area = AreaAtuacao.normalizar(vaga.area)
+        if (vaga.empresa?.id == null) throw new IllegalArgumentException("Empresa obrigatoria")
         if (vagaDAO.buscarNomeVagaEmpresa(vaga.empresa.id, vaga.nome) != null) {
             throw new IllegalArgumentException("A empresa ja possui uma vaga cadastrada com esse nome: ${vaga.nome}")
         }
+    }
+
+    @Override
+    protected void validarAntesAtualizar(Integer id, Vaga vaga) {
+        vaga.area = AreaAtuacao.normalizar(vaga.area)
+        if (vaga.empresa?.id == null) throw new IllegalArgumentException("Empresa obrigatoria")
     }
 
     void excluirVagaDaEmpresa(Integer id_empresa, Integer id_vaga) {

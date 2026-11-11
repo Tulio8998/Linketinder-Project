@@ -14,6 +14,12 @@ e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
   avaliações em `schema/update_recrutador.sql`, com cópia sincronizada no backend.
 - Teste SQL isolado para a migration de Recrutador em
   `schema/tests/update_recrutador_test.sql`.
+- Backend da feature Recrutador: cadastro e desativação lógica, filtro por área,
+  autoria imutável da primeira avaliação, histórico e contato pós-match.
+- Endpoints sensíveis agora exigem identidade autenticada; perfis e vagas
+  anônimos usam DTOs sem dados pessoais nem identificadores internos.
+- Testes Spock de Services, Controllers, tokens opacos e integração PostgreSQL
+  em schema temporário isolado.
 
 ### Modificado
 - Nenhuma alteração registrada.

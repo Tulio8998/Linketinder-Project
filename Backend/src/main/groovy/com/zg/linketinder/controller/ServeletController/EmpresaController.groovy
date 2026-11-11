@@ -1,8 +1,10 @@
 package com.zg.linketinder.controller.ServeletController
 
 import com.zg.linketinder.api.JsonHelper
+import com.zg.linketinder.api.ServletIdentity
 import com.zg.linketinder.dto.CandidatoDTO
 import com.zg.linketinder.dto.EmpresaDTO
+import com.zg.linketinder.dto.EmpresaPerfilDTO
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Endereco
@@ -15,12 +17,24 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 
 class EmpresaController extends HttpServlet {
-    private final EmpresaService service = new EmpresaService()
+    private final EmpresaService service
+
+    EmpresaController() {
+        this(new EmpresaService())
+    }
+
+    EmpresaController(EmpresaService service) {
+        this.service = service
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         try {
             EmpresaDTO dto = JsonHelper.read(req.inputStream, EmpresaDTO)
+            if (dto == null) {
+                JsonHelper.error(resp, 400, 'Dados da empresa obrigatórios')
+                return
+            }
 
             Empresa empresa = new Empresa(
                     cnpj: new CnpjVO(dto.cnpj),
@@ -37,13 +51,12 @@ class EmpresaController extends HttpServlet {
             )
             service.salvar(empresa)
             resp.setHeader('Location', "/api/empresas/${empresa.id}")
-            JsonHelper.respond(resp, 201, empresa)
+            JsonHelper.respond(resp, 201, [id: empresa.id])
 
         } catch (IllegalArgumentException e) {
             JsonHelper.error(resp, 400, e.message)
         } catch (Exception e) {
-            e.printStackTrace()
-            JsonHelper.error(resp, 500, 'Erro interno do servidor')
+            JsonHelper.internalError(resp, e)
         }
     }
 
@@ -53,13 +66,18 @@ class EmpresaController extends HttpServlet {
             Integer id = extrairId(req, resp)
             if (id == null) return
 
-            Empresa empresa = service.buscarPorId(id)
-            if (empresa == null) {
-                JsonHelper.error(resp, 404, "Empresa ${id} não encontrada")
+            Empresa autenticada = empresaAutenticada(req, resp)
+            if (autenticada == null) return
+            if (autenticada.id != id) {
+                JsonHelper.error(resp, 404, 'Empresa não encontrada')
                 return
             }
 
             EmpresaDTO dto = JsonHelper.read(req.inputStream, EmpresaDTO)
+            if (dto == null) {
+                JsonHelper.error(resp, 400, 'Dados da empresa obrigatórios')
+                return
+            }
 
             empresa = new Empresa(
                     id: id,
@@ -76,13 +94,12 @@ class EmpresaController extends HttpServlet {
                     )
             )
             service.atualizar(id, empresa)
-            JsonHelper.respond(resp, 200, empresa)
+            JsonHelper.respond(resp, 200, [id: empresa.id])
 
         } catch (IllegalArgumentException e) {
             JsonHelper.error(resp, 400, e.message)
         } catch (Exception e) {
-            e.printStackTrace()
-            JsonHelper.error(resp, 500, 'Erro interno do servidor')
+            JsonHelper.internalError(resp, e)
         }
     }
 
@@ -95,69 +112,65 @@ class EmpresaController extends HttpServlet {
                 Integer id = extrairId(req, resp)
                 if (id == null) return
 
-                Empresa empresa = service.buscarPorId(id)
-                if (empresa == null) {
-                    JsonHelper.error(resp, 404, "Empresa ${id} não encontrada")
+                Empresa autenticada = empresaAutenticada(req, resp)
+                if (autenticada == null) return
+                if (autenticada.id != id) {
+                    JsonHelper.error(resp, 404, 'Empresa não encontrada')
                     return
                 }
-                service.excluir(id)
+                service.excluir(autenticada.id)
                 resp.status = 204
             }
 
         } catch (NumberFormatException ignored) {
             JsonHelper.error(resp, 400, "ID inválido")
         } catch (Exception e) {
-            e.printStackTrace()
-            JsonHelper.error(resp, 500, 'Erro interno do servidor')
+            JsonHelper.internalError(resp, e)
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         try {
+            Empresa autenticada = empresaAutenticada(req, resp)
+            if (autenticada == null) return
             String pathInfo = req.pathInfo
 
             if (pathInfo != null && !pathInfo.isEmpty() && pathInfo != '/') {
                 Integer id = extrairId(req, resp)
                 if (id == null) return
-
-                Empresa empresa = service.buscarPorId(id)
-                if (empresa == null) {
-                    JsonHelper.error(resp, 404, "Empresa ${id} não encontrado")
+                if (autenticada.id != id) {
+                    JsonHelper.error(resp, 404, 'Empresa não encontrada')
                     return
                 }
-                JsonHelper.respond(resp, 200, empresa)
+                JsonHelper.respond(resp, 200, perfil(autenticada))
                 return
             }
 
             String cnpj = req.getParameter('cnpj')
             if (cnpj != null && !cnpj.isBlank()) {
-                Empresa empresa = service.buscarCnpjEmpresa(cnpj)
-                if (empresa == null) {
-                    JsonHelper.error(resp, 404, "Empresa com CNPJ ${cnpj} não encontrado")
+                if (autenticada.cnpj?.valor != cnpj) {
+                    JsonHelper.error(resp, 404, 'Empresa não encontrada')
                     return
                 }
-                JsonHelper.respond(resp, 200, empresa)
+                JsonHelper.respond(resp, 200, perfil(autenticada))
                 return
             }
 
             String email = req.getParameter('email')
             if (email != null && !email.isBlank()) {
-                Empresa empresa = service.buscarEmailEmpresa(email)
-                if (empresa == null) {
-                    JsonHelper.error(resp, 404, "Empresa com email ${email} não encontrado")
+                if (!autenticada.email?.valor?.equalsIgnoreCase(email)) {
+                    JsonHelper.error(resp, 404, 'Empresa não encontrada')
                     return
                 }
-                JsonHelper.respond(resp, 200, empresa)
+                JsonHelper.respond(resp, 200, perfil(autenticada))
                 return
             }
 
-            List<Empresa> lista = service.listarTodos()
-            JsonHelper.respond(resp, 200, lista)
+            JsonHelper.respond(resp, 200, perfil(autenticada))
 
         } catch (Exception e) {
-            e.printStackTrace()
-            JsonHelper.error(resp, 500, 'Erro interno do servidor')
+            JsonHelper.internalError(resp, e)
         }
     }
 
@@ -173,5 +186,31 @@ class EmpresaController extends HttpServlet {
             JsonHelper.error(resp, 400, "ID invalido: ${pathInfo.substring(1)}")
             return null
         }
+    }
+
+    private Empresa empresaAutenticada(HttpServletRequest req, HttpServletResponse resp) {
+        String email = ServletIdentity.requirePrincipalEmail(req, resp)
+        if (email == null) return null
+        try {
+            Empresa empresa = service.buscarEmailEmpresaParaAutorizacao(email)
+            if (empresa == null) {
+                JsonHelper.error(resp, 403, 'Identidade autenticada não corresponde a uma empresa')
+            }
+            return empresa
+        } catch (Exception e) {
+            JsonHelper.internalError(resp, e)
+            return null
+        }
+    }
+
+    private static EmpresaPerfilDTO perfil(Empresa empresa) {
+        return new EmpresaPerfilDTO(
+                id: empresa.id,
+                nome: empresa.nome,
+                email: empresa.email?.valor,
+                cnpj: empresa.cnpj?.valor,
+                descricao: empresa.descricao,
+                endereco: empresa.endereco
+        )
     }
 }

@@ -41,4 +41,9 @@ class CandidatoService extends CrudService<Candidato> {
         try { return candidatoDAO.buscarEmailCandidato(email) }
         catch (Exception e) { println "Nao tem candidato com esse email: ${e.message}"; return null }
     }
+
+    Candidato buscarEmailCandidatoParaAutorizacao(String email) {
+        if (email == null || email.isBlank()) return null
+        return candidatoDAO.buscarEmailCandidato(email.trim())
+    }
 }

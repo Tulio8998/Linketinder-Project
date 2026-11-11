@@ -21,9 +21,17 @@ class CurtidaDAOImpl implements CurtidaDAO {
     }
 
     @Override
-    void salvarCurtidaEmpresa(Integer idEmpresa, Integer idCandidato, Integer idVaga, Boolean curtiu) {
-        ConexaoDB.emTransacao { sql ->
-            sql.executeInsert(CurtidaSql.INSERIR_EMPRESA, [idEmpresa, idCandidato, idVaga, curtiu])
+    boolean salvarCurtidaEmpresa(
+            Integer idEmpresa,
+            Integer idRecrutador,
+            Integer idCandidato,
+            Integer idVaga,
+            Boolean curtiu
+    ) {
+        return ConexaoDB.emTransacao { sql ->
+            !sql.rows(CurtidaSql.INSERIR_EMPRESA, [
+                    idCandidato, curtiu, idRecrutador, idVaga, idEmpresa
+            ]).isEmpty()
         }
     }
 

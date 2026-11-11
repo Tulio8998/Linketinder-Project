@@ -30,13 +30,14 @@ class VagaDAOImpl extends CrudDAOImpl<Vaga> implements VagaDAO {
     @Override
     protected List getParametrosInserir(Vaga vaga) {
         return [
-                vaga.nome, vaga.descricao, vaga.endereco?.pais, vaga.endereco?.estado, vaga.endereco?.cidade, vaga.empresa.id
+                vaga.nome, vaga.descricao, vaga.endereco?.pais, vaga.endereco?.estado,
+                vaga.endereco?.cidade, vaga.empresa.id, vaga.area
         ]
     }
 
     @Override
     protected List getParametrosAtualizar(Integer id, Vaga vaga) {
-        return [vaga.nome, vaga.descricao, vaga.endereco?.pais, vaga.endereco?.estado, vaga.endereco?.cidade, id]
+        return [vaga.nome, vaga.descricao, vaga.endereco?.pais, vaga.endereco?.estado, vaga.endereco?.cidade, vaga.area, id]
     }
 
     @Override
@@ -138,6 +139,7 @@ class VagaDAOImpl extends CrudDAOImpl<Vaga> implements VagaDAO {
                 id: (linha.id instanceof Number) ? ((Number) linha.id).intValue() : Integer.parseInt(linha.id.toString()),
                 nome: nomeVaga,
                 descricao: linha.descricao,
+                area: linha.area,
                 endereco: new Endereco(
                         pais: linha.pais,
                         estado: linha.estado,

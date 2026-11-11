@@ -20,10 +20,7 @@ class CurtidaService {
     }
 
     void curtirVagaComoEmpresa(Empresa empresa, Candidato candidato, Vaga vaga, Boolean like) {
-        if (empresa?.id != vaga?.empresa?.id) throw new IllegalArgumentException("A empresa so pode curtir candidatos das suas proprias vagas")
-        try {
-            curtidaDAO.salvarCurtidaEmpresa(empresa.id, candidato.id, vaga.id, like)
-        } catch (Exception e) { throw new IllegalArgumentException("Erro ao curtir: ${e.message}") }
+        throw new IllegalArgumentException('Avaliacoes de candidatos devem ser registradas por um recrutador')
     }
 
     int calcularAfinidade(Candidato candidato, Vaga vaga) {

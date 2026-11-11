@@ -36,4 +36,9 @@ class EmpresaService extends CrudService<Empresa> {
         try { return empresaDAO.buscarEmailEmpresa(email) }
         catch (Exception e) { println "Nao tem empresas com esse email: ${e.message}"; return null }
     }
+
+    Empresa buscarEmailEmpresaParaAutorizacao(String email) {
+        if (email == null || email.isBlank()) return null
+        return empresaDAO.buscarEmailEmpresa(email.trim())
+    }
 }

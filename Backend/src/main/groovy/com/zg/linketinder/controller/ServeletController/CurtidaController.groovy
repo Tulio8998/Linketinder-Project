@@ -1,9 +1,9 @@
 package com.zg.linketinder.controller.ServeletController
 
 import com.zg.linketinder.api.JsonHelper
+import com.zg.linketinder.api.AnonymousVagaTokenStore
+import com.zg.linketinder.api.ServletIdentity
 import com.zg.linketinder.model.Candidato
-import com.zg.linketinder.model.CurtidaCandidato
-import com.zg.linketinder.model.CurtidaEmpresa
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.model.curtida.Match
@@ -17,10 +17,26 @@ import jakarta.servlet.http.HttpServletResponse
 
 class CurtidaController extends HttpServlet {
 
-    private final CurtidaService curtidaService = new CurtidaService()
-    private final CandidatoService candidatoService = new CandidatoService()
-    private final EmpresaService empresaService = new EmpresaService()
-    private final VagaService vagaService = new VagaService()
+    private final CurtidaService curtidaService
+    private final CandidatoService candidatoService
+    private final EmpresaService empresaService
+    private final VagaService vagaService
+
+    CurtidaController() {
+        this(new CurtidaService(), new CandidatoService(), new EmpresaService(), new VagaService())
+    }
+
+    CurtidaController(
+            CurtidaService curtidaService,
+            CandidatoService candidatoService,
+            EmpresaService empresaService,
+            VagaService vagaService
+    ) {
+        this.curtidaService = curtidaService
+        this.candidatoService = candidatoService
+        this.empresaService = empresaService
+        this.vagaService = vagaService
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
@@ -28,74 +44,43 @@ class CurtidaController extends HttpServlet {
             String path = req.pathInfo
 
             if (path == '/candidato') {
-                Map body = JsonHelper.read(req.inputStream, Map)
-                Integer candidatoId = parseIntSafe(body?.candidatoId)
-                Integer vagaId = parseIntSafe(body?.vagaId)
-
-                if (candidatoId == null || vagaId == null) {
-                    JsonHelper.error(resp, 400, 'Campos obrigatórios: candidatoId, vagaId')
+                String principalEmail = ServletIdentity.requirePrincipalEmail(req, resp)
+                if (principalEmail == null) return
+                Candidato autenticado = candidatoService.buscarEmailCandidatoParaAutorizacao(principalEmail)
+                if (autenticado == null) {
+                    JsonHelper.error(resp, 403, 'Identidade autenticada não corresponde a um candidato')
                     return
                 }
+                Map body = JsonHelper.read(req.inputStream, Map)
+                Integer candidatoId = parseIntSafe(body?.candidatoId)
+                Integer vagaId = AnonymousVagaTokenStore.INSTANCE.resolver(body?.token as String)
 
-                Candidato candidato = candidatoService.buscarPorId(candidatoId)
-                if (candidato == null) {
-                    JsonHelper.error(resp, 404, "Candidato ${candidatoId} não encontrado")
+                if (body?.containsKey('candidatoId') && candidatoId == null) {
+                    JsonHelper.error(resp, 400, 'Identidade inválida')
+                    return
+                }
+                if (vagaId == null || (candidatoId != null && candidatoId != autenticado.id)) {
+                    JsonHelper.error(resp, 400, 'Token da vaga ou identidade inválidos')
                     return
                 }
 
                 Vaga vaga = vagaService.buscarPorId(vagaId)
                 if (vaga == null) {
-                    JsonHelper.error(resp, 404, "Vaga ${vagaId} não encontrada")
+                    JsonHelper.error(resp, 404, 'Vaga não encontrada')
                     return
                 }
 
-                curtidaService.curtirVagaComoCandidato(candidatoId, vagaId, true)
+                curtidaService.curtirVagaComoCandidato(autenticado.id, vagaId, true)
 
                 JsonHelper.respond(resp, 201, [
-                        mensagem: 'Vaga curtida com sucesso',
-                        candidatoId: candidatoId,
-                        vagaId: vagaId
+                        mensagem: 'Vaga curtida com sucesso'
                 ])
                 return
             }
 
             if (path == '/empresa') {
-                Map body = JsonHelper.read(req.inputStream, Map)
-                Integer empresaId = parseIntSafe(body?.empresaId)
-                Integer candidatoId = parseIntSafe(body?.candidatoId)
-                Integer vagaId = parseIntSafe(body?.vagaId)
-
-                if (empresaId == null || candidatoId == null || vagaId == null) {
-                    JsonHelper.error(resp, 400, 'Campos obrigatórios: empresaId, candidatoId, vagaId')
-                    return
-                }
-
-                Empresa empresa = empresaService.buscarPorId(empresaId)
-                if (empresa == null) {
-                    JsonHelper.error(resp, 404, "Empresa ${empresaId} não encontrada")
-                    return
-                }
-
-                Candidato candidato = candidatoService.buscarPorId(candidatoId)
-                if (candidato == null) {
-                    JsonHelper.error(resp, 404, "Candidato ${candidatoId} não encontrado")
-                    return
-                }
-
-                Vaga vaga = vagaService.buscarPorId(vagaId)
-                if (vaga == null) {
-                    JsonHelper.error(resp, 404, "Vaga ${vagaId} não encontrada")
-                    return
-                }
-
-                curtidaService.curtirVagaComoEmpresa(empresa, candidato, vaga, true)
-
-                JsonHelper.respond(resp, 201, [
-                        mensagem: 'Candidato curtido com sucesso',
-                        empresaId: empresaId,
-                        candidatoId: candidatoId,
-                        vagaId: vagaId
-                ])
+                JsonHelper.error(resp, 403,
+                        'Avaliações da empresa devem ser registradas por um recrutador autenticado')
                 return
             }
 
@@ -104,8 +89,7 @@ class CurtidaController extends HttpServlet {
         } catch (IllegalArgumentException e) {
             JsonHelper.error(resp, 400, e.message)
         } catch (Exception e) {
-            e.printStackTrace()
-            JsonHelper.error(resp, 500, 'Erro interno do servidor')
+            JsonHelper.internalError(resp, e)
         }
     }
 
@@ -122,20 +106,25 @@ class CurtidaController extends HttpServlet {
             }
 
             if (path == '/candidato') {
-                List<CurtidaCandidato> lista = curtidaService.listarCurtidasCandidato()
-                JsonHelper.respond(resp, 200, lista)
+                JsonHelper.error(resp, 403, 'A listagem global de curtidas não está disponível')
                 return
             }
 
             if (path == '/empresa') {
-                List<CurtidaEmpresa> lista = curtidaService.listarCurtidasEmpresa()
-                JsonHelper.respond(resp, 200, lista)
+                JsonHelper.error(resp, 403, 'A listagem global de avaliações não está disponível')
                 return
             }
 
             if (path.startsWith('/matches/candidato/')) {
                 Integer id = parseIdFromPath(path, '/matches/candidato/', resp)
                 if (id == null) return
+                String email = ServletIdentity.requirePrincipalEmail(req, resp)
+                if (email == null) return
+                Candidato candidato = candidatoService.buscarEmailCandidatoParaAutorizacao(email)
+                if (candidato == null || candidato.id != id) {
+                    JsonHelper.error(resp, 404, 'Match não encontrado')
+                    return
+                }
 
                 List<Match> matches = curtidaService.listarMatchCandidato(id)
                 JsonHelper.respond(resp, 200, matches)
@@ -145,6 +134,13 @@ class CurtidaController extends HttpServlet {
             if (path.startsWith('/matches/empresa/')) {
                 Integer id = parseIdFromPath(path, '/matches/empresa/', resp)
                 if (id == null) return
+                String email = ServletIdentity.requirePrincipalEmail(req, resp)
+                if (email == null) return
+                Empresa empresa = empresaService.buscarEmailEmpresaParaAutorizacao(email)
+                if (empresa == null || empresa.id != id) {
+                    JsonHelper.error(resp, 404, 'Match não encontrado')
+                    return
+                }
 
                 List<Match> matches = curtidaService.listarMatchEmpresa(id)
                 JsonHelper.respond(resp, 200, matches)
@@ -152,6 +148,8 @@ class CurtidaController extends HttpServlet {
             }
 
             if (path == '/afinidade') {
+                String email = ServletIdentity.requirePrincipalEmail(req, resp)
+                if (email == null) return
                 Integer candidatoId = parseIntSafe(req.getParameter('candidatoId'))
                 Integer vagaId = parseIntSafe(req.getParameter('vagaId'))
 
@@ -160,25 +158,23 @@ class CurtidaController extends HttpServlet {
                     return
                 }
 
-                Candidato candidato = candidatoService.buscarPorId(candidatoId)
-                if (candidato == null) {
-                    JsonHelper.error(resp, 404, "Candidato ${candidatoId} não encontrado")
+                Candidato candidato = candidatoService.buscarEmailCandidatoParaAutorizacao(email)
+                if (candidato == null || candidato.id != candidatoId) {
+                    JsonHelper.error(resp, 404, 'Afinidade não encontrada')
                     return
                 }
 
                 Vaga vaga = vagaService.buscarPorId(vagaId)
                 if (vaga == null) {
-                    JsonHelper.error(resp, 404, "Vaga ${vagaId} não encontrada")
+                    JsonHelper.error(resp, 404, 'Vaga não encontrada')
                     return
                 }
 
                 int afinidade = curtidaService.calcularAfinidade(candidato, vaga)
 
                 JsonHelper.respond(resp, 200, [
-                        candidatoId: candidatoId,
-                        candidatoNome: candidato.nome,
-                        vagaId: vagaId,
                         vagaNome: vaga.nome,
+                        area: vaga.area,
                         afinidade: afinidade
                 ])
                 return
@@ -187,8 +183,7 @@ class CurtidaController extends HttpServlet {
             JsonHelper.error(resp, 404, "Rota não encontrada: GET ${path}")
 
         } catch (Exception e) {
-            e.printStackTrace()
-            JsonHelper.error(resp, 500, 'Erro interno do servidor')
+            JsonHelper.internalError(resp, e)
         }
     }
 

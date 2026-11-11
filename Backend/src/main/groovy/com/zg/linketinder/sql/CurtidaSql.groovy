@@ -8,9 +8,16 @@ class CurtidaSql {
     '''
 
     static final String INSERIR_EMPRESA = '''
-        INSERT INTO curtidas_empresa (id_empresa, id_candidato, id_vaga, curtiu)
-        VALUES (?, ?, ?, ?)
-        ON CONFLICT (id_empresa, id_candidato, id_vaga) DO UPDATE SET curtiu = EXCLUDED.curtiu
+        INSERT INTO curtidas_empresa (id_empresa, id_candidato, id_vaga, curtiu, id_recrutador)
+        SELECT e.id, ?, v.id, ?, r.id
+        FROM empresas e
+        INNER JOIN recrutadores r
+            ON r.id = ? AND r.id_empresa = e.id AND r.ativo = TRUE
+        INNER JOIN vagas v
+            ON v.id = ? AND v.id_empresa = e.id AND v.area = r.area
+        WHERE e.id = ?
+        ON CONFLICT (id_empresa, id_candidato, id_vaga) DO NOTHING
+        RETURNING id
     '''
 
     static final String LISTAR_CURTIDAS_CANDIDATO = '''

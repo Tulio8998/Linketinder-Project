@@ -13,6 +13,7 @@ class VagaController {
             Vaga vaga = new Vaga(
                     nome: vagaDTO.nome,
                     descricao: vagaDTO.descricao,
+                    area: vagaDTO.area,
                     empresa: vagaDTO.empresa,
                     endereco: new Endereco(
                             pais: vagaDTO.pais,
@@ -33,6 +34,7 @@ class VagaController {
                     id: id,
                     nome: vagaDTO.nome,
                     descricao: vagaDTO.descricao,
+                    area: vagaDTO.area,
                     empresa: vagaDTO.empresa,
                     endereco: new Endereco(
                             pais: vagaDTO.pais,

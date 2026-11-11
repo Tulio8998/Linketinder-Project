@@ -5,6 +5,7 @@ import com.zg.linketinder.controller.ServeletController.CompetenciaController
 import com.zg.linketinder.controller.ServeletController.CurtidaController
 import com.zg.linketinder.controller.ServeletController.EmpresaController
 import com.zg.linketinder.controller.ServeletController.VagaController
+import com.zg.linketinder.controller.ServeletController.RecrutadorController
 import org.apache.catalina.Context
 import org.apache.catalina.startup.Tomcat
 
@@ -29,6 +30,7 @@ class ApiServer {
         register(ctx, 'vagas', new VagaController(), '/api/vagas/*')
         register(ctx, 'competencias', new CompetenciaController(),'/api/competencias/*')
         register(ctx, 'curtidas', new CurtidaController(), '/api/curtidas/*')
+        register(ctx, 'recrutadores', new RecrutadorController(), '/api/recrutadores/*')
 
 
         tomcat.start()

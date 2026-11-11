@@ -6,7 +6,13 @@ import com.zg.linketinder.model.curtida.Match
 
 interface CurtidaDAO {
     void salvarCurtidaCandidato(Integer id_candidato, Integer id_vaga, Boolean like)
-    void salvarCurtidaEmpresa(Integer id_empresa, Integer id_candidato, Integer id_vaga, Boolean like)
+    boolean salvarCurtidaEmpresa(
+            Integer id_empresa,
+            Integer id_recrutador,
+            Integer id_candidato,
+            Integer id_vaga,
+            Boolean like
+    )
     List<CurtidaEmpresa> listarCurtidasEmpresa()
     List<CurtidaCandidato> listarCurtidasCandidato()
     List<Match> listarMatchEmpresa(Integer id_empresa)

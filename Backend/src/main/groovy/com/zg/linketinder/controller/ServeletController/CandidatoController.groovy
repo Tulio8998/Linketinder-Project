@@ -1,6 +1,8 @@
 package com.zg.linketinder.controller.ServeletController
 
 import com.zg.linketinder.api.JsonHelper
+import com.zg.linketinder.api.ServletIdentity
+import com.zg.linketinder.dto.CandidatoPerfilDTO
 import com.zg.linketinder.dto.CandidatoDTO
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Empresa
@@ -27,6 +29,10 @@ class CandidatoController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         try {
             CandidatoDTO dto = JsonHelper.read(req.inputStream, CandidatoDTO)
+            if (dto == null) {
+                JsonHelper.error(resp, 400, 'Dados do candidato obrigatórios')
+                return
+            }
 
             Candidato candidato = new Candidato(
                     cpf: new CpfVO(dto.cpf),
@@ -44,13 +50,12 @@ class CandidatoController extends HttpServlet {
             )
             service.salvar(candidato)
             resp.setHeader('Location', "/api/candidatos/${candidato.id}")
-            JsonHelper.respond(resp, 201, candidato)
+            JsonHelper.respond(resp, 201, [id: candidato.id])
 
         } catch (IllegalArgumentException e) {
             JsonHelper.error(resp, 400, e.message)
         } catch (Exception e) {
-            e.printStackTrace()
-            JsonHelper.error(resp, 500, 'Erro interno do servidor')
+            JsonHelper.internalError(resp, e)
         }
     }
 
@@ -60,13 +65,18 @@ class CandidatoController extends HttpServlet {
             Integer id = extrairId(req, resp)
             if (id == null) return
 
-            Candidato candidato = service.buscarPorId(id)
-            if (candidato == null) {
-                JsonHelper.error(resp, 404, "Candidato ${id} não encontrado")
+            Candidato autenticado = candidatoAutenticado(req, resp)
+            if (autenticado == null) return
+            if (autenticado.id != id) {
+                JsonHelper.error(resp, 404, 'Candidato não encontrado')
                 return
             }
 
             CandidatoDTO dto = JsonHelper.read(req.inputStream, CandidatoDTO)
+            if (dto == null) {
+                JsonHelper.error(resp, 400, 'Dados do candidato obrigatórios')
+                return
+            }
 
             candidato = new Candidato(
                     id: id,
@@ -84,13 +94,12 @@ class CandidatoController extends HttpServlet {
                     )
             )
             service.atualizar(id, candidato)
-            JsonHelper.respond(resp, 200, candidato)
+            JsonHelper.respond(resp, 200, [id: candidato.id])
 
         } catch (IllegalArgumentException e) {
             JsonHelper.error(resp, 400, e.message)
         } catch (Exception e) {
-            e.printStackTrace()
-            JsonHelper.error(resp, 500, 'Erro interno do servidor')
+            JsonHelper.internalError(resp, e)
         }
     }
 
@@ -103,9 +112,10 @@ class CandidatoController extends HttpServlet {
                 Integer id = extrairId(req, resp)
                 if (id == null) return
 
-                Candidato candidato = service.buscarPorId(id)
-                if (candidato == null) {
-                    JsonHelper.error(resp, 404, "Candidato ${id} não encontrado")
+                Candidato autenticado = candidatoAutenticado(req, resp)
+                if (autenticado == null) return
+                if (autenticado.id != id) {
+                    JsonHelper.error(resp, 404, 'Candidato não encontrado')
                     return
                 }
                 service.excluir(id)
@@ -115,72 +125,58 @@ class CandidatoController extends HttpServlet {
         } catch (NumberFormatException ignored) {
             JsonHelper.error(resp, 400, "ID inválido")
         } catch (Exception e) {
-            e.printStackTrace()
-            JsonHelper.error(resp, 500, 'Erro interno do servidor')
+            JsonHelper.internalError(resp, e)
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         try {
+            Candidato candidato = candidatoAutenticado(req, resp)
+            if (candidato == null) return
             String pathInfo = req.pathInfo
 
             if (pathInfo != null && !pathInfo.isEmpty() && pathInfo != '/') {
                 Integer id = extrairId(req, resp)
                 if (id == null) return
-
-                Candidato candidato = service.buscarPorId(id)
-                if (candidato == null) {
-                    JsonHelper.error(resp, 404, "Candidato ${id} não encontrado")
+                if (candidato.id != id) {
+                    JsonHelper.error(resp, 404, 'Candidato não encontrado')
                     return
                 }
-                JsonHelper.respond(resp, 200, candidato)
+                JsonHelper.respond(resp, 200, perfil(candidato))
                 return
             }
 
             String cpf = req.getParameter('cpf')
             if (cpf != null && !cpf.isBlank()) {
-                Candidato candidato = service.buscarCpfCandidato(cpf)
-                if (candidato == null) {
-                    JsonHelper.error(resp, 404, "Candidato com CPF ${cpf} não encontrado")
+                if (candidato.cpf?.valor != cpf) {
+                    JsonHelper.error(resp, 404, 'Candidato não encontrado')
                     return
                 }
-                JsonHelper.respond(resp, 200, candidato)
+                JsonHelper.respond(resp, 200, perfil(candidato))
                 return
             }
 
             String email = req.getParameter('email')
             if (email != null && !email.isBlank()) {
-                Candidato candidato = service.buscarEmailCandidato(email)
-                if (candidato == null) {
-                    JsonHelper.error(resp, 404, "Candidato com email ${email} não encontrado")
+                if (!candidato.email?.valor?.equalsIgnoreCase(email)) {
+                    JsonHelper.error(resp, 404, 'Candidato não encontrado')
                     return
                 }
-                JsonHelper.respond(resp, 200, candidato)
+                JsonHelper.respond(resp, 200, perfil(candidato))
                 return
             }
 
             String empresaIdStr = req.getParameter('empresaId')
             if (empresaIdStr != null && !empresaIdStr.isBlank()) {
-                Integer empresaId
-                try {
-                    empresaId = empresaIdStr as Integer
-                } catch (NumberFormatException ignored) {
-                    JsonHelper.error(resp, 400, "empresaId inválido: ${empresaIdStr}")
-                    return
-                }
-
-                List<Candidato> lista = service.listarCandidatoEmpresa(empresaId)
-                JsonHelper.respond(resp, 200, lista)
+                JsonHelper.error(resp, 403, 'Listagem de candidatos por empresa não está disponível')
                 return
             }
 
-            List<Candidato> lista = service.listarTodos()
-            JsonHelper.respond(resp, 200, lista)
+            JsonHelper.respond(resp, 200, perfil(candidato))
 
         } catch (Exception e) {
-            e.printStackTrace()
-            JsonHelper.error(resp, 500, 'Erro interno do servidor')
+            JsonHelper.internalError(resp, e)
         }
     }
 
@@ -196,5 +192,32 @@ class CandidatoController extends HttpServlet {
             JsonHelper.error(resp, 400, "ID invalido: ${pathInfo.substring(1)}")
             return null
         }
+    }
+
+    private Candidato candidatoAutenticado(HttpServletRequest req, HttpServletResponse resp) {
+        String email = ServletIdentity.requirePrincipalEmail(req, resp)
+        if (email == null) return null
+        try {
+            Candidato candidato = service.buscarEmailCandidatoParaAutorizacao(email)
+            if (candidato == null) {
+                JsonHelper.error(resp, 403, 'Identidade autenticada não corresponde a um candidato')
+            }
+            return candidato
+        } catch (Exception e) {
+            JsonHelper.internalError(resp, e)
+            return null
+        }
+    }
+
+    private static CandidatoPerfilDTO perfil(Candidato candidato) {
+        return new CandidatoPerfilDTO(
+                id: candidato.id,
+                nome: candidato.nome,
+                email: candidato.email?.valor,
+                cpf: candidato.cpf?.valor,
+                dataNascimento: candidato.dataNascimento,
+                descricao: candidato.descricao,
+                endereco: candidato.endereco
+        )
     }
 }
