@@ -20,12 +20,19 @@ e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
   anônimos omitem dados pessoais e aceitam IDs numéricos explícitos.
 - Testes Spock de Services, Controllers e integração PostgreSQL em schema
   temporário isolado.
+- Interface local de recrutador com cadastro/desativação pela empresa, triagem
+  anônima por área, histórico de autoria e matches com contato pós-match
+  (demonstração local com dados sintéticos; sem integração REST).
 
 ### Modificado
 - Simplificados os endpoints de vagas, triagem e curtida para trafegar IDs
   numéricos diretamente em vez de tokens opacos temporários.
 - Consulta anônima de vaga por ID retorna apenas o DTO público, sem identidade
   da empresa.
+- Formulário de vaga passou a exigir área; IDs locais são atribuídos a vagas e
+  candidatos legados para relacionar avaliações do MVP.
+- Vistas pré-match de candidato e recrutador omitem localização e identidade da
+  outra parte.
 
 ### Corrigido
 - Nenhuma alteração registrada.

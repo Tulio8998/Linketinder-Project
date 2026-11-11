@@ -236,12 +236,21 @@ autorização. A consulta pública de vagas retorna DTOs sem identidade da empre
 
 ## 3. Frontend
 
-### FE-1 — Adicionar modelos e serviços TypeScript
+**Limite da implementação atual:** o frontend existente persiste os perfis em
+`localStorage` e não tem cliente REST nem sessão autenticada. As telas desta
+etapa usam o mesmo armazenamento local somente para demonstração no navegador;
+isso não autentica requisições ao backend nem é uma fronteira de privacidade:
+qualquer pessoa com acesso ao navegador pode inspecionar o armazenamento.
+Usar somente dados sintéticos nesse fluxo local. A integração REST permanece
+pendente até existir um mecanismo de identidade confiável. Nenhum ID enviado
+pelo frontend será tratado pelo backend como prova de identidade.
 
-- [ ] Criar tipos e chamadas HTTP para perfil de recrutador, criação/
+### FE-1 — Adicionar modelos e serviços TypeScript para o MVP local
+
+- [x] Criar tipos e serviços locais para perfil de recrutador, criação/
   desativação pela empresa, vagas com área, triagem anônima, histórico,
-  avaliações e contato pós-match. Alinhar contratos aos DTOs validados no
-  backend antes de implementar telas.
+  avaliações e contato pós-match. Os serviços seguem o armazenamento local
+  já utilizado no frontend; não simulam autorização da API.
 - **Arquivos afetados:**
   - `Frontend/src/ts/models/Recrutador.ts` (novo)
   - `Frontend/src/ts/models/Vaga.ts`
@@ -249,17 +258,18 @@ autorização. A consulta pública de vagas retorna DTOs sem identidade da empre
   - `Frontend/src/ts/services/RecrutadorService.ts` (novo)
   - `Frontend/src/ts/services/VagaService.ts`
   - `Frontend/src/ts/services/CurtidaService.ts`
-- **Teste:** `cd Frontend && npm run build`; validar chamadas contra API local
-  funcional.
+- **Teste executado:** `cd Frontend && npm run build`; fluxo local validado no
+  navegador com cadastro, triagem, like e match.
 - **Checklist de anonimato:**
-  - [ ] Tipos/serviços de triagem não modelam nem armazenam dados pessoais do
-    candidato pré-match.
-  - [ ] Tipo de contato pós-match não inclui CPF, data de nascimento ou senha;
+  - [x] Tipos/serviços de triagem não modelam nem armazenam dados pessoais do
+    candidato na avaliação pré-match; essa guarda de interface não protege
+    dados pessoais existentes no `localStorage`.
+  - [x] Tipo de contato pós-match não inclui CPF, data de nascimento ou senha;
     nenhuma chamada de API expõe senha.
 
 ### FE-2 — Adicionar gestão de recrutadores no painel da empresa
 
-- [ ] Incluir formulário de cadastro e listagem de recrutadores da empresa,
+- [x] Incluir formulário de cadastro e listagem de recrutadores da empresa,
   com ação de desativação lógica. A interface da empresa mantém suas funções
   de Gestor; não substituir exclusão lógica por remoção física.
 - **Arquivos afetados:**
@@ -267,21 +277,20 @@ autorização. A consulta pública de vagas retorna DTOs sem identidade da empre
   - `Frontend/src/components/empresa.ts`
   - `Frontend/src/components/shared.ts` (somente helpers reutilizáveis
     necessários)
-  - `Frontend/src/styles/empresaDash.css`
+  - `Frontend/src/styles/recrutadorDash.css`
   - `Frontend/src/ts/services/RecrutadorService.ts`
-- **Teste:** `cd Frontend && npm run build`; validação manual no Vite com
-  cadastro, validação de campos obrigatórios, e-mail/CPF duplicados e
-  desativação.
+- **Teste executado:** `cd Frontend && npm run build`; teste manual no Vite de
+  cadastro e desativação lógica.
 - **Checklist de anonimato:**
-  - [ ] CPF, data de nascimento e senha do recrutador não aparecem em listas,
+  - [x] CPF, data de nascimento e senha do recrutador não aparecem em listas,
     painéis ou respostas renderizadas.
-  - [ ] O painel não exibe dados pessoais de candidatos sem match.
+  - [x] O painel não exibe dados pessoais de candidatos sem match.
 
 ### FE-3 — Criar fluxo e tela de triagem do recrutador
 
-- [ ] Criar entrada/fluxo de acesso para recrutador conforme mecanismo de
-  identidade autenticada validado no backend; mostrar apenas vagas da empresa
-  e área autorizadas, cards de candidato anônimos, ações curtir/passar e
+- [x] Criar entrada/fluxo local de demonstração para recrutador; mostrar
+  apenas vagas da empresa e área autorizadas, cards de candidato anônimos,
+  ações curtir/passar e
   histórico imutável incluindo autor desativado. Não oferecer criação,
   edição ou exclusão de vagas.
 - **Arquivos afetados:**
@@ -293,40 +302,36 @@ autorização. A consulta pública de vagas retorna DTOs sem identidade da empre
   - `Frontend/src/ts/models/Recrutador.ts`
   - `Frontend/src/ts/services/RecrutadorService.ts`
   - `Frontend/src/ts/services/CurtidaService.ts`
-- **Teste:** `cd Frontend && npm run build`; teste manual com recrutadores de
-  áreas/empresas distintas, conta desativada e avaliações já existentes.
+- **Teste executado:** `cd Frontend && npm run build`; teste manual no Vite de
+  filtro por área, anonimato do candidato, like e bloqueio de login após
+  desativação.
 - **Checklist de anonimato:**
-  - [ ] Cards e detalhes do candidato mostram somente competências, formação
+  - [x] Cards e detalhes do candidato mostram somente competências, formação
     (se disponível) e descrição; identidade não fica em DOM, atributos ou
     metadados ocultos.
-  - [ ] A vaga continua anônima para candidato e UI não mostra dados pessoais
+  - [x] A vaga continua anônima para candidato e UI não mostra dados pessoais
     do recrutador antes do match.
-  - [ ] Recrutador inativo não acessa a triagem nem registra nova avaliação.
+  - [x] Recrutador inativo não acessa a triagem nem registra nova avaliação.
 
 ### FE-4 — Integrar experiência de match e validar ponta a ponta
 
-- [ ] Integrar a visualização de matches para o candidato apresentar o contato
-  do recrutador autor e dados da empresa somente quando a API confirmar o match
-  mútuo da mesma vaga. Executar regressão visual e verificar o fluxo completo
-  junto ao backend.
+- [x] Integrar a visualização local de matches para apresentar o contato do
+  recrutador autor e dados da empresa somente após likes positivos de ambas as
+  partes para a mesma vaga. A integração com a API/backend ainda não foi feita.
 - **Arquivos afetados:**
   - `Frontend/src/pages/candidatoDash.ts`
   - `Frontend/src/components/candidato.ts`
-  - `Frontend/src/components/shared.ts`
-  - `Frontend/src/styles/candidatoDash.css`
-  - `Frontend/src/ts/models/Curtida.ts`
-  - `Frontend/src/ts/services/CurtidaService.ts`
-  - `Frontend/src/main.ts`
-- **Teste:** `cd Frontend && npm run build`; teste manual com API e PostgreSQL
-  locais: sem match, curtida unilateral, match de mesma vaga, match de outra
-  vaga, autor desativado e match legado sem autor. Executar também
-  `cd Backend && ./gradlew test`.
+  - `Frontend/src/components/recrutador.ts`
+  - `Frontend/src/ts/models/Recrutador.ts`
+  - `Frontend/src/ts/services/RecrutadorService.ts`
+- **Teste executado:** `cd Frontend && npm run build`; teste manual no navegador
+  confirmou anonimato antes do match e contato do recrutador após match local.
 - **Checklist de anonimato:**
-  - [ ] Antes do match, nem candidato nem recrutador recebe identidade da outra
+  - [x] Antes do match, nem candidato nem recrutador recebe identidade da outra
     parte ou identificadores ocultos no DOM.
-  - [ ] Depois do match, somente o candidato daquele match vê nome/e-mail do
+  - [x] Depois do match, somente o candidato daquele match vê nome/e-mail do
     recrutador responsável e informações da empresa.
-  - [ ] CPF, data de nascimento e senha nunca são exibidos antes ou depois do
+  - [x] CPF, data de nascimento e senha nunca são exibidos antes ou depois do
     match; match legado sem autor não mostra contato inventado.
 
 ## Checklist de aceite da spec

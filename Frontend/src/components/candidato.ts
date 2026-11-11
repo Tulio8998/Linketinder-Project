@@ -2,6 +2,7 @@ import { deleteCandidatoProfile, editProfile, viewVagaCand } from "../pages/cand
 import { CandidatoService } from '../ts/services/CandidatoService'
 import { VagaService } from '../ts/services/VagaService'
 import { CurtidaService } from '../ts/services/CurtidaService'
+import { matchesRecrutadorParaCandidato } from './recrutador'
 import { atualizaSidebarCandidato } from "../main"
 import {
     abrirPainelCard,
@@ -161,7 +162,6 @@ export function findVaga(): void {
                     <div class="info-job">
                         <p class="porcent-match">MATCH: ${afinidade.toFixed(0)}%</p>
                         <p class="name">${vaga.nome}</p>
-                        <p class="address">${vaga.cidade}, ${vaga.estado} - ${vaga.pais}</p>
                         <p class="description">${vaga.descricao}</p>
                         <div class="skills-class">
                             ${vaga.competencias.map((s) => `<p class="skill">${s}</p>`).join('')}
@@ -212,7 +212,10 @@ export function findMatch(): void {
             .listarMatchs()
             .filter((m) => m.candidato.cpf === candLogado?.cpf && m.like === true)
 
-        if (matchsConfirmados.length === 0) {
+        const matchesRecrutador = candLogado
+            ? matchesRecrutadorParaCandidato(candLogado)
+            : ''
+        if (matchsConfirmados.length === 0 && !matchesRecrutador) {
             dash.innerHTML =
                 '<p style="padding: 2rem; color: #64748B;">Nenhum match confirmado</p>'
             return
@@ -237,7 +240,7 @@ export function findMatch(): void {
                     </div>
                 </div>`
             )
-            .join('')
+            .join('') + matchesRecrutador
 
         abrirPainelCard()
         pointSkills()
