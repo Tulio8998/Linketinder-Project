@@ -1,7 +1,6 @@
 package com.zg.linketinder.controller.ServeletController
 
 import com.zg.linketinder.api.JsonHelper
-import com.zg.linketinder.api.AnonymousVagaTokenStore
 import com.zg.linketinder.api.ServletIdentity
 import com.zg.linketinder.dto.VagaGestaoDTO
 import com.zg.linketinder.dto.VagaPublicaDTO
@@ -158,19 +157,13 @@ class VagaController extends HttpServlet {
             if (pathInfo != null && !pathInfo.isEmpty() && pathInfo != '/') {
                 Integer id = extrairId(req, resp)
                 if (id == null) return
-                Empresa empresa = empresaAutenticada(req, resp)
-                if (empresa == null) return
 
                 Vaga vaga = vagaService.buscarPorId(id)
                 if (vaga == null) {
-                    JsonHelper.error(resp, 404, "Vaga ${id} não encontrada")
-                    return
-                }
-                if (vaga.empresa?.id != empresa.id) {
                     JsonHelper.error(resp, 404, 'Vaga não encontrada')
                     return
                 }
-                JsonHelper.respond(resp, 200, gestao(vaga))
+                JsonHelper.respond(resp, 200, publica(vaga))
                 return
             }
 
@@ -270,7 +263,7 @@ class VagaController extends HttpServlet {
 
     private static VagaPublicaDTO publica(Vaga vaga) {
         return new VagaPublicaDTO(
-                token: AnonymousVagaTokenStore.INSTANCE.criar(vaga.id),
+                id: vaga.id,
                 nome: vaga.nome,
                 descricao: vaga.descricao,
                 area: vaga.area,

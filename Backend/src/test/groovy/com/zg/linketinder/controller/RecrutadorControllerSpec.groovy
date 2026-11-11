@@ -1,6 +1,5 @@
 package com.zg.linketinder.controller.ServeletController
 
-import com.zg.linketinder.api.ReviewTokenStore
 import com.zg.linketinder.dto.MatchRecrutadorDTO
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Competencia
@@ -12,6 +11,8 @@ import com.zg.linketinder.service.CandidatoService
 import com.zg.linketinder.service.EmpresaService
 import com.zg.linketinder.service.RecrutadorService
 import jakarta.servlet.ServletOutputStream
+import jakarta.servlet.ServletInputStream
+import jakarta.servlet.ReadListener
 import jakarta.servlet.WriteListener
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -24,9 +25,8 @@ class RecrutadorControllerSpec extends Specification {
     RecrutadorService recrutadorService = Mock()
     EmpresaService empresaService = Mock()
     CandidatoService candidatoService = Mock()
-    ReviewTokenStore tokenStore = new ReviewTokenStore()
     RecrutadorController controller = new RecrutadorController(
-            recrutadorService, empresaService, candidatoService, tokenStore)
+            recrutadorService, empresaService, candidatoService)
 
     def "bloqueia leitura sem identidade autenticada"() {
         given:
@@ -43,7 +43,7 @@ class RecrutadorControllerSpec extends Specification {
         0 * recrutadorService._
     }
 
-    def "retorna vagas de triagem sem identificador interno ou identidade da empresa"() {
+    def "retorna vagas de triagem com ID e sem identidade da empresa"() {
         given:
         Recrutador recrutador = new Recrutador(id: 8, empresa: new Empresa(id: 9),
                 nome: 'Recrutadora', area: 'TI', ativo: true)
@@ -64,17 +64,16 @@ class RecrutadorControllerSpec extends Specification {
         String json = captured.body()
         json.contains('Engenheira de Software')
         json.contains('Groovy')
-        !json.contains('727')
+        json.contains('"id":727')
         !json.contains('Empresa Secreta')
         !json.contains('idEmpresa')
         !json.contains('senha')
     }
 
-    def "candidatos são serializados sem dados pessoais nem identificador interno"() {
+    def "candidatos são serializados com ID e sem dados pessoais"() {
         given:
         Recrutador recrutador = new Recrutador(id: 8, area: 'TI', ativo: true)
-        String tokenVaga = tokenStore.criarTokenVaga(8, 41)
-        HttpServletRequest request = request("/me/vagas/${tokenVaga}/candidatos",
+        HttpServletRequest request = request('/me/vagas/41/candidatos',
                 'recrutadora@example.com')
         CapturedBody captured = new CapturedBody()
 
@@ -95,12 +94,29 @@ class RecrutadorControllerSpec extends Specification {
         String json = captured.body()
         json.contains('Experiência em sistemas distribuídos')
         json.contains('Ciência da Computação')
-        !json.contains('987654')
+        json.contains('"id":987654')
         !json.contains('nome')
         !json.contains('email')
         !json.contains('cpf')
         !json.contains('dataNascimento')
         !json.contains('senha')
+    }
+
+    def "avaliação aceita IDs numéricos de candidato e vaga"() {
+        given:
+        Recrutador recrutador = new Recrutador(id: 8, area: 'TI', ativo: true)
+        HttpServletRequest request = request('/me/avaliacoes', 'recrutadora@example.com')
+        request.inputStream >> input('{"candidatoId":19,"vagaId":41,"curtiu":true}')
+        CapturedBody captured = new CapturedBody()
+
+        when:
+        controller.doPost(request, response(captured))
+
+        then:
+        1 * recrutadorService.buscarPorEmail('recrutadora@example.com') >> recrutador
+        1 * recrutadorService.registrarAvaliacao(8, 19, 41, true) >> true
+        captured.status == 201
+        captured.body().contains('Avaliação registrada')
     }
 
     def "contato do match é retornado ao candidato autenticado sem dados sensíveis do recrutador"() {
@@ -148,6 +164,23 @@ class RecrutadorControllerSpec extends Specification {
         response.getOutputStream() >> captured.output
         response.setStatus(_ as int) >> { int value -> captured.status = value }
         return response
+    }
+
+    private static ServletInputStream input(String value) {
+        ByteArrayInputStream bytes = new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8))
+        return new ServletInputStream() {
+            @Override
+            int read() { bytes.read() }
+
+            @Override
+            boolean isFinished() { bytes.available() == 0 }
+
+            @Override
+            boolean isReady() { true }
+
+            @Override
+            void setReadListener(ReadListener listener) {}
+        }
     }
 
     private static class CapturedBody {

@@ -1,7 +1,6 @@
 package com.zg.linketinder.controller.ServeletController
 
 import com.zg.linketinder.api.JsonHelper
-import com.zg.linketinder.api.AnonymousVagaTokenStore
 import com.zg.linketinder.api.ServletIdentity
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Empresa
@@ -53,14 +52,10 @@ class CurtidaController extends HttpServlet {
                 }
                 Map body = JsonHelper.read(req.inputStream, Map)
                 Integer candidatoId = parseIntSafe(body?.candidatoId)
-                Integer vagaId = AnonymousVagaTokenStore.INSTANCE.resolver(body?.token as String)
+                Integer vagaId = parseIntSafe(body?.vagaId)
 
-                if (body?.containsKey('candidatoId') && candidatoId == null) {
-                    JsonHelper.error(resp, 400, 'Identidade inválida')
-                    return
-                }
-                if (vagaId == null || (candidatoId != null && candidatoId != autenticado.id)) {
-                    JsonHelper.error(resp, 400, 'Token da vaga ou identidade inválidos')
+                if (candidatoId == null || vagaId == null || candidatoId != autenticado.id) {
+                    JsonHelper.error(resp, 400, 'IDs da vaga ou do candidato inválidos')
                     return
                 }
 

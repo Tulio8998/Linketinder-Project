@@ -17,18 +17,21 @@ e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 - Backend da feature Recrutador: cadastro e desativação lógica, filtro por área,
   autoria imutável da primeira avaliação, histórico e contato pós-match.
 - Endpoints sensíveis agora exigem identidade autenticada; perfis e vagas
-  anônimos usam DTOs sem dados pessoais nem identificadores internos.
-- Testes Spock de Services, Controllers, tokens opacos e integração PostgreSQL
-  em schema temporário isolado.
+  anônimos omitem dados pessoais e aceitam IDs numéricos explícitos.
+- Testes Spock de Services, Controllers e integração PostgreSQL em schema
+  temporário isolado.
 
 ### Modificado
-- Nenhuma alteração registrada.
+- Simplificados os endpoints de vagas, triagem e curtida para trafegar IDs
+  numéricos diretamente em vez de tokens opacos temporários.
+- Consulta anônima de vaga por ID retorna apenas o DTO público, sem identidade
+  da empresa.
 
 ### Corrigido
 - Nenhuma alteração registrada.
 
 ### Removido
-- Nenhuma alteração registrada.
+- Stores temporários de tokens opacos para vagas e avaliações de recrutador.
 
 ## [1.9.0] - 2026-11-10
 

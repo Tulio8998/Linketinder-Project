@@ -4,7 +4,6 @@ import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Vaga
-import com.zg.linketinder.api.AnonymousVagaTokenStore
 import com.zg.linketinder.service.CompetenciaService
 import com.zg.linketinder.service.CandidatoService
 import com.zg.linketinder.service.CurtidaService
@@ -141,7 +140,7 @@ class LegacyApiPrivacySpec extends Specification {
         !captured.body().contains('senha')
     }
 
-    def "publica vagas anônimas sem IDs nem identidade da empresa"() {
+    def "publica vagas anônimas com ID e sem identidade da empresa"() {
         given:
         VagaService vagaService = Mock()
         EmpresaService empresaService = Mock()
@@ -170,14 +169,14 @@ class LegacyApiPrivacySpec extends Specification {
         json.contains('Construir plataformas de dados')
         json.contains('PostgreSQL')
         json.contains('TI')
-        !json.contains('739')
+        json.contains('"id":739')
         !json.contains('88')
         !json.contains('Empresa Confidencial')
         !json.contains('Brasil')
         !json.contains('idEmpresa')
     }
 
-    def "bloqueia consulta anônima de vaga por identificador estável"() {
+    def "consulta vaga por ID sem revelar identidade da empresa"() {
         given:
         VagaService vagaService = Mock()
         VagaController controller = new VagaController(vagaService, Mock(EmpresaService))
@@ -187,8 +186,19 @@ class LegacyApiPrivacySpec extends Specification {
         controller.doGet(request('/739', null), response(captured))
 
         then:
-        captured.status == 401
-        0 * vagaService._
+        1 * vagaService.buscarPorId(739) >> new Vaga(
+                id: 739,
+                nome: 'Engenharia de Dados',
+                descricao: 'Construir plataformas de dados',
+                area: 'TI',
+                empresa: new Empresa(id: 88, nome: 'Empresa Confidencial'),
+                competencias: [new Competencia(nome: 'PostgreSQL')]
+        )
+        captured.status == 200
+        captured.body().contains('"id":739')
+        captured.body().contains('PostgreSQL')
+        !captured.body().contains('Empresa Confidencial')
+        !captured.body().contains('88')
     }
 
     def "bloqueia listagens globais de curtidas e matches sem autenticação"() {
@@ -224,7 +234,7 @@ class LegacyApiPrivacySpec extends Specification {
         0 * service._
     }
 
-    def "curtida de candidato resolve token anônimo usando somente a identidade autenticada"() {
+    def "curtida de candidato usa ID real de vaga e identidade autenticada"() {
         given:
         CandidatoService candidatoService = Mock()
         CurtidaService curtidaService = Mock()
@@ -232,9 +242,8 @@ class LegacyApiPrivacySpec extends Specification {
         CurtidaController controller = new CurtidaController(
                 curtidaService, candidatoService, Mock(EmpresaService), vagaService)
         CapturedBody captured = new CapturedBody()
-        String token = AnonymousVagaTokenStore.INSTANCE.criar(73)
         HttpServletRequest request = request('/candidato', 'candidate@example.com')
-        request.inputStream >> input('{"token":"' + token + '"}')
+        request.inputStream >> input('{"candidatoId":18,"vagaId":73}')
 
         when:
         controller.doPost(request, response(captured))

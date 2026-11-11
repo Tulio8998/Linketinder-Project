@@ -1,7 +1,6 @@
 package com.zg.linketinder.controller.ServeletController
 
 import com.zg.linketinder.api.JsonHelper
-import com.zg.linketinder.api.ReviewTokenStore
 import com.zg.linketinder.api.ServletIdentity
 import com.zg.linketinder.dto.AvaliacaoRecrutadorRequestDTO
 import com.zg.linketinder.dto.AvaliacaoRecrutadorDTO
@@ -15,7 +14,6 @@ import com.zg.linketinder.model.Recrutador
 import com.zg.linketinder.service.CandidatoService
 import com.zg.linketinder.service.EmpresaService
 import com.zg.linketinder.service.RecrutadorService
-import com.zg.linketinder.service.VagaService
 import com.zg.linketinder.vo.CpfVO
 import com.zg.linketinder.vo.EmailVO
 import jakarta.servlet.http.HttpServlet
@@ -27,22 +25,19 @@ class RecrutadorController extends HttpServlet {
     private final RecrutadorService recrutadorService
     private final EmpresaService empresaService
     private final CandidatoService candidatoService
-    private final ReviewTokenStore tokenStore
 
     RecrutadorController() {
-        this(new RecrutadorService(), new EmpresaService(), new CandidatoService(), new ReviewTokenStore())
+        this(new RecrutadorService(), new EmpresaService(), new CandidatoService())
     }
 
     RecrutadorController(
             RecrutadorService recrutadorService,
             EmpresaService empresaService,
-            CandidatoService candidatoService,
-            ReviewTokenStore tokenStore
+            CandidatoService candidatoService
     ) {
         this.recrutadorService = recrutadorService
         this.empresaService = empresaService
         this.candidatoService = candidatoService
-        this.tokenStore = tokenStore
     }
 
     @Override
@@ -153,7 +148,7 @@ class RecrutadorController extends HttpServlet {
         try {
             List<VagaTriagemDTO> vagas = recrutadorService.listarVagasDaArea(recrutador.id).collect { vaga ->
                 new VagaTriagemDTO(
-                        token: tokenStore.criarTokenVaga(recrutador.id, vaga.id),
+                        id: vaga.id,
                         nome: vaga.nome,
                         descricao: vaga.descricao,
                         area: vaga.area,
@@ -169,25 +164,23 @@ class RecrutadorController extends HttpServlet {
     private void listarCandidatos(HttpServletRequest req, HttpServletResponse resp, String path) {
         Recrutador recrutador = recrutadorAutenticado(req, resp)
         if (recrutador == null) return
-        String token = path.substring('/me/vagas/'.length(), path.length() - '/candidatos'.length())
-        ReviewTokenStore.ReviewContext context = tokenStore.buscar(token, recrutador.id)
-        if (context == null || !context.isVagaToken()) {
-            JsonHelper.error(resp, 404, 'Vaga de triagem não encontrada')
-            return
-        }
+        String rawId = path.substring('/me/vagas/'.length(), path.length() - '/candidatos'.length())
+        Integer vagaId = parseId(rawId, resp)
+        if (vagaId == null) return
         try {
             List<CandidatoAnonimoDTO> candidatos = recrutadorService
-                    .listarCandidatosAnonimos(recrutador.id, context.vagaId)
+                    .listarCandidatosAnonimos(recrutador.id, vagaId)
                     .collect { PerfilCandidatoAnonimo perfil ->
                         new CandidatoAnonimoDTO(
-                                token: tokenStore.criarTokenCandidato(
-                                        recrutador.id, context.vagaId, perfil.idInterno),
+                                id: perfil.idInterno,
                                 descricao: perfil.descricao,
                                 competencias: perfil.competencias,
                                 formacoes: perfil.formacoes
                         )
                     }
             JsonHelper.respond(resp, 200, candidatos)
+        } catch (IllegalArgumentException e) {
+            JsonHelper.error(resp, 404, 'Vaga de triagem não encontrada')
         } catch (Exception e) {
             JsonHelper.internalError(resp, e)
         }
@@ -196,24 +189,15 @@ class RecrutadorController extends HttpServlet {
     private void avaliar(HttpServletRequest req, HttpServletResponse resp) {
         Recrutador recrutador = recrutadorAutenticado(req, resp)
         if (recrutador == null) return
-        ReviewTokenStore.ReviewContext context
-        String token
         try {
             AvaliacaoRecrutadorRequestDTO dto =
                     JsonHelper.read(req.inputStream, AvaliacaoRecrutadorRequestDTO)
-            if (dto == null) {
-                JsonHelper.error(resp, 400, 'Dados da avaliação obrigatórios')
-                return
-            }
-            token = dto.token
-            context = tokenStore.buscar(token, recrutador.id)
-            if (context == null || context.isVagaToken() || dto.curtiu == null) {
-                JsonHelper.error(resp, 400, 'Token de avaliação ou decisão inválidos')
+            if (dto == null || dto.candidatoId == null || dto.vagaId == null || dto.curtiu == null) {
+                JsonHelper.error(resp, 400, 'Campos obrigatórios: candidatoId, vagaId, curtiu')
                 return
             }
             boolean inserida = recrutadorService.registrarAvaliacao(
-                    recrutador.id, context.candidatoId, context.vagaId, dto.curtiu)
-            tokenStore.remover(token, context)
+                    recrutador.id, dto.candidatoId, dto.vagaId, dto.curtiu)
             if (!inserida) {
                 JsonHelper.error(resp, 409, 'A vaga já possui uma avaliação para este candidato')
                 return

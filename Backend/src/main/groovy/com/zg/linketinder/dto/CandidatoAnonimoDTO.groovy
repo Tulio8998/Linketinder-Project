@@ -1,7 +1,7 @@
 package com.zg.linketinder.dto
 
 class CandidatoAnonimoDTO {
-    String token
+    Integer id
     String descricao
     List<String> competencias = []
     List<String> formacoes = []

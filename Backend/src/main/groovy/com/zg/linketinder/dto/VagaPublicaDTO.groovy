@@ -1,7 +1,7 @@
 package com.zg.linketinder.dto
 
 class VagaPublicaDTO {
-    String token
+    Integer id
     String nome
     String descricao
     String area

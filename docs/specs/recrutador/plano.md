@@ -104,8 +104,8 @@ o schema nem implementa a feature.
 - **Teste:** `cd Backend && ./gradlew test --tests '*Recrutador*Spec'`; incluir
   testes de construção/validação e serialização dos DTOs sem senha.
 - **Checklist de anonimato:**
-  - [x] DTO anônimo do candidato contém somente competências, formação (se
-    disponível) e descrição, sem identificadores estáveis.
+  - [x] DTO anônimo do candidato contém competências, formação (se disponível),
+    descrição e ID numérico autorizado para as operações do MVP.
   - [x] DTO de contato pós-match contém nome/e-mail corporativo do autor e
     informações da empresa, excluindo CPF, data de nascimento e senha.
 
@@ -191,18 +191,18 @@ o schema nem implementa a feature.
   - `Backend/src/main/groovy/com/zg/linketinder/controller/ServeletController/CompetenciaController.groovy`
   - `Backend/src/main/groovy/com/zg/linketinder/api/ApiServer.groovy`
   - `Backend/src/main/groovy/com/zg/linketinder/api/ServletIdentity.groovy`
-  - `Backend/src/main/groovy/com/zg/linketinder/api/AnonymousVagaTokenStore.groovy`
+  - `Backend/src/main/groovy/com/zg/linketinder/api/ServletIdentity.groovy`
   - testes dos controllers em
     `Backend/src/test/groovy/com/zg/linketinder/controller/`
 - **Teste:** `cd Backend && ./gradlew test --tests '*ControllerSpec' --tests '*LegacyApiPrivacySpec'`.
 - **Checklist de anonimato:**
   - [x] Testar serialização de listagem, busca, avaliações, afinidade e match:
-    nada pessoal antes de match, mesmo em IDs/metadata/respostas de erro.
+    nada pessoal antes do match; IDs numéricos são trafegados explicitamente.
   - [x] Confirmar que após match apenas candidato participante recebe nome e
     e-mail corporativo do autor e informações da empresa; CPF, data de
     nascimento e senha nunca são enviados.
-  - [x] Requests com ID de empresa/recrutador de terceiros não contornam
-    autorização.
+  - [x] IDs de vaga/candidato não substituem a identidade e autorização do
+    backend.
 
 ### BE-5 — Cobrir integração e regressões do backend
 
@@ -216,7 +216,7 @@ o schema nem implementa a feature.
   - `Backend/src/test/groovy/com/zg/linketinder/service/`
   - `Backend/src/test/groovy/com/zg/linketinder/controller/`
   - `Backend/src/test/groovy/com/zg/linketinder/dao/RecrutadorDaoIntegrationSpec.groovy`
-- **Teste executado:** `cd Backend && ./gradlew test --tests '*ControllerSpec' --tests '*ServiceSpec' --tests '*RecrutadorDaoIntegrationSpec' --tests '*ReviewTokenStoreSpec' --tests '*AnonymousVagaTokenStoreSpec' --tests '*LegacyApiPrivacySpec'`.
+- **Teste executado:** `cd Backend && ./gradlew test --tests '*ControllerSpec' --tests '*ServiceSpec' --tests '*RecrutadorDaoIntegrationSpec' --tests '*LegacyApiPrivacySpec'`.
 - **Isolamento:** a integração usa schema aleatório temporário em
   `linketinder_test` e o remove ao terminar. A suíte completa não foi executada,
   pois os testes de DAO existentes limpam tabelas do schema público
@@ -228,12 +228,11 @@ o schema nem implementa a feature.
   - [x] Testes confirmam revelação pós-match restrita aos participantes e
     ocultação permanente de CPF, data de nascimento e senha.
 
-**Decisão de autenticação:** o backend atual não configura autenticação que
-preencha `HttpServletRequest.userPrincipal`. Endpoints sensíveis exigem um
-`Principal` cujo nome seja o e-mail cadastrado; sem ele, respondem `401` e não
-usam IDs recebidos para autorizar. Até essa autenticação ser configurada, essas
-operações permanecem bloqueadas. A listagem pública de vagas retorna DTOs sem
-IDs nem identidade da empresa e usa tokens opacos temporários para curtidas.
+**Decisão de autenticação:** endpoints sensíveis exigem um `Principal` cujo
+nome seja o e-mail cadastrado; sem ele, respondem `401` e não usam IDs
+recebidos para autorizar. IDs numéricos substituem tokens opacos nas APIs de
+listagem e avaliação, mas não substituem a validação de identidade e
+autorização. A consulta pública de vagas retorna DTOs sem identidade da empresa.
 
 ## 3. Frontend
 

@@ -1,6 +1,7 @@
 package com.zg.linketinder.dto
 
 class AvaliacaoRecrutadorRequestDTO {
-    String token
+    Integer candidatoId
+    Integer vagaId
     Boolean curtiu
 }
