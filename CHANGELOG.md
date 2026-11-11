@@ -8,6 +8,8 @@ e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ### Adicionado
 - Spec funcional da feature Recrutador em `docs/specs/recrutador/spec.md`.
+- Plano de implementação incremental da feature Recrutador em
+  `docs/specs/recrutador/plano.md`.
 
 ### Modificado
 - Nenhuma alteração registrada.
