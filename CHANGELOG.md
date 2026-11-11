@@ -10,6 +10,10 @@ e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 - Spec funcional da feature Recrutador em `docs/specs/recrutador/spec.md`.
 - Plano de implementação incremental da feature Recrutador em
   `docs/specs/recrutador/plano.md`.
+- Migration PostgreSQL incremental para Recrutador, áreas de vagas e autoria de
+  avaliações em `schema/update_recrutador.sql`, com cópia sincronizada no backend.
+- Teste SQL isolado para a migration de Recrutador em
+  `schema/tests/update_recrutador_test.sql`.
 
 ### Modificado
 - Nenhuma alteração registrada.

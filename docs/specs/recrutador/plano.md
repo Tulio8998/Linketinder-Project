@@ -29,7 +29,7 @@ o schema nem implementa a feature.
 
 ### BD-1 — Criar migration incremental para recrutadores
 
-- [ ] Criar a tabela `recrutadores` com FK obrigatória para `empresas`, campos
+- [x] Criar a tabela `recrutadores` com FK obrigatória para `empresas`, campos
   especificados, unicidade de CPF e e-mail corporativo e `ativo = TRUE` por
   padrão. Não configurar exclusão em cascata que apague avaliações ou autoria.
 - **Arquivos afetados:**
@@ -41,14 +41,14 @@ o schema nem implementa a feature.
   default de `ativo`; confirmar que a exclusão de recrutador com avaliações não
   apaga registros relacionados.
 - **Checklist de anonimato:**
-  - [ ] O schema conserva os campos sensíveis para uso interno, mas não cria
+  - [x] O schema conserva os campos sensíveis para uso interno, mas não cria
     view/consulta pública que exponha CPF, data de nascimento ou senha.
-  - [ ] FK e regras de retenção não permitem que exclusões removam autoria de
+  - [x] FK e regras de retenção não permitem que exclusões removam autoria de
     avaliação.
 
 ### BD-2 — Adicionar área à vaga com migração de dados legados
 
-- [ ] Adicionar a coluna `vagas.area` e torná-la obrigatória conforme a spec.
+- [x] Adicionar a coluna `vagas.area` e torná-la obrigatória conforme a spec.
   Antes de finalizar o `NOT NULL`, definir e aplicar mapeamento aprovado para
   todas as vagas existentes; não usar área genérica ou valor arbitrário como
   fallback. Não impor catálogo fechado, que está fora do escopo.
@@ -59,14 +59,14 @@ o schema nem implementa a feature.
   os registros existentes e que `area` fica `NOT NULL`; validar rejeição de
   nova vaga sem área. Reexecutar a validação sem executar DDL base destrutivo.
 - **Checklist de anonimato:**
-  - [ ] Área não revela identidade da empresa, recrutador ou candidato nas
+  - [x] Área não revela identidade da empresa, recrutador ou candidato nas
     listagens anônimas de vagas.
-  - [ ] Nenhum dado pessoal é usado como critério de backfill ou publicado
+  - [x] Nenhum dado pessoal é usado como critério de backfill ou publicado
     junto à área.
 
 ### BD-3 — Registrar autoria nas avaliações da empresa
 
-- [ ] Adicionar `curtidas_empresa.id_recrutador` como FK sem cascade. Permitir
+- [x] Adicionar `curtidas_empresa.id_recrutador` como FK sem cascade. Permitir
   `NULL` somente para preservar avaliações históricas; manter a unicidade
   existente por empresa/candidato/vaga, sem criar segunda decisão por autor.
 - **Arquivos afetados:**
@@ -77,8 +77,8 @@ o schema nem implementa a feature.
   atribuir recrutador de outra empresa é rejeitada pela validação de domínio e,
   quando viável, por integridade relacional.
 - **Checklist de anonimato:**
-  - [ ] A coluna de autoria não é exposta em leituras anônimas pré-match.
-  - [ ] A migration não altera valores de curtida nem atribui autor a registros
+  - [x] A coluna de autoria não é exposta em leituras anônimas pré-match.
+  - [x] A migration não altera valores de curtida nem atribui autor a registros
     preexistentes.
 
 ## 2. Backend e testes (Spock)
