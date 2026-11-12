@@ -1,5 +1,5 @@
-CREATE DATABASE linketinder;
-DROP DATABASE linketinder;
+CREATE DATABASE linketinder_test;
+postgresgrDROP DATABASE linketinder;
 
 CREATE TABLE candidatos(
     id SERIAL PRIMARY KEY,
@@ -14,6 +14,10 @@ CREATE TABLE candidatos(
     cep VARCHAR(9) NOT NULL,
     descricao TEXT NOT NULL
 );
+
+SELECT * FROM candidatos;
+SELECT * FROM empresas;
+
 
 CREATE TABLE empresas(
     id SERIAL PRIMARY KEY,
@@ -72,3 +76,43 @@ CREATE TABLE curtidas_empresa(
     UNIQUE (id_empresa, id_candidato, id_vaga)
 );
 
+
+
+
+-- 1. Cria a tabela de recrutadores
+CREATE TABLE recrutadores (
+    id SERIAL PRIMARY KEY,
+    id_empresa INTEGER NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    area VARCHAR(100) NOT NULL,
+    descricao TEXT NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    cpf VARCHAR(14) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    senha VARCHAR(100) NOT NULL,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT fk_recrutadores_empresa 
+        FOREIGN KEY (id_empresa) REFERENCES empresas(id) ON DELETE RESTRICT,
+    CONSTRAINT uq_recrutadores_email UNIQUE (email),
+    CONSTRAINT uq_recrutadores_cpf UNIQUE (cpf),
+    CONSTRAINT uq_recrutadores_id_empresa UNIQUE (id, id_empresa)
+);
+
+-- 2. Adiciona a coluna area na tabela vagas
+ALTER TABLE vagas ADD COLUMN area VARCHAR(100);
+
+-- 3. Atualiza as vagas legadas do seu banco para 'TI' para não quebrar a restrição NOT NULL
+UPDATE vagas SET area = 'TI' WHERE area IS NULL;
+
+-- 4. Torna a coluna area obrigatória
+ALTER TABLE vagas ALTER COLUMN area SET NOT NULL;
+
+-- 5. Adiciona o id_recrutador na curtidas_empresa para rastrear a autoria
+ALTER TABLE curtidas_empresa ADD COLUMN id_recrutador INTEGER;
+
+-- 6. Cria a Foreign Key amarrando o recrutador à empresa correta na curtida
+ALTER TABLE curtidas_empresa
+    ADD CONSTRAINT fk_curtidas_empresa_recrutador_empresa
+    FOREIGN KEY (id_recrutador, id_empresa)
+    REFERENCES recrutadores (id, id_empresa)
+    ON DELETE RESTRICT;
