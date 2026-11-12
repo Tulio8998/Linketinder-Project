@@ -3,6 +3,7 @@ package com.zg.linketinder.service
 import com.zg.linketinder.dao.base.CrudDAO
 import com.zg.linketinder.dao.interfaces.VagaDAO
 import com.zg.linketinder.dao.VagaDAOImpl
+import com.zg.linketinder.dto.VagaResumoDTO
 import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.service.base.CrudService
 import com.zg.linketinder.util.AreaAtuacao
@@ -62,5 +63,17 @@ class VagaService extends CrudService<Vaga> {
     Vaga buscarNomeVaga(String nome) {
         try { return vagaDAO.buscarNomeVaga(nome) }
         catch (Exception e) { println "Erro ao buscar: ${e.message}"; return null }
+    }
+
+    List<VagaResumoDTO> listarResumosPublicos() {
+        return vagaDAO.listarResumosPublicos()
+    }
+
+    VagaResumoDTO buscarResumoPublicoPorId(Integer id) {
+        return vagaDAO.buscarResumoPublicoPorId(id)
+    }
+
+    VagaResumoDTO buscarResumoPublicoPorNome(String nome) {
+        return vagaDAO.buscarResumoPublicoPorNome(nome)
     }
 }

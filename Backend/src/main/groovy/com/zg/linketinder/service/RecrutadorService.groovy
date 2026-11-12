@@ -2,11 +2,11 @@ package com.zg.linketinder.service
 
 import com.zg.linketinder.dao.RecrutadorDAOImpl
 import com.zg.linketinder.dao.interfaces.RecrutadorDAO
+import com.zg.linketinder.dto.AvaliacaoRecrutadorDTO
+import com.zg.linketinder.dto.CandidatoAnonimoDTO
 import com.zg.linketinder.dto.MatchRecrutadorDTO
-import com.zg.linketinder.model.AvaliacaoRecrutador
-import com.zg.linketinder.model.PerfilCandidatoAnonimo
+import com.zg.linketinder.dto.VagaResumoDTO
 import com.zg.linketinder.model.Recrutador
-import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.util.AreaAtuacao
 import com.zg.linketinder.vo.CpfVO
 import com.zg.linketinder.vo.EmailVO
@@ -54,12 +54,12 @@ class RecrutadorService {
         }
     }
 
-    List<Vaga> listarVagasDaArea(Integer recrutadorId) {
+    List<VagaResumoDTO> listarVagasDaArea(Integer recrutadorId) {
         validarId(recrutadorId, 'Recrutador')
         return recrutadorDAO.listarVagasDaArea(recrutadorId)
     }
 
-    List<PerfilCandidatoAnonimo> listarCandidatosAnonimos(Integer recrutadorId, Integer vagaId) {
+    List<CandidatoAnonimoDTO> listarCandidatosAnonimos(Integer recrutadorId, Integer vagaId) {
         validarId(recrutadorId, 'Recrutador')
         validarId(vagaId, 'Vaga')
         return recrutadorDAO.listarCandidatosAnonimos(recrutadorId, vagaId)
@@ -73,7 +73,7 @@ class RecrutadorService {
         return recrutadorDAO.registrarAvaliacao(recrutadorId, candidatoId, vagaId, curtiu)
     }
 
-    List<AvaliacaoRecrutador> listarHistorico(Integer recrutadorId) {
+    List<AvaliacaoRecrutadorDTO> listarHistorico(Integer recrutadorId) {
         validarId(recrutadorId, 'Recrutador')
         return recrutadorDAO.listarHistorico(recrutadorId)
     }

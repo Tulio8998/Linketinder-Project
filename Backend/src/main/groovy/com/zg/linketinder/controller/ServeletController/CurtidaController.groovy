@@ -53,9 +53,10 @@ class CurtidaController extends HttpServlet {
                 Map body = JsonHelper.read(req.inputStream, Map)
                 Integer candidatoId = parseIntSafe(body?.candidatoId)
                 Integer vagaId = parseIntSafe(body?.vagaId)
+                Boolean curtiu = body?.curtiu instanceof Boolean ? body.curtiu as Boolean : null
 
-                if (candidatoId == null || vagaId == null || candidatoId != autenticado.id) {
-                    JsonHelper.error(resp, 400, 'IDs da vaga ou do candidato inválidos')
+                if (candidatoId == null || vagaId == null || candidatoId != autenticado.id || curtiu == null) {
+                    JsonHelper.error(resp, 400, 'Campos obrigatórios: candidatoId, vagaId, curtiu')
                     return
                 }
 
@@ -65,10 +66,10 @@ class CurtidaController extends HttpServlet {
                     return
                 }
 
-                curtidaService.curtirVagaComoCandidato(autenticado.id, vagaId, true)
+                curtidaService.curtirVagaComoCandidato(autenticado.id, vagaId, curtiu)
 
                 JsonHelper.respond(resp, 201, [
-                        mensagem: 'Vaga curtida com sucesso'
+                        mensagem: curtiu ? 'Vaga curtida com sucesso' : 'Avaliação negativa registrada'
                 ])
                 return
             }

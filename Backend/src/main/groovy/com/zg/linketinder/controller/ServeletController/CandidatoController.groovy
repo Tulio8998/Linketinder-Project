@@ -78,7 +78,7 @@ class CandidatoController extends HttpServlet {
                 return
             }
 
-            candidato = new Candidato(
+            Candidato candidato = new Candidato(
                     id: id,
                     cpf: new CpfVO(dto.cpf),
                     nome: dto.nome,

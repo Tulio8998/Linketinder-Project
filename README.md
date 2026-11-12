@@ -167,3 +167,23 @@ Para viabilizar o sistema de interações e a ocorrência de "Matches" no Linket
 4. Entre no link para ver a interface: `http://localhost:5173/`
 
 Observação: O projeto utiliza **Groovy 5.0.8** e a ferramenta de build Gradle **9.7.0**.
+
+## Integração Frontend e API REST
+
+Para usar os fluxos persistidos, prepare o PostgreSQL conforme a seção de banco
+de dados e inicie a API em um terminal (`cd Backend && ./gradlew runApi`). Em
+outro terminal, inicie o Vite (`cd Frontend && npm install && npm run dev`) e
+abra `http://localhost:5173/`.
+
+O frontend envia credenciais HTTP Basic em cada chamada protegida. A API valida
+o e-mail e a senha no banco e aceita, por padrão, o frontend em
+`http://localhost:5173` via CORS. Para outra origem local, configure a
+propriedade JVM `-Dlinketinder.frontend.origin=http://localhost:5174`. A sessão
+fica somente em memória no navegador e termina ao sair/recarregar a página.
+HTTP Basic não cifra as
+credenciais; use esta configuração apenas em desenvolvimento local, nunca em
+uma implantação sem HTTPS e política de senhas adequada.
+
+Os perfis anônimos de triagem e os resumos públicos de vagas são filtrados no
+backend. Nome e e-mail do recrutador e dados da empresa são mostrados ao
+candidato somente no endpoint de matches, após interesse mútuo na mesma vaga.

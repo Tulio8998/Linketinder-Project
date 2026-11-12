@@ -9,11 +9,11 @@ export function signIn(): string {
                             <div class="input-data">
                                 <div>
                                     <p>Email:</p>
-                                    <input class="input-in" type="email" placeholder="@email.com" required>
+                                    <input class="input-in" type="email" placeholder="@email.com">
                                 </div>
                                 <div>
                                     <p>Senha:</p>
-                                    <input class="input-in" type="password" placeholder="senha" required>
+                                    <input class="input-in" type="password" placeholder="senha">
                                 </div>
                             </div>
                             <button>Entrar</button>

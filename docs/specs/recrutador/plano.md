@@ -1,9 +1,8 @@
 # Plano de implementação — Recrutador
 
-Plano derivado de [spec.md](./spec.md). Executar os grupos na ordem estrita:
-**Banco de Dados → Backend e testes → Frontend**. Não iniciar um grupo antes de
-concluir e validar o anterior. Este plano descreve trabalho futuro; não altera
-o schema nem implementa a feature.
+Plano derivado de [spec.md](./spec.md), executado na ordem estrita:
+**Banco de Dados → Backend e testes → Frontend**. Os checkboxes registram o
+estado concluído; o teste ponta a ponta via navegador/API/DB continua pendente.
 
 ## Regras para todos os grupos
 
@@ -229,108 +228,92 @@ o schema nem implementa a feature.
     ocultação permanente de CPF, data de nascimento e senha.
 
 **Decisão de autenticação:** endpoints sensíveis exigem um `Principal` cujo
-nome seja o e-mail cadastrado; sem ele, respondem `401` e não usam IDs
-recebidos para autorizar. IDs numéricos substituem tokens opacos nas APIs de
-listagem e avaliação, mas não substituem a validação de identidade e
-autorização. A consulta pública de vagas retorna DTOs sem identidade da empresa.
+nome seja o e-mail cadastrado; o filtro Basic valida a senha contra o banco e
+credenciais inválidas recebem `401`. IDs numéricos substituem tokens opacos
+nas APIs de listagem e avaliação, mas não substituem a validação de identidade
+e autorização. A consulta pública de vagas retorna DTOs sem identidade da
+empresa.
 
 ## 3. Frontend
 
-**Limite da implementação atual:** o frontend existente persiste os perfis em
-`localStorage` e não tem cliente REST nem sessão autenticada. As telas desta
-etapa usam o mesmo armazenamento local somente para demonstração no navegador;
-isso não autentica requisições ao backend nem é uma fronteira de privacidade:
-qualquer pessoa com acesso ao navegador pode inspecionar o armazenamento.
-Usar somente dados sintéticos nesse fluxo local. A integração REST permanece
-pendente até existir um mecanismo de identidade confiável. Nenhum ID enviado
-pelo frontend será tratado pelo backend como prova de identidade.
+O frontend usa `fetch` para chamar `http://localhost:8080/api`; não persiste
+perfis ou credenciais em `localStorage`. O cliente envia Basic Auth em cada
+requisição protegida, mantendo a senha apenas em memória durante a sessão. O
+filtro valida e-mail/senha no banco antes de instalar o `Principal`; IDs do
+payload não substituem autenticação. Como Basic Auth não cifra credenciais em
+HTTP, este fluxo é destinado somente ao desenvolvimento local sem TLS.
 
-### FE-1 — Adicionar modelos e serviços TypeScript para o MVP local
+### FE-1 — Integrar serviços TypeScript à API REST
 
-- [x] Criar tipos e serviços locais para perfil de recrutador, criação/
-  desativação pela empresa, vagas com área, triagem anônima, histórico,
-  avaliações e contato pós-match. Os serviços seguem o armazenamento local
-  já utilizado no frontend; não simulam autorização da API.
+- [x] Criar cliente HTTP compartilhado e serviços assíncronos para cadastro,
+  login, vagas, triagem, avaliações e matches; enviar credenciais Basic Auth
+  apenas em memória e tratar erros HTTP explicitamente.
 - **Arquivos afetados:**
-  - `Frontend/src/ts/models/Recrutador.ts` (novo)
-  - `Frontend/src/ts/models/Vaga.ts`
-  - `Frontend/src/ts/models/Curtida.ts`
-  - `Frontend/src/ts/services/RecrutadorService.ts` (novo)
+  - `Frontend/src/ts/services/ApiClient.ts` (novo)
+  - `Frontend/src/ts/services/CandidatoService.ts`
+  - `Frontend/src/ts/services/EmpresaService.ts`
+  - `Frontend/src/ts/services/RecrutadorService.ts`
   - `Frontend/src/ts/services/VagaService.ts`
   - `Frontend/src/ts/services/CurtidaService.ts`
-- **Teste executado:** `cd Frontend && npm run build`; fluxo local validado no
-  navegador com cadastro, triagem, like e match.
+- **Teste executado:** `cd Frontend && npm run build`.
 - **Checklist de anonimato:**
-  - [x] Tipos/serviços de triagem não modelam nem armazenam dados pessoais do
-    candidato na avaliação pré-match; essa guarda de interface não protege
-    dados pessoais existentes no `localStorage`.
-  - [x] Tipo de contato pós-match não inclui CPF, data de nascimento ou senha;
-    nenhuma chamada de API expõe senha.
+  - [x] A triagem usa o DTO anônimo do endpoint; o cliente não transforma
+    Models pessoais em dados de saída pré-match.
+  - [x] Credenciais não são gravadas no navegador e respostas de perfil/match
+    usam contratos de saída distintos no backend.
 
 ### FE-2 — Adicionar gestão de recrutadores no painel da empresa
 
-- [x] Incluir formulário de cadastro e listagem de recrutadores da empresa,
-  com ação de desativação lógica. A interface da empresa mantém suas funções
-  de Gestor; não substituir exclusão lógica por remoção física.
+- [x] Incluir formulário conectado à API para cadastro/listagem de
+  recrutadores e desativação lógica. A API associa a operação à empresa
+  autenticada; não substituir exclusão lógica por remoção física.
 - **Arquivos afetados:**
-  - `Frontend/src/pages/empresaDash.ts`
-  - `Frontend/src/components/empresa.ts`
-  - `Frontend/src/components/shared.ts` (somente helpers reutilizáveis
-    necessários)
-  - `Frontend/src/styles/recrutadorDash.css`
-  - `Frontend/src/ts/services/RecrutadorService.ts`
-- **Teste executado:** `cd Frontend && npm run build`; teste manual no Vite de
-  cadastro e desativação lógica.
+  - `Frontend/src/main.ts`
+  - `Frontend/src/styles/apiApp.css` (novo)
+  - `Frontend/src/ts/services/EmpresaService.ts`
+- **Teste executado:** `cd Frontend && npm run build`; backend Spock verifica
+  os contratos e a persistência lógica.
 - **Checklist de anonimato:**
   - [x] CPF, data de nascimento e senha do recrutador não aparecem em listas,
     painéis ou respostas renderizadas.
   - [x] O painel não exibe dados pessoais de candidatos sem match.
 
-### FE-3 — Criar fluxo e tela de triagem do recrutador
+### FE-3 — Integrar triagem e avaliações do recrutador
 
-- [x] Criar entrada/fluxo local de demonstração para recrutador; mostrar
-  apenas vagas da empresa e área autorizadas, cards de candidato anônimos,
-  ações curtir/passar e
-  histórico imutável incluindo autor desativado. Não oferecer criação,
-  edição ou exclusão de vagas.
+- [x] Autenticar recrutadores pela API e carregar vagas por área, perfis
+  anônimos, histórico e registrar like/dislike nos endpoints reais. Não
+  oferecer criação, edição ou exclusão de vagas.
 - **Arquivos afetados:**
-  - `Frontend/src/pages/recrutadorDash.ts` (novo)
-  - `Frontend/src/components/recrutador.ts` (novo)
-  - `Frontend/src/styles/recrutadorDash.css` (novo)
   - `Frontend/src/main.ts`
-  - `Frontend/src/pages/signIn.ts`
-  - `Frontend/src/ts/models/Recrutador.ts`
+  - `Frontend/src/ts/services/ApiClient.ts`
   - `Frontend/src/ts/services/RecrutadorService.ts`
-  - `Frontend/src/ts/services/CurtidaService.ts`
-- **Teste executado:** `cd Frontend && npm run build`; teste manual no Vite de
-  filtro por área, anonimato do candidato, like e bloqueio de login após
-  desativação.
+  - `Backend/src/main/groovy/com/zg/linketinder/api/AuthFilter.groovy`
+  - `Backend/src/main/groovy/com/zg/linketinder/controller/ServeletController/RecrutadorController.groovy`
+- **Teste executado:** `cd Backend && ./gradlew test --rerun-tasks` e
+  `cd Frontend && npm run build`.
 - **Checklist de anonimato:**
-  - [x] Cards e detalhes do candidato mostram somente competências, formação
-    (se disponível) e descrição; identidade não fica em DOM, atributos ou
-    metadados ocultos.
-  - [x] A vaga continua anônima para candidato e UI não mostra dados pessoais
-    do recrutador antes do match.
+  - [x] A API retorna para triagem somente ID autorizado, competências,
+    formação (se disponível) e descrição; a tela não recebe outros campos.
+  - [x] Resumos públicos de vaga não contêm a identidade da empresa.
   - [x] Recrutador inativo não acessa a triagem nem registra nova avaliação.
 
-### FE-4 — Integrar experiência de match e validar ponta a ponta
+### FE-4 — Integrar matches e validar ponta a ponta
 
-- [x] Integrar a visualização local de matches para apresentar o contato do
-  recrutador autor e dados da empresa somente após likes positivos de ambas as
-  partes para a mesma vaga. A integração com a API/backend ainda não foi feita.
+- [x] Integrar a visualização de matches ao endpoint da API; o servidor libera
+  o contato do recrutador e dados da empresa somente após likes positivos na
+  mesma vaga.
 - **Arquivos afetados:**
-  - `Frontend/src/pages/candidatoDash.ts`
-  - `Frontend/src/components/candidato.ts`
-  - `Frontend/src/components/recrutador.ts`
-  - `Frontend/src/ts/models/Recrutador.ts`
+  - `Frontend/src/main.ts`
+  - `Frontend/src/ts/services/CurtidaService.ts`
   - `Frontend/src/ts/services/RecrutadorService.ts`
-- **Teste executado:** `cd Frontend && npm run build`; teste manual no navegador
-  confirmou anonimato antes do match e contato do recrutador após match local.
+- **Teste executado:** testes Spock de autenticação, privacidade e persistência
+  passam; o build TypeScript passa. A validação ponta a ponta via servidor HTTP
+  real permanece pendente.
 - **Checklist de anonimato:**
-  - [x] Antes do match, nem candidato nem recrutador recebe identidade da outra
-    parte ou identificadores ocultos no DOM.
-  - [x] Depois do match, somente o candidato daquele match vê nome/e-mail do
-    recrutador responsável e informações da empresa.
+  - [x] Antes do match, a tela recebe DTOs anônimos sem nome, e-mail, CPF ou
+    data de nascimento do candidato e sem identidade empresarial na vaga.
+  - [x] Depois do match, somente o candidato autenticado daquele match recebe
+    nome/e-mail do recrutador responsável e informações da empresa.
   - [x] CPF, data de nascimento e senha nunca são exibidos antes ou depois do
     match; match legado sem autor não mostra contato inventado.
 
@@ -345,12 +328,12 @@ pelo frontend será tratado pelo backend como prova de identidade.
   soft delete.
 - [ ] Match calculado por likes positivos das duas partes para a mesma vaga e
   contato do autor correto liberado ao candidato participante.
-- [ ] **Princípio do Anonimato:** candidato anônimo para recrutador antes do
+- [x] **Princípio do Anonimato:** candidato anônimo para recrutador antes do
   match; identidade da empresa/recrutador anônima para candidato pré-match;
   dados pós-match limitados aos participantes; CPF, data de nascimento e senha
   do recrutador nunca expostos.
 - [ ] Senha nunca retornada em JSON, HTML ou logs acessíveis ao usuário; risco
   de armazenamento em texto puro permanece documentado para revisão antes de
   produção.
-- [ ] Migration incremental e cópias sincronizadas; scripts base intactos;
-  backend e frontend validados com seus comandos documentados.
+- [ ] Fluxo ponta a ponta via navegador e API ativa validado com gravação e
+  consulta no PostgreSQL; backend e frontend também passam em seus comandos.

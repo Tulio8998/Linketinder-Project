@@ -78,6 +78,32 @@ class VagaSql {
         WHERE v.nome = ?
     '''
 
+    static final String LISTAR_RESUMOS_PUBLICOS = '''
+        SELECT v.id, v.nome, v.descricao, v.area, cm.nome AS nome_competencia
+        FROM vagas v
+        LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
+        LEFT JOIN competencias cm ON cm.id = vc.id_competencia
+        ORDER BY v.id, cm.nome
+    '''
+
+    static final String BUSCAR_RESUMO_PUBLICO_POR_ID = '''
+        SELECT v.id, v.nome, v.descricao, v.area, cm.nome AS nome_competencia
+        FROM vagas v
+        LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
+        LEFT JOIN competencias cm ON cm.id = vc.id_competencia
+        WHERE v.id = ?
+        ORDER BY cm.nome
+    '''
+
+    static final String BUSCAR_RESUMO_PUBLICO_POR_NOME = '''
+        SELECT v.id, v.nome, v.descricao, v.area, cm.nome AS nome_competencia
+        FROM vagas v
+        LEFT JOIN vagas_competencias vc ON v.id = vc.id_vaga
+        LEFT JOIN competencias cm ON cm.id = vc.id_competencia
+        WHERE v.nome = ?
+        ORDER BY v.id, cm.nome
+    '''
+
     static final String INSERIR_COMPETENCIA = '''
         INSERT INTO vagas_competencias (id_vaga, id_competencia) VALUES (?, ?)
     '''

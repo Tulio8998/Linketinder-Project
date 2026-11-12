@@ -4,27 +4,26 @@ import './styles/signUpCandidato.css'
 import './styles/signUpEmpresa.css'
 import './styles/candidatoDash.css'
 import './styles/empresaDash.css'
-import './styles/recrutadorDash.css'
 
 import { signIn } from './pages/signIn'
 import { signUpCandidato } from './pages/signUpCandidato'
 import { signUpEmpresa } from './pages/signUpEmpresa'
 import { candidatoDash } from './pages/candidatoDash'
 import { empresaDash } from './pages/empresaDash'
-import { recrutadorDash } from './pages/recrutadorDash'
 
 import { CandidatoService } from './ts/services/CandidatoService'
 import { EmpresaService } from './ts/services/EmpresaService'
-import { RecrutadorService } from './ts/services/RecrutadorService'
+import { VagaService } from './ts/services/VagaService'
+import { CurtidaService } from './ts/services/CurtidaService'
 
 import type { Candidato } from './ts/models/Candidato'
 import type { Empresa } from './ts/models/Empresa'
-import { gerenciarRecrutadores, inicializarTriagem } from './components/recrutador'
 
 import { validarCep, validarCnpj, validarCpf, validarEmail } from './ts/util/validators'
 
 import {
     configCandSkills,
+    cadidatoPanel as candCardPanel,
     editCandPanel,
     vagaPanel,
     candPointSkills,
@@ -46,7 +45,8 @@ import {
 
 const candidatoService = new CandidatoService(localStorage)
 const empresaService = new EmpresaService(localStorage)
-const recrutadorService = new RecrutadorService(localStorage)
+const vagaService = new VagaService(localStorage)
+const curtidaService = new CurtidaService(localStorage)
 
 const app = document.querySelector<HTMLDivElement>('#app')!
 
@@ -63,16 +63,8 @@ function signInPage(): void {
     form?.addEventListener('submit', (e) => {
         e.preventDefault()
         const emailInput = form.querySelector<HTMLInputElement>('.input-in[type="email"]')
-        const senhaInput = form.querySelector<HTMLInputElement>('.input-in[type="password"]')
         const email = emailInput?.value.trim()
         if (!email) { alert('Informe um email.'); return }
-
-        const recrutador = recrutadorService.autenticar(email, senhaInput?.value ?? '')
-        if (recrutador) {
-            recrutadorService.salvarSessao(recrutador)
-            recrutadorDashPage()
-            return
-        }
 
         const candidato = candidatoService.listarCandidatos().find((c) => c.email === email)
         if (candidato) {
@@ -140,8 +132,8 @@ function signUpPageCandidato(): void {
             competencias: Array.from(skillsElements).map((s) => s.textContent || '')
         }
 
-        const candidatoSalvo = candidatoService.salvarCandidato(novoCandidato)
-        localStorage.setItem('candidato_atual', JSON.stringify(candidatoSalvo))
+        candidatoService.salvarCandidato(novoCandidato)
+        localStorage.setItem('candidato_atual', JSON.stringify(novoCandidato))
         candidatoDashPage()
     })
 }
@@ -247,7 +239,6 @@ function candidatoDashPage(): void {
 function empresaDashPage(): void {
     app.innerHTML = empresaDash()
     editEmpPanel()
-    gerenciarRecrutadores()
     addVagaPanel()
     empCardPanel()
     empPointSkills()
@@ -261,20 +252,6 @@ function empresaDashPage(): void {
 
     document.querySelector('.btn-out')?.addEventListener('click', () => {
         localStorage.removeItem('empresa_atual')
-        signInPage()
-    })
-}
-
-function recrutadorDashPage(): void {
-    const recrutador = recrutadorService.recrutadorAtual()
-    if (!recrutador || !recrutadorService.estaAtivo(recrutador.id)) {
-        recrutadorService.limparSessao()
-        signInPage()
-        return
-    }
-    app.innerHTML = recrutadorDash()
-    inicializarTriagem(app, recrutador, () => {
-        recrutadorService.limparSessao()
         signInPage()
     })
 }

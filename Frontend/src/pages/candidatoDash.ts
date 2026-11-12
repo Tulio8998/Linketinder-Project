@@ -1,5 +1,9 @@
 import { ESTADOS, PAISES } from '../ts/util/constants'
 
+interface OpcoesPanel {
+    mostrarMatch?: boolean
+}
+
 function renderizarOpcoes(colecao: string[]): string {
     return colecao.map((e) => `<option value="${e}">${e}</option>`).join('')
 }

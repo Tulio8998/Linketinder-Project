@@ -8,6 +8,8 @@ import com.zg.linketinder.controller.ServeletController.VagaController
 import com.zg.linketinder.controller.ServeletController.RecrutadorController
 import org.apache.catalina.Context
 import org.apache.catalina.startup.Tomcat
+import org.apache.tomcat.util.descriptor.web.FilterDef
+import org.apache.tomcat.util.descriptor.web.FilterMap
 
 import java.nio.file.Paths
 
@@ -24,6 +26,17 @@ class ApiServer {
                 '',
                 Paths.get('.').toAbsolutePath().toString()
         )
+
+        FilterDef filterDef = new FilterDef()
+        filterDef.setFilterName("AuthFilter")
+        filterDef.setFilterClass(AuthFilter.name)
+        filterDef.setFilter(new AuthFilter())
+        ctx.addFilterDef(filterDef)
+
+        FilterMap filterMap = new FilterMap()
+        filterMap.setFilterName("AuthFilter")
+        filterMap.addURLPattern("/api/*")
+        ctx.addFilterMap(filterMap)
 
         register(ctx, 'candidatos', new CandidatoController(), '/api/candidatos/*')
         register(ctx, 'empresas', new EmpresaController(), '/api/empresas/*')

@@ -1,0 +1,1675 @@
+{
+	"info": {
+		"_postman_id": "74fe4abb-bc9b-4450-bc45-4e471df525bf",
+		"name": "linketinder",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41280511"
+	},
+	"item": [
+		{
+			"name": "Candidato",
+			"item": [
+				{
+					"name": "CriarCandidato",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Túlio Vilela Lopes\",\n    \"email\": \"tulio@gmail.com\",\n    \"senha\": \"12345678\",\n    \"pais\": \"Brasil\",\n    \"cidade\": \"Belo Horizonte\",\n    \"estado\": \"MG\",\n    \"cep\": \"11111-11\",\n    \"descricao\": \"Minha descricao...\",\n    \"cpf\":\"111.111.111-11\",\n    \"dataNascimento\": \"2004-10-01\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/candidatos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"candidatos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AtualizarCandidato",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "tulio@gmail.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Túlio Vilela Lopes Atualizado2\",\n    \"email\": \"tulio@gmail.com\",\n    \"senha\": \"12345678\",\n    \"pais\": \"Brasil\",\n    \"cidade\": \"Belo Horizonte\",\n    \"estado\": \"MG\",\n    \"cep\": \"11111-11\",\n    \"descricao\": \"Descricao editada...\",\n    \"cpf\":\"111.111.111-11\",\n    \"dataNascimento\": \"2004-10-01\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/candidatos/20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"candidatos",
+								"20"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarCandidato",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "tulio@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/candidatos/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"candidatos",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarCandidato (Perfil Logado)",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "tulio@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/candidatos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"candidatos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarCandidato_ID",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "tulio@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/candidatos/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"candidatos",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarCandidato_Email",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "tulio@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/candidatos?email=tulio@gmail.com",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"candidatos"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "tulio@gmail.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarCandidato_CPF",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "tulio@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/candidatos?cpf=111.111.111-11",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"candidatos"
+							],
+							"query": [
+								{
+									"key": "cpf",
+									"value": "111.111.111-11"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Empresa",
+			"item": [
+				{
+					"name": "CriarEmpresa",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"ACZG\",\n    \"email\": \"aszg@gmail.com\",\n    \"senha\": \"12345678\",\n    \"pais\": \"Brasil\",\n    \"cidade\": \"Belo Horizonte\",\n    \"estado\": \"Minas Gerais\",\n    \"cep\": \"11111-11\",\n    \"descricao\": \"Minha descricao...\",\n    \"cnpj\": \"11.211.111/1111-11\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/empresas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"empresas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AtualizarEmpresa",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "aszg@gmail.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"ACZG Atualizada\",\n    \"email\": \"aszg@gmail.com\",\n    \"senha\": \"12345678\",\n    \"pais\": \"Brasil\",\n    \"cidade\": \"Belo Horizonte\",\n    \"estado\": \"Minas Gerais\",\n    \"cep\": \"11111-11\",\n    \"descricao\": \"Descricao nova...\",\n    \"cnpj\": \"11.211.111/1111-11\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/empresas/10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"empresas",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarEmpresa",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "aczg@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/empresas/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"empresas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarEmpresa (Perfil Logado)",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "aszg@gmail.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/empresas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"empresas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarEmpresa_ID",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "aszg@gmail.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/empresas/10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"empresas",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarEmpresa_CNPJ",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "aszg@gmail.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/empresas?cnpj=11.211.111/1111-11",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"empresas"
+							],
+							"query": [
+								{
+									"key": "cnpj",
+									"value": "11.211.111/1111-11"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarEmpresa_Email",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "aszg@gmail.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/empresas?email=aszg@gmail.com",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"empresas"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "aszg@gmail.com"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vaga",
+			"item": [
+				{
+					"name": "CriarVaga",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "aszg@gmail.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Desenvolvedor Backend\",\n    \"descricao\": \"Desenvolver backend Java\",\n    \"area\": \"TI\",\n    \"pais\": \"Brasil\",\n    \"estado\": \"MG\",\n    \"cidade\": \"Belo Horizonte\",\n    \"empresa\": { \"id\": 10 }\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/vagas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vagas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AtualizarVaga",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "aczg@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Desenvolvedor Backend Senior\",\n    \"descricao\": \"Java + Groovy\",\n    \"area\": \"TI\",\n    \"pais\": \"Brasil\",\n    \"estado\": \"MG\",\n    \"cidade\": \"Belo Horizonte\",\n    \"empresa\": { \"id\": 1 }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/vagas/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vagas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarVaga",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "aczg@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/vagas/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vagas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarVaga_Publica",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/vagas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vagas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarVaga_Publica_ID",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/vagas/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vagas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarVaga_Publica_Nome",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/vagas?nome=Desenvolvedor Backend",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vagas"
+							],
+							"query": [
+								{
+									"key": "nome",
+									"value": "Desenvolvedor Backend"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarVagas_Empresa_Especifica",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "aszg@gmail.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/vagas?empresaId=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vagas"
+							],
+							"query": [
+								{
+									"key": "empresaId",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarVaga_Empresa_Especifica_ID",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "aczg@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/vagas?empresaId=1&vagaId=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vagas"
+							],
+							"query": [
+								{
+									"key": "empresaId",
+									"value": "1"
+								},
+								{
+									"key": "vagaId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarVaga_Empresa_Especifica_Nome",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "aczg@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/vagas?empresaId=1&nome=Desenvolvedor Backend",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"vagas"
+							],
+							"query": [
+								{
+									"key": "empresaId",
+									"value": "1"
+								},
+								{
+									"key": "nome",
+									"value": "Desenvolvedor Backend"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Competencia",
+			"item": [
+				{
+					"name": "ListarCompetencia_Geral",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CriarCompetenciaCandidato",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "tulio@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"candidatoId\": 20, \n    \"competenciaId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/competencias/candidato",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"candidato"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarCompetenciaCandidato",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "tulio@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/candidato/1/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"candidato",
+								"1",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarCompetenciaCandidato",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "tulio@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/candidato/20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"candidato",
+								"20"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarCompetenciaCandidato_Nome",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "tulio@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/candidato/20?nome=Java",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"candidato",
+								"20"
+							],
+							"query": [
+								{
+									"key": "nome",
+									"value": "Java"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarCompetenciaCandidato_IDs",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "tulio@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/candidato/20/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"candidato",
+								"20",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CriarCompetenciaVaga",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "aszg@gmail.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vagaId\": 10, \n    \"competenciaId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/competencias/vaga",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"vaga"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarCompetenciaVaga",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "aczg@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/vaga/1/6",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"vaga",
+								"1",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarCompetenciaVaga",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "aszg@gmail.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/vaga/10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"vaga",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarCompetenciaVaga_Nome",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "aczg@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/vaga/1?nome=JavaScript",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"vaga",
+								"1"
+							],
+							"query": [
+								{
+									"key": "nome",
+									"value": "JavaScript"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BuscarCompetenciaVaga_IDs",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "aczg@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/competencias/vaga/1/6",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"competencias",
+								"vaga",
+								"1",
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Curtida",
+			"item": [
+				{
+					"name": "CriarCurtidaCandidato",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "tulio@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"candidatoId\": 20, \n    \"vagaId\": 10\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/curtidas/candidato",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"curtidas",
+								"candidato"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CurtirCandidatoRecrutador",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "carlos@aczg.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"candidatoId\": 20,\n    \"vagaId\": 10,\n    \"curtiu\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/recrutadores/me/avaliacoes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"recrutadores",
+								"me",
+								"avaliacoes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MatchCandidato",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "tulio@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/curtidas/matches/candidato/20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"curtidas",
+								"matches",
+								"candidato",
+								"20"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MatchEmpresa",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "aszg@gmail.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/curtidas/matches/empresa/10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"curtidas",
+								"matches",
+								"empresa",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CalcularAfinidadeCandidato",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "tulio@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/curtidas/afinidade?candidatoId=1&vagaId=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"curtidas",
+								"afinidade"
+							],
+							"query": [
+								{
+									"key": "candidatoId",
+									"value": "1"
+								},
+								{
+									"key": "vagaId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Recrutador",
+			"item": [
+				{
+					"name": "CriarRecrutador",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "aszg@gmail.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Carlos RH\",\n    \"area\": \"TI\",\n    \"descricao\": \"Recrutador ACZG\",\n    \"email\": \"carlos@aczg.com\",\n    \"cpf\": \"111.222.333-44\",\n    \"dataNascimento\": \"1985-05-15\",\n    \"senha\": \"12345678\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/recrutadores/empresa/recrutadores",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"recrutadores",
+								"empresa",
+								"recrutadores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarRecrutadoresDaEmpresa",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "aszg@gmail.com",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/recrutadores/empresa/recrutadores",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"recrutadores",
+								"empresa",
+								"recrutadores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeletarRecrutador",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "aczg@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/recrutadores/empresa/recrutadores/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"recrutadores",
+								"empresa",
+								"recrutadores",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarVagasRecrutador",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "carlos@aczg.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/recrutadores/me/vagas",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"recrutadores",
+								"me",
+								"vagas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarCandidatosVagasRecrutador",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "carlos@aczg.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/recrutadores/me/vagas/10/candidatos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"recrutadores",
+								"me",
+								"vagas",
+								"10",
+								"candidatos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListarHistoricoRecrutador",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "carlos@aczg.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/recrutadores/me/historico",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"recrutadores",
+								"me",
+								"historico"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MatchCandidato_Recrutador",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "12345678",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "tulio@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/recrutadores/matches/candidato",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"recrutadores",
+								"matches",
+								"candidato"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

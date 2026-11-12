@@ -4,6 +4,7 @@ import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Vaga
+import com.zg.linketinder.dto.VagaResumoDTO
 import com.zg.linketinder.service.CompetenciaService
 import com.zg.linketinder.service.CandidatoService
 import com.zg.linketinder.service.CurtidaService
@@ -151,16 +152,13 @@ class LegacyApiPrivacySpec extends Specification {
         controller.doGet(request('/', null), response(captured))
 
         then:
-        1 * vagaService.listarTodos() >> [
-                new Vaga(
+        1 * vagaService.listarResumosPublicos() >> [
+                new VagaResumoDTO(
                         id: 739,
                         nome: 'Engenharia de Dados',
                         descricao: 'Construir plataformas de dados',
                         area: 'TI',
-                        endereco: new com.zg.linketinder.model.Endereco(
-                                pais: 'Brasil', estado: 'SP', cidade: 'São Paulo'),
-                        empresa: new Empresa(id: 88, nome: 'Empresa Confidencial'),
-                        competencias: [new Competencia(nome: 'PostgreSQL')]
+                        competencias: ['PostgreSQL']
                 )
         ]
         captured.status == 200
@@ -186,13 +184,12 @@ class LegacyApiPrivacySpec extends Specification {
         controller.doGet(request('/739', null), response(captured))
 
         then:
-        1 * vagaService.buscarPorId(739) >> new Vaga(
+        1 * vagaService.buscarResumoPublicoPorId(739) >> new VagaResumoDTO(
                 id: 739,
                 nome: 'Engenharia de Dados',
                 descricao: 'Construir plataformas de dados',
                 area: 'TI',
-                empresa: new Empresa(id: 88, nome: 'Empresa Confidencial'),
-                competencias: [new Competencia(nome: 'PostgreSQL')]
+                competencias: ['PostgreSQL']
         )
         captured.status == 200
         captured.body().contains('"id":739')
@@ -243,7 +240,7 @@ class LegacyApiPrivacySpec extends Specification {
                 curtidaService, candidatoService, Mock(EmpresaService), vagaService)
         CapturedBody captured = new CapturedBody()
         HttpServletRequest request = request('/candidato', 'candidate@example.com')
-        request.inputStream >> input('{"candidatoId":18,"vagaId":73}')
+        request.inputStream >> input('{"candidatoId":18,"vagaId":73,"curtiu":true}')
 
         when:
         controller.doPost(request, response(captured))
@@ -257,6 +254,29 @@ class LegacyApiPrivacySpec extends Specification {
         captured.body().contains('Vaga curtida com sucesso')
         !captured.body().contains('18')
         !captured.body().contains('73')
+    }
+
+    def "curtida de candidato registra avaliação negativa da vaga"() {
+        given:
+        CandidatoService candidatoService = Mock()
+        CurtidaService curtidaService = Mock()
+        VagaService vagaService = Mock()
+        CurtidaController controller = new CurtidaController(
+                curtidaService, candidatoService, Mock(EmpresaService), vagaService)
+        CapturedBody captured = new CapturedBody()
+        HttpServletRequest request = request('/candidato', 'candidate@example.com')
+        request.inputStream >> input('{"candidatoId":18,"vagaId":73,"curtiu":false}')
+
+        when:
+        controller.doPost(request, response(captured))
+
+        then:
+        1 * candidatoService.buscarEmailCandidatoParaAutorizacao('candidate@example.com') >>
+                new Candidato(id: 18)
+        1 * vagaService.buscarPorId(73) >> new Vaga(id: 73)
+        1 * curtidaService.curtirVagaComoCandidato(18, 73, false)
+        captured.status == 201
+        captured.body().contains('Avaliação negativa registrada')
     }
 
     private HttpServletRequest request(String path, String email) {

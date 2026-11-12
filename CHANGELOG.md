@@ -20,9 +20,9 @@ e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
   anônimos omitem dados pessoais e aceitam IDs numéricos explícitos.
 - Testes Spock de Services, Controllers e integração PostgreSQL em schema
   temporário isolado.
-- Interface local de recrutador com cadastro/desativação pela empresa, triagem
-  anônima por área, histórico de autoria e matches com contato pós-match
-  (demonstração local com dados sintéticos; sem integração REST).
+- Frontend integrado aos endpoints REST para cadastro e login de candidatos e
+  empresas, gestão de recrutadores, triagem anônima, avaliações e contato após
+  match; credenciais Basic Auth permanecem somente em memória.
 
 ### Modificado
 - Simplificados os endpoints de vagas, triagem e curtida para trafegar IDs
@@ -32,7 +32,11 @@ e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 - Formulário de vaga passou a exigir área; IDs locais são atribuídos a vagas e
   candidatos legados para relacionar avaliações do MVP.
 - Vistas pré-match de candidato e recrutador omitem localização e identidade da
-  outra parte.
+  outra parte na interface.
+- Filtro HTTP Basic valida e-mail/senha contra o banco, instala o `Principal`
+  validado e habilita CORS para o frontend local em `http://localhost:5173`.
+- Avaliações positivas e negativas do candidato agora são enviadas à API e
+  persistidas por vaga, junto às avaliações do recrutador.
 
 ### Corrigido
 - Nenhuma alteração registrada.
@@ -40,7 +44,7 @@ e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 ### Removido
 - Stores temporários de tokens opacos para vagas e avaliações de recrutador.
 
-## [1.9.0] - 2026-11-10
+## [2.1.0] - 2026-11-10
 
 ### Adicionado
 - Controllers e DTOs para separar o transporte e a interface da lógica de negócio.

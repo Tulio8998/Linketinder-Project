@@ -1,15 +1,13 @@
 package com.zg.linketinder.dao
 
 import com.zg.linketinder.dao.interfaces.RecrutadorDAO
+import com.zg.linketinder.dto.AvaliacaoRecrutadorDTO
+import com.zg.linketinder.dto.CandidatoAnonimoDTO
 import com.zg.linketinder.dto.MatchRecrutadorDTO
+import com.zg.linketinder.dto.VagaResumoDTO
 import com.zg.linketinder.factory.ConexaoDB
-import com.zg.linketinder.model.AvaliacaoRecrutador
-import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.Empresa
-import com.zg.linketinder.model.Endereco
-import com.zg.linketinder.model.PerfilCandidatoAnonimo
 import com.zg.linketinder.model.Recrutador
-import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.sql.RecrutadorSql
 import com.zg.linketinder.vo.CpfVO
 import com.zg.linketinder.vo.EmailVO
@@ -77,21 +75,21 @@ class RecrutadorDAOImpl implements RecrutadorDAO {
     }
 
     @Override
-    List<Vaga> listarVagasDaArea(Integer recrutadorId) {
+    List<VagaResumoDTO> listarVagasDaArea(Integer recrutadorId) {
         return ConexaoDB.consultar { sql ->
-            agruparVagas(sql.rows(RecrutadorSql.LISTAR_VAGAS_DA_AREA, [recrutadorId]))
+            agruparResumosVaga(sql.rows(RecrutadorSql.LISTAR_VAGAS_DA_AREA, [recrutadorId]))
         }
     }
 
     @Override
-    List<PerfilCandidatoAnonimo> listarCandidatosAnonimos(Integer recrutadorId, Integer vagaId) {
+    List<CandidatoAnonimoDTO> listarCandidatosAnonimos(Integer recrutadorId, Integer vagaId) {
         return ConexaoDB.consultar { sql ->
-            Map<Integer, PerfilCandidatoAnonimo> perfis = [:]
+            Map<Integer, CandidatoAnonimoDTO> perfis = [:]
             sql.rows(RecrutadorSql.LISTAR_CANDIDATOS_ANONIMOS, [recrutadorId, vagaId]).each { row ->
                 Integer id = row.id as Integer
                 if (!perfis.containsKey(id)) {
-                    perfis[id] = new PerfilCandidatoAnonimo(
-                            idInterno: id,
+                    perfis[id] = new CandidatoAnonimoDTO(
+                            id: id,
                             descricao: row.descricao,
                             competencias: [],
                             formacoes: []
@@ -115,13 +113,13 @@ class RecrutadorDAOImpl implements RecrutadorDAO {
     }
 
     @Override
-    List<AvaliacaoRecrutador> listarHistorico(Integer recrutadorId) {
+    List<AvaliacaoRecrutadorDTO> listarHistorico(Integer recrutadorId) {
         return ConexaoDB.consultar { sql ->
-            Map<Integer, AvaliacaoRecrutador> avaliacoes = [:]
+            Map<Integer, AvaliacaoRecrutadorDTO> avaliacoes = [:]
             sql.rows(RecrutadorSql.LISTAR_HISTORICO, [recrutadorId]).each { row ->
                 Integer id = row.id as Integer
                 if (!avaliacoes.containsKey(id)) {
-                    avaliacoes[id] = new AvaliacaoRecrutador(
+                    avaliacoes[id] = new AvaliacaoRecrutadorDTO(
                             autor: row.nome_autor,
                             vaga: row.nome_vaga,
                             area: row.area,
@@ -174,12 +172,12 @@ class RecrutadorDAOImpl implements RecrutadorDAO {
         )
     }
 
-    private List<Vaga> agruparVagas(List rows) {
-        Map<Integer, Vaga> vagas = [:]
+    private List<VagaResumoDTO> agruparResumosVaga(List rows) {
+        Map<Integer, VagaResumoDTO> vagas = [:]
         rows.each { row ->
             Integer id = row.id as Integer
             if (!vagas.containsKey(id)) {
-                vagas[id] = new Vaga(
+                vagas[id] = new VagaResumoDTO(
                         id: id,
                         nome: row.nome,
                         descricao: row.descricao,
@@ -188,7 +186,7 @@ class RecrutadorDAOImpl implements RecrutadorDAO {
                 )
             }
             if (row.nome_competencia != null) {
-                vagas[id].competencias.add(new Competencia(nome: row.nome_competencia))
+                vagas[id].competencias.add(row.nome_competencia as String)
             }
         }
         return vagas.values().toList()

@@ -3,8 +3,8 @@ package com.zg.linketinder.controller.ServeletController
 import com.zg.linketinder.api.JsonHelper
 import com.zg.linketinder.api.ServletIdentity
 import com.zg.linketinder.dto.VagaGestaoDTO
-import com.zg.linketinder.dto.VagaPublicaDTO
 import com.zg.linketinder.dto.VagaDTO
+import com.zg.linketinder.dto.VagaResumoDTO
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Endereco
 import com.zg.linketinder.model.Vaga
@@ -158,12 +158,12 @@ class VagaController extends HttpServlet {
                 Integer id = extrairId(req, resp)
                 if (id == null) return
 
-                Vaga vaga = vagaService.buscarPorId(id)
+                VagaResumoDTO vaga = vagaService.buscarResumoPublicoPorId(id)
                 if (vaga == null) {
                     JsonHelper.error(resp, 404, 'Vaga não encontrada')
                     return
                 }
-                JsonHelper.respond(resp, 200, publica(vaga))
+                JsonHelper.respond(resp, 200, vaga)
                 return
             }
 
@@ -229,17 +229,17 @@ class VagaController extends HttpServlet {
             }
 
             if (nome && !nome.isBlank()) {
-                Vaga vaga = vagaService.buscarNomeVaga(nome)
+                VagaResumoDTO vaga = vagaService.buscarResumoPublicoPorNome(nome)
                 if (vaga == null) {
                     JsonHelper.error(resp, 404, "Vaga com nome '${nome}' não encontrada")
                     return
                 }
-                JsonHelper.respond(resp, 200, publica(vaga))
+                JsonHelper.respond(resp, 200, vaga)
                 return
             }
 
-            List<Vaga> lista = vagaService.listarTodos()
-            JsonHelper.respond(resp, 200, lista.collect { publica(it) })
+            List<VagaResumoDTO> lista = vagaService.listarResumosPublicos()
+            JsonHelper.respond(resp, 200, lista)
 
         } catch (Exception e) {
             JsonHelper.internalError(resp, e)
@@ -259,16 +259,6 @@ class VagaController extends HttpServlet {
             JsonHelper.internalError(resp, e)
             return null
         }
-    }
-
-    private static VagaPublicaDTO publica(Vaga vaga) {
-        return new VagaPublicaDTO(
-                id: vaga.id,
-                nome: vaga.nome,
-                descricao: vaga.descricao,
-                area: vaga.area,
-                competencias: vaga.competencias?.collect { it.nome } ?: []
-        )
     }
 
     private static VagaGestaoDTO gestao(Vaga vaga) {

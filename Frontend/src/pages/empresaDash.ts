@@ -34,10 +34,6 @@ function templateEditavel(titulo: string, subtitulo: string, dados: {
                                     <p class="input-name">Tipo de vaga</p>
                                     <input class="input-data" type="text" placeholder="Desenvolvedor...">
                                 </div>
-                                <div>
-                                    <p class="input-name">Área de atuação</p>
-                                    <input class="input-data" type="text" placeholder="TI, RH, Suporte...">
-                                </div>
                             </div>
                             <div class="info-location">
                                 <p class="title-personal">LOCALIZAÇÃO</p>
@@ -203,7 +199,6 @@ export function empresaDash(): string {
                         <nav class="match-cand">Matches</nav>
                         <nav class="add-vaga">Adicionar Vaga</nav>
                         <nav class="view-vaga">Ver Vagas</nav>
-                        <nav class="manage-recrutadores">Gerenciar recrutadores</nav>
                     </div>
                     <div class="log-out">
                         <p class="line"></p>

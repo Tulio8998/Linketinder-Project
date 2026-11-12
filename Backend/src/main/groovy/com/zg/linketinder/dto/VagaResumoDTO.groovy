@@ -1,6 +1,6 @@
 package com.zg.linketinder.dto
 
-class VagaTriagemDTO {
+class VagaResumoDTO {
     Integer id
     String nome
     String descricao

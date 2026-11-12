@@ -7,9 +7,8 @@ import com.zg.linketinder.dto.AvaliacaoRecrutadorDTO
 import com.zg.linketinder.dto.CandidatoAnonimoDTO
 import com.zg.linketinder.dto.RecrutadorDTO
 import com.zg.linketinder.dto.RecrutadorResumoDTO
-import com.zg.linketinder.dto.VagaTriagemDTO
+import com.zg.linketinder.dto.VagaResumoDTO
 import com.zg.linketinder.model.Empresa
-import com.zg.linketinder.model.PerfilCandidatoAnonimo
 import com.zg.linketinder.model.Recrutador
 import com.zg.linketinder.service.CandidatoService
 import com.zg.linketinder.service.EmpresaService
@@ -57,6 +56,11 @@ class RecrutadorController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         String path = req.pathInfo ?: '/'
+        if (path == '/me') {
+            Recrutador recrutador = recrutadorAutenticado(req, resp)
+            if (recrutador != null) JsonHelper.respond(resp, 200, resumo(recrutador))
+            return
+        }
         if (path == '/empresa/recrutadores') {
             listarDaEmpresa(req, resp)
             return
@@ -146,15 +150,7 @@ class RecrutadorController extends HttpServlet {
         Recrutador recrutador = recrutadorAutenticado(req, resp)
         if (recrutador == null) return
         try {
-            List<VagaTriagemDTO> vagas = recrutadorService.listarVagasDaArea(recrutador.id).collect { vaga ->
-                new VagaTriagemDTO(
-                        id: vaga.id,
-                        nome: vaga.nome,
-                        descricao: vaga.descricao,
-                        area: vaga.area,
-                        competencias: vaga.competencias.collect { it.nome }
-                )
-            }
+            List<VagaResumoDTO> vagas = recrutadorService.listarVagasDaArea(recrutador.id)
             JsonHelper.respond(resp, 200, vagas)
         } catch (Exception e) {
             JsonHelper.internalError(resp, e)
@@ -168,16 +164,8 @@ class RecrutadorController extends HttpServlet {
         Integer vagaId = parseId(rawId, resp)
         if (vagaId == null) return
         try {
-            List<CandidatoAnonimoDTO> candidatos = recrutadorService
-                    .listarCandidatosAnonimos(recrutador.id, vagaId)
-                    .collect { PerfilCandidatoAnonimo perfil ->
-                        new CandidatoAnonimoDTO(
-                                id: perfil.idInterno,
-                                descricao: perfil.descricao,
-                                competencias: perfil.competencias,
-                                formacoes: perfil.formacoes
-                        )
-                    }
+            List<CandidatoAnonimoDTO> candidatos =
+                    recrutadorService.listarCandidatosAnonimos(recrutador.id, vagaId)
             JsonHelper.respond(resp, 200, candidatos)
         } catch (IllegalArgumentException e) {
             JsonHelper.error(resp, 404, 'Vaga de triagem não encontrada')
@@ -214,17 +202,8 @@ class RecrutadorController extends HttpServlet {
         Recrutador recrutador = recrutadorAutenticado(req, resp)
         if (recrutador == null) return
         try {
-            List<AvaliacaoRecrutadorDTO> historico = recrutadorService.listarHistorico(recrutador.id)
-                    .collect { avaliacao ->
-                        new AvaliacaoRecrutadorDTO(
-                                autor: avaliacao.autor,
-                                vaga: avaliacao.vaga,
-                                area: avaliacao.area,
-                                descricaoCandidato: avaliacao.descricaoCandidato,
-                                competencias: avaliacao.competencias,
-                                curtiu: avaliacao.curtiu
-                        )
-                    }
+            List<AvaliacaoRecrutadorDTO> historico =
+                    recrutadorService.listarHistorico(recrutador.id)
             JsonHelper.respond(resp, 200, historico)
         } catch (Exception e) {
             JsonHelper.internalError(resp, e)

@@ -79,7 +79,7 @@ class EmpresaController extends HttpServlet {
                 return
             }
 
-            empresa = new Empresa(
+            Empresa empresa = new Empresa(
                     id: id,
                     cnpj: new CnpjVO(dto.cnpj),
                     nome: dto.nome,

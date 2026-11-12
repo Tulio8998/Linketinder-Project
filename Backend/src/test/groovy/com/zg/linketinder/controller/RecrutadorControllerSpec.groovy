@@ -1,10 +1,12 @@
 package com.zg.linketinder.controller.ServeletController
 
 import com.zg.linketinder.dto.MatchRecrutadorDTO
+import com.zg.linketinder.dto.AvaliacaoRecrutadorDTO
+import com.zg.linketinder.dto.CandidatoAnonimoDTO
+import com.zg.linketinder.dto.VagaResumoDTO
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.Empresa
-import com.zg.linketinder.model.PerfilCandidatoAnonimo
 import com.zg.linketinder.model.Recrutador
 import com.zg.linketinder.model.Vaga
 import com.zg.linketinder.service.CandidatoService
@@ -27,6 +29,34 @@ class RecrutadorControllerSpec extends Specification {
     CandidatoService candidatoService = Mock()
     RecrutadorController controller = new RecrutadorController(
             recrutadorService, empresaService, candidatoService)
+
+    def "retorna o resumo do recrutador autenticado sem dados sensíveis"() {
+        given:
+        HttpServletRequest request = request('/me', 'recrutadora@example.com')
+        CapturedBody captured = new CapturedBody()
+
+        when:
+        controller.doGet(request, response(captured))
+
+        then:
+        1 * recrutadorService.buscarPorEmail('recrutadora@example.com') >>
+                new Recrutador(
+                        id: 8,
+                        empresa: new Empresa(id: 9),
+                        nome: 'Recrutadora',
+                        area: 'TI',
+                        descricao: 'Seleção de tecnologia',
+                        email: new com.zg.linketinder.vo.EmailVO('recrutadora@example.com'),
+                        cpf: new com.zg.linketinder.vo.CpfVO('123.456.789-09'),
+                        senha: 'segredo',
+                        ativo: true
+                )
+        captured.status == 200
+        captured.body().contains('Recrutadora')
+        captured.body().contains('TI')
+        !captured.body().contains('123.456.789-09')
+        !captured.body().contains('segredo')
+    }
 
     def "bloqueia leitura sem identidade autenticada"() {
         given:
@@ -56,9 +86,8 @@ class RecrutadorControllerSpec extends Specification {
         then:
         1 * recrutadorService.buscarPorEmail('recrutadora@example.com') >> recrutador
         1 * recrutadorService.listarVagasDaArea(8) >> [
-                new Vaga(id: 727, nome: 'Engenheira de Software', descricao: 'Criar serviços',
-                        area: 'TI', empresa: new Empresa(id: 9, nome: 'Empresa Secreta'),
-                        competencias: [new Competencia(nome: 'Groovy')])
+                new VagaResumoDTO(id: 727, nome: 'Engenheira de Software',
+                        descricao: 'Criar serviços', area: 'TI', competencias: ['Groovy'])
         ]
         captured.status == 200
         String json = captured.body()
@@ -83,8 +112,8 @@ class RecrutadorControllerSpec extends Specification {
         then:
         1 * recrutadorService.buscarPorEmail('recrutadora@example.com') >> recrutador
         1 * recrutadorService.listarCandidatosAnonimos(8, 41) >> [
-                new PerfilCandidatoAnonimo(
-                        idInterno: 987654,
+                new CandidatoAnonimoDTO(
+                        id: 987654,
                         descricao: 'Experiência em sistemas distribuídos',
                         competencias: ['Groovy', 'PostgreSQL'],
                         formacoes: ['Ciência da Computação']
@@ -117,6 +146,31 @@ class RecrutadorControllerSpec extends Specification {
         1 * recrutadorService.registrarAvaliacao(8, 19, 41, true) >> true
         captured.status == 201
         captured.body().contains('Avaliação registrada')
+    }
+
+    def "histórico é retornado diretamente pelo DTO de saída"() {
+        given:
+        Recrutador recrutador = new Recrutador(id: 8, area: 'TI', ativo: true)
+        HttpServletRequest request = request('/me/historico', 'recrutadora@example.com')
+        CapturedBody captured = new CapturedBody()
+
+        when:
+        controller.doGet(request, response(captured))
+
+        then:
+        1 * recrutadorService.buscarPorEmail('recrutadora@example.com') >> recrutador
+        1 * recrutadorService.listarHistorico(8) >> [
+                new AvaliacaoRecrutadorDTO(
+                        autor: 'Recrutadora', vaga: 'Vaga TI', area: 'TI',
+                        descricaoCandidato: 'Experiência em sistemas', competencias: ['Groovy'],
+                        curtiu: true
+                )
+        ]
+        captured.status == 200
+        captured.body().contains('Vaga TI')
+        captured.body().contains('Groovy')
+        !captured.body().contains('cpf')
+        !captured.body().contains('senha')
     }
 
     def "contato do match é retornado ao candidato autenticado sem dados sensíveis do recrutador"() {

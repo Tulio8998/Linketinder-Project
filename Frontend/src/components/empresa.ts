@@ -125,16 +125,8 @@ export function addVagaPanel(): void {
                 descricao: '', competencias: [], cpnj: ''
             }
 
-            const nome = inputs[0].value.trim()
-            const area = inputs[1].value.trim()
-            if (!nome || !area) {
-                alert('Informe o nome e a área da vaga.')
-                return
-            }
-
             const novaVaga: Vaga = {
-                nome,
-                area,
+                nome: inputs[0].value,
                 pais: selects[0].value,
                 estado: selects[1].value,
                 cidade: selects[2].value,
@@ -165,7 +157,6 @@ export function editVagaPanel(index: number): void {
     const textarea = panel.querySelector('textarea')
 
     inputs[0].value = vagaAtual.nome
-    inputs[1].value = vagaAtual.area ?? ''
     selects[0].value = vagaAtual.pais
     selects[1].value = vagaAtual.estado
     selects[2].value = vagaAtual.cidade
@@ -189,7 +180,6 @@ export function editVagaPanel(index: number): void {
         const vagaAtualizada: Vaga = {
             ...vagaAtual,
             nome: inputs[0].value,
-            area: inputs[1].value.trim(),
             pais: selects[0].value,
             estado: selects[1].value,
             cidade: selects[2].value,
@@ -279,6 +269,7 @@ export function findCand(): void {
                     <div class="info-job">
                         <p class="porcent-match">MATCH: ${afinidade.toFixed(0)}%</p>
                         <p class="name">Vaga: ${curtida.vaga.nome}</p>
+                        <p class="address">${curtida.candidato.estado}, ${curtida.candidato.pais}</p>
                         <p class="description">${curtida.candidato.descricao}</p>
                         <div class="skills-class">
                             ${curtida.candidato.competencias.map((s) => `<p class="skill">${s}</p>`).join('')}

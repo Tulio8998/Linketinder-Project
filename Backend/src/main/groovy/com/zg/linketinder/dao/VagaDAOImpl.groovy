@@ -2,6 +2,7 @@ package com.zg.linketinder.dao
 
 import com.zg.linketinder.dao.base.CrudDAOImpl
 import com.zg.linketinder.dao.interfaces.VagaDAO
+import com.zg.linketinder.dto.VagaResumoDTO
 import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Endereco
@@ -108,6 +109,31 @@ class VagaDAOImpl extends CrudDAOImpl<Vaga> implements VagaDAO {
         }
     }
 
+    @Override
+    List<VagaResumoDTO> listarResumosPublicos() {
+        return ConexaoDB.consultar { Sql sql ->
+            agruparResumos(sql.rows(VagaSql.LISTAR_RESUMOS_PUBLICOS))
+        }
+    }
+
+    @Override
+    VagaResumoDTO buscarResumoPublicoPorId(Integer id) {
+        return ConexaoDB.consultar { Sql sql ->
+            List<VagaResumoDTO> lista = agruparResumos(
+                    sql.rows(VagaSql.BUSCAR_RESUMO_PUBLICO_POR_ID, [id]))
+            lista.isEmpty() ? null : lista.first()
+        }
+    }
+
+    @Override
+    VagaResumoDTO buscarResumoPublicoPorNome(String nome) {
+        return ConexaoDB.consultar { Sql sql ->
+            List<VagaResumoDTO> lista = agruparResumos(
+                    sql.rows(VagaSql.BUSCAR_RESUMO_PUBLICO_POR_NOME, [nome]))
+            lista.isEmpty() ? null : lista.first()
+        }
+    }
+
     private List<Vaga> agruparPorId(List linhas) {
         if (!linhas || linhas.isEmpty()) return []
         Map<Integer, Vaga> mapa = [:]
@@ -121,6 +147,28 @@ class VagaDAOImpl extends CrudDAOImpl<Vaga> implements VagaDAO {
                 Integer idComp = (linha.id_competencia instanceof Number) ?
                         ((Number) linha.id_competencia).intValue() : Integer.parseInt(linha.id_competencia.toString())
                 mapa[id].competencias.add(new Competencia(id: idComp, nome: linha.nome_competencia))
+            }
+        }
+        return mapa.values().toList()
+    }
+
+    private List<VagaResumoDTO> agruparResumos(List linhas) {
+        Map<Integer, VagaResumoDTO> mapa = [:]
+        linhas.each { linha ->
+            Integer id = (linha.id instanceof Number)
+                    ? ((Number) linha.id).intValue()
+                    : Integer.parseInt(linha.id.toString())
+            if (!mapa.containsKey(id)) {
+                mapa[id] = new VagaResumoDTO(
+                        id: id,
+                        nome: linha.nome,
+                        descricao: linha.descricao,
+                        area: linha.area,
+                        competencias: []
+                )
+            }
+            if (linha.nome_competencia != null) {
+                mapa[id].competencias.add(linha.nome_competencia as String)
             }
         }
         return mapa.values().toList()

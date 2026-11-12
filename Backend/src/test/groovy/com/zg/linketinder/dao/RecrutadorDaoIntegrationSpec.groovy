@@ -1,20 +1,26 @@
 package com.zg.linketinder.dao
 
+import com.zg.linketinder.api.AuthFilter
 import com.zg.linketinder.factory.ConexaoDB
 import com.zg.linketinder.factory.DatabaseFactory
 import com.zg.linketinder.factory.PostgresTestFactory
-import com.zg.linketinder.model.AvaliacaoRecrutador
+import com.zg.linketinder.dto.AvaliacaoRecrutadorDTO
+import com.zg.linketinder.dto.CandidatoAnonimoDTO
 import com.zg.linketinder.model.Empresa
-import com.zg.linketinder.model.PerfilCandidatoAnonimo
 import com.zg.linketinder.model.Recrutador
-import com.zg.linketinder.model.Vaga
+import com.zg.linketinder.dto.VagaResumoDTO
 import com.zg.linketinder.vo.CpfVO
 import com.zg.linketinder.vo.EmailVO
 import groovy.sql.Sql
+import jakarta.servlet.FilterChain
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import spock.lang.Shared
 import spock.lang.Specification
 
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate
+import java.util.Base64
 
 class RecrutadorDaoIntegrationSpec extends Specification {
     @Shared
@@ -98,26 +104,94 @@ class RecrutadorDaoIntegrationSpec extends Specification {
 
     def "limita vagas e perfis anonimos a empresa e área do recrutador"() {
         when:
-        List<Vaga> vagas = dao.listarVagasDaArea(10)
-        List<PerfilCandidatoAnonimo> perfis = dao.listarCandidatosAnonimos(10, 201)
+        List<VagaResumoDTO> vagas = dao.listarVagasDaArea(10)
+        List<CandidatoAnonimoDTO> perfis = dao.listarCandidatosAnonimos(10, 201)
 
         then:
         vagas*.id == [201, 204]
         vagas*.area.every { it == 'TI' }
-        perfis*.idInterno == [301, 302]
+        vagas.find { it.id == 201 }.competencias == ['Groovy']
+        perfis*.id == [301, 302]
         perfis.every { it.descricao && it.competencias }
+        !perfis.first().properties.keySet().any {
+            it.toLowerCase().contains('nome') || it.toLowerCase().contains('email') ||
+                    it.toLowerCase().contains('cpf') || it.toLowerCase().contains('senha')
+        }
+    }
+
+    def "DAO público de vagas retorna somente o contrato de resumo anônimo"() {
+        given:
+        VagaDAOImpl vagaDAO = new VagaDAOImpl()
+
+        when:
+        List<VagaResumoDTO> resumos = vagaDAO.listarResumosPublicos()
+        VagaResumoDTO porId = vagaDAO.buscarResumoPublicoPorId(201)
+        VagaResumoDTO porNome = vagaDAO.buscarResumoPublicoPorNome('Vaga TI 1')
+
+        then:
+        resumos*.id == [201, 202, 203, 204]
+        porId.nome == 'Vaga TI 1'
+        porId.competencias == ['Groovy']
+        porNome.id == 201
+        [resumos.first(), porId, porNome].every {
+            (it.properties.keySet() - 'class') as Set ==
+                    ['id', 'nome', 'descricao', 'area', 'competencias'] as Set
+        }
+    }
+
+    def "Basic Auth valida senha no banco e instala identidade da requisição"() {
+        given:
+        AuthFilter filter = new AuthFilter()
+        HttpServletRequest request = Mock()
+        HttpServletResponse response = Mock()
+        FilterChain chain = Mock()
+        String header = 'Basic ' + Base64.encoder.encodeToString(
+                'recrutador-ti@example.com:senha'.getBytes(StandardCharsets.UTF_8)
+        )
+
+        when:
+        filter.doFilter(request, response, chain)
+
+        then:
+        1 * request.getMethod() >> 'GET'
+        1 * request.getHeader('Origin') >> null
+        1 * request.getHeader('Authorization') >> header
+        1 * chain.doFilter({ it instanceof HttpServletRequest &&
+                it.userPrincipal.name == 'recrutador-ti@example.com' }, response)
+    }
+
+    def "Basic Auth rejeita senha incorreta"() {
+        given:
+        AuthFilter filter = new AuthFilter()
+        HttpServletRequest request = Mock()
+        HttpServletResponse response = Mock()
+        FilterChain chain = Mock()
+        String header = 'Basic ' + Base64.encoder.encodeToString(
+                'recrutador-ti@example.com:senha-errada'.getBytes(StandardCharsets.UTF_8)
+        )
+
+        when:
+        filter.doFilter(request, response, chain)
+
+        then:
+        1 * request.getMethod() >> 'GET'
+        1 * request.getHeader('Origin') >> null
+        1 * request.getHeader('Authorization') >> header
+        1 * response.setHeader('WWW-Authenticate', 'Basic realm="Linketinder"')
+        1 * response.sendError(401, 'Credenciais inválidas')
+        0 * chain._
     }
 
     def "primeira avaliação vence, mantém autoria após soft delete e libera contato só no match"() {
         when:
         boolean primeira = dao.registrarAvaliacao(10, 301, 201, true)
         boolean conflito = dao.registrarAvaliacao(13, 301, 201, false)
-        List<AvaliacaoRecrutador> historico = dao.listarHistorico(13)
+        List<AvaliacaoRecrutadorDTO> historico = dao.listarHistorico(13)
         ConexaoDB.getConexao().execute(
                 'INSERT INTO curtidas_candidato (id_candidato, id_vaga, curtiu) VALUES (301, 201, TRUE)')
         def matches = dao.listarMatchesCandidato(301)
         boolean desativado = dao.desativar(10, 1)
-        List<AvaliacaoRecrutador> historicoDepoisDoDesligamento = dao.listarHistorico(13)
+        List<AvaliacaoRecrutadorDTO> historicoDepoisDoDesligamento = dao.listarHistorico(13)
         boolean avaliacaoInativa = dao.registrarAvaliacao(10, 302, 201, true)
 
         then:
