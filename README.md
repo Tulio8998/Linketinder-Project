@@ -98,6 +98,14 @@ O projeto foi desenvolvido focando na entrega do Produto Mínimo Viável (MVP) s
 * **Coexistência com o CLI:** A API REST é um acréscimo isolado. A CLI original continua funcionando normalmente via `./gradlew run`, e a API sobe via `./gradlew runApi`, ambas compartilhando a mesma camada de Service e DAO.
 * **DTOs na Requisição:** Os DTOs (`CandidatoDTO`, `EmpresaDTO`, `VagaDTO`) isolam a API dos models internos, recebendo apenas os campos que o cliente pode enviar.
 
+### Versão 2.1.0
+* **Feature de Recrutador:** Inclusão do perfil de recrutador vinculado a uma empresa, com triagem anônima de candidatos, avaliações por vaga, histórico e matches.
+* **Escopo Seguro por Empresa e Área:** A listagem e avaliação de candidatos são limitadas no backend às vagas da empresa e da área do recrutador; o frontend compara estritamente o CNPJ da vaga com o da empresa vinculada antes de prosseguir.
+* **Integração Frontend com API REST:** Substituição da persistência simulada no `localStorage` por serviços TypeScript assíncronos que usam `fetch`, Basic Auth e tratamento global de erros.
+* **Resiliência de Listagens e Matches:** Normalização de respostas vazias ou inesperadas e fallbacks para evitar falhas ao renderizar históricos, matches e feeds.
+* **Catálogo de Competências:** Carregamento de habilidades da API e validação para permitir somente competências existentes no catálogo.
+* **Interface Responsiva:** Modernização de login, cadastros e dashboards, com cards em grid fluido, descrições truncadas, competências em pills, sidebars renovadas e modais sobrepostos e compactos.
+
 ### Tutorial: Implementando API REST
 
 #### Recursos Utilizados
