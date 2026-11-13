@@ -80,6 +80,12 @@ recrutador originou a avaliação da empresa para o candidato e a vaga.
 
 - Um recrutador ativo pode visualizar e analisar somente vagas pertencentes à
   sua empresa cujo `area` corresponda à `area` do seu perfil.
+- As rotas autenticadas de perfil do recrutador e de vagas para triagem podem
+  incluir `empresa.cnpj` da própria empresa vinculada para que o cliente
+  compare os valores por igualdade estrita antes de renderizar vagas, carregar
+  candidatos ou enviar avaliações. Esse campo não deve ser incluído nas
+  listagens públicas de vagas; o backend continua sendo a autoridade e deve
+  validar o vínculo recrutador/empresa/área em cada operação.
 - “Gerenciar vagas”, neste contexto, significa triagem de candidatos e
   avaliações; não concede permissões de CRUD de vagas.
 - A avaliação é por candidato **e por vaga**. O mesmo candidato pode receber

@@ -23,6 +23,11 @@ e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 - Frontend integrado aos endpoints REST para cadastro e login de candidatos e
   empresas, gestão de recrutadores, triagem anônima, avaliações e contato após
   match; credenciais Basic Auth permanecem somente em memória.
+- Cliente HTTP TypeScript centralizado em `Frontend/src/api/api.ts`; serviços
+  assíncronos cobrem também competências, vagas, curtidas, matches e
+  recrutadores sem usar `localStorage`.
+- Dashboard do recrutador e gestão de recrutadores no painel da empresa,
+  reutilizando a estrutura visual existente sem alterações nos arquivos CSS.
 
 ### Modificado
 - Simplificados os endpoints de vagas, triagem e curtida para trafegar IDs

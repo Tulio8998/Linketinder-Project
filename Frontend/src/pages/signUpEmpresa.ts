@@ -5,82 +5,84 @@ export const paises = PAISES
 
 export function signUpEmpresa(): string {
     return `
-        <section class="signUp-class">
+        <main class="signUp-class">
             <div class="container">
-                <div class="signUpEmpresa-content">
-                    <div class="title-class">
-                        <p class="title">Registro <span>Empresa</span> Linketinder</p>
-                        <p class="subtitle">Crie o perfil da sua empresa</p>
-                    </div>
+                <section class="signUpEmpresa-content">
+                    <header class="title-class">
+                        <a class="brand-home" href="#">Linketinder</a>
+                        <p class="eyebrow">Encontre pessoas que fazem a diferença</p>
+                        <h1 class="title">Apresente sua empresa</h1>
+                        <p class="subtitle">Crie um perfil e publique oportunidades com propósito.</p>
+                    </header>
                     <form>
                         <div class="input-form">
-                            <div class="info-personal">
-                                <p class="title-personal">INFORMAÇÃO EMPRESARIAL</p>
+                            <section class="info-personal form-section">
+                                <h2 class="title-personal">Informações da empresa</h2>
                                 <div>
-                                    <p class="input-name">Nome da empresa</p>
-                                    <input class="input-data" type="text" placeholder="nome">
+                                    <label class="input-name" for="company-name">Nome da empresa</label>
+                                    <input id="company-name" class="input-data" data-field="nome" type="text" placeholder="Nome da organização" autocomplete="organization" required>
                                 </div>
                                 <div class="div-row">
                                     <div>
-                                        <p class="input-name">CNPJ</p>
-                                        <input class="input-data" type="text" placeholder="00.000.000/0001-00">
+                                        <label class="input-name" for="company-cnpj">CNPJ</label>
+                                        <input id="company-cnpj" class="input-data" data-field="cnpj" type="text" placeholder="00.000.000/0001-00" required>
                                     </div>
                                     <div>
-                                        <p class="input-name">Email corporativo</p>
-                                        <input class="input-data" type="email" placeholder="email@exemplo.com">
+                                        <label class="input-name" for="company-email">E-mail corporativo</label>
+                                        <input id="company-email" class="input-data" data-field="email" type="email" placeholder="contato@empresa.com" autocomplete="email" required>
                                     </div>
                                 </div>
                                 <div>
-                                    <p class="input-name">Senha</p>
-                                    <input class="input-data" type="password" placeholder="senha123">
+                                    <label class="input-name" for="company-password">Senha</label>
+                                    <input id="company-password" class="input-data" data-field="senha" type="password" placeholder="Crie uma senha" autocomplete="new-password" required>
                                 </div>
-                            </div>
+                            </section>
 
-                            <div class="info-location">
-                                <p class="title-personal">LOCALIZAÇÃO</p>
+                            <section class="info-location form-section">
+                                <h2 class="title-personal">Localização</h2>
                                 <div class="div-row">
                                     <div>
-                                        <p class="input-name">País</p>
-                                        <select name="" id="">
-                                            ${paises.map(e => `<option value="${e}">${e}</option>`).join('')}
-                                        </select>
+                                        <label class="input-name">País</label>
+                                        <select aria-label="País">${paises.map((item) => `<option value="${item}">${item}</option>`).join('')}</select>
                                     </div>
                                     <div>
-                                        <p class="input-name">Estado</p>
-                                        <select name="" id="">
-                                            ${estados.map(e => `<option value="${e}">${e}</option>`).join('')}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <p class="input-name">CEP</p>
-                                        <input class="input-data" type="text" placeholder="00000-00">
+                                        <label class="input-name">Estado</label>
+                                        <select aria-label="Estado">${estados.map((item) => `<option value="${item}">${item}</option>`).join('')}</select>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="info-professional">
-                                <p class="title-personal">PERFIL DA EMPRESA</p>
                                 <div class="div-row">
                                     <div>
-                                        <p class="input-name">Bio / Descrição</p>
-                                        <textarea name="" id="" placeholder="Escreva mais sobre a empresa, cultura, valores, etc..."></textarea>
+                                        <label class="input-name" for="company-city">Cidade</label>
+                                        <input id="company-city" class="input-data" data-field="cidade" type="text" placeholder="Cidade" autocomplete="address-level2" required>
                                     </div>
+                                    <div>
+                                        <label class="input-name" for="company-zip">CEP</label>
+                                        <input id="company-zip" class="input-data" data-field="cep" type="text" placeholder="00000-000" autocomplete="postal-code" required>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="info-professional form-section">
+                                <h2 class="title-personal">Perfil da empresa</h2>
+                                <div>
+                                    <label class="input-name" for="company-about">Sobre a empresa</label>
+                                    <textarea id="company-about" placeholder="Compartilhe sua cultura, valores e atuação..." required></textarea>
                                 </div>
                                 <div>
-                                    <p class="input-name">Habilidades requeridas</p>
-                                    <div class="skills-class">
-                                    </div>
-                                    <input id="input-skill" class="input-data" type="text" placeholder="Digite e aperte Enter">
+                                    <label class="input-name" for="input-skill">Competências valorizadas</label>
+                                    <div class="skills-class"></div>
+                                    <input id="input-skill" class="input-data" type="text" placeholder="Busque uma competência e pressione Enter">
+                                    <small>Escolha somente competências disponíveis no catálogo.</small>
                                 </div>
-                            </div>
+                            </section>
                             <div class="button-class">
-                                <button class="cancel" type="submit">Cancelar</button>
-                                <button class="create" type="submit">Criar</button>
+                                <button class="cancel" type="button">Voltar</button>
+                                <button class="create" type="submit">Criar perfil da empresa</button>
                             </div>
                         </div>
                     </form>
-                </div>
+                </section>
             </div>
-        <!-- </section> -->
+        </main>
     `
 }

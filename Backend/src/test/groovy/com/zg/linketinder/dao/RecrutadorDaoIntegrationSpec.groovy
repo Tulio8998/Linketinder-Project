@@ -9,6 +9,7 @@ import com.zg.linketinder.dto.CandidatoAnonimoDTO
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Recrutador
 import com.zg.linketinder.dto.VagaResumoDTO
+import com.zg.linketinder.dto.VagaTriagemDTO
 import com.zg.linketinder.vo.CpfVO
 import com.zg.linketinder.vo.EmailVO
 import groovy.sql.Sql
@@ -104,12 +105,13 @@ class RecrutadorDaoIntegrationSpec extends Specification {
 
     def "limita vagas e perfis anonimos a empresa e área do recrutador"() {
         when:
-        List<VagaResumoDTO> vagas = dao.listarVagasDaArea(10)
+        List<VagaTriagemDTO> vagas = dao.listarVagasDaArea(10)
         List<CandidatoAnonimoDTO> perfis = dao.listarCandidatosAnonimos(10, 201)
 
         then:
         vagas*.id == [201, 204]
         vagas*.area.every { it == 'TI' }
+        vagas*.empresa*.cnpj.every { it == '12.345.678/0001-90' }
         vagas.find { it.id == 201 }.competencias == ['Groovy']
         perfis*.id == [301, 302]
         perfis.every { it.descricao && it.competencias }

@@ -10,250 +10,317 @@ import { signUpCandidato } from './pages/signUpCandidato'
 import { signUpEmpresa } from './pages/signUpEmpresa'
 import { candidatoDash } from './pages/candidatoDash'
 import { empresaDash } from './pages/empresaDash'
+import { recrutadorDash } from './pages/recrutadorDash'
 
-import { CandidatoService } from './ts/services/CandidatoService'
-import { EmpresaService } from './ts/services/EmpresaService'
+import { setApiCredentials, clearApiCredentials, ApiError } from './api/api'
+import { CandidatoService, type CandidatoPayload } from './ts/services/CandidatoService'
+import { EmpresaService, type EmpresaPayload } from './ts/services/EmpresaService'
+import { CompetenciaService } from './ts/services/CompetenciaService'
 import { VagaService } from './ts/services/VagaService'
-import { CurtidaService } from './ts/services/CurtidaService'
 
 import type { Candidato } from './ts/models/Candidato'
 import type { Empresa } from './ts/models/Empresa'
-
 import { validarCep, validarCnpj, validarCpf, validarEmail } from './ts/util/validators'
 
 import {
     configCandSkills,
-    cadidatoPanel as candCardPanel,
     editCandPanel,
-    vagaPanel,
-    candPointSkills,
-    candFindMatch,
-    candFindVaga
+    findMatch as candFindMatch,
+    findVaga as candFindVaga
 } from './components/candidato'
 
 import {
     configEmpSkills,
     addVagaPanel,
-    cadidatoPanel as empCardPanel,
     editEmpPanel,
     findCand,
-    empFindMatch,
-    empFindVaga,
-    graphCand,
-    empPointSkills
+    findMatch as empFindMatch,
+    findVaga as empFindVaga,
+    graphCand
 } from './components/empresa'
 
-const candidatoService = new CandidatoService(localStorage)
-const empresaService = new EmpresaService(localStorage)
-const vagaService = new VagaService(localStorage)
-const curtidaService = new CurtidaService(localStorage)
+import {
+    atualizaSidebarRecrutador,
+    recrutadorFindVaga,
+    recrutadorHistorico
+} from './components/recrutador'
 
+const candidatoService = new CandidatoService()
+const empresaService = new EmpresaService()
+const competenciaService = new CompetenciaService()
+const vagaService = new VagaService()
 const app = document.querySelector<HTMLDivElement>('#app')!
 
+function mostrarErro(error: unknown): void {
+    alert(error instanceof Error ? error.message : 'Não foi possível concluir a operação.')
+}
+
+function campo(form: ParentNode, nome: string): HTMLInputElement {
+    const input = form.querySelector<HTMLInputElement>(`[data-field="${nome}"]`)
+    if (!input) throw new Error(`Campo ${nome} não encontrado.`)
+    return input
+}
+
+function skillsDoFormulario(form: ParentNode): string[] {
+    return Array.from(form.querySelectorAll('.info-professional .skill'))
+        .map((skill) => skill.textContent?.trim() ?? '')
+        .filter(Boolean)
+}
+
+async function carregarCandidato(): Promise<Candidato> {
+    const perfil = await candidatoService.obterPerfil()
+    const competencias = await competenciaService.listarDoCandidato(perfil.id)
+    perfil.competencias = competencias.map((competencia) => competencia.nome)
+    return perfil
+}
+
+async function carregarEmpresa(): Promise<Empresa> {
+    return empresaService.obterPerfil()
+}
+
 function signInPage(): void {
+    clearApiCredentials()
     app.innerHTML = signIn()
-    document.querySelector('.link-cand')?.addEventListener('click', (e) => {
-        e.preventDefault(); signUpPageCandidato()
+    document.querySelector('.link-cand')?.addEventListener('click', (event) => {
+        event.preventDefault()
+        signUpPageCandidato()
     })
-    document.querySelector('.link-emp')?.addEventListener('click', (e) => {
-        e.preventDefault(); signUpPageEmpresa()
+    document.querySelector('.link-emp')?.addEventListener('click', (event) => {
+        event.preventDefault()
+        signUpPageEmpresa()
     })
 
-    const form = document.querySelector('form')
-    form?.addEventListener('submit', (e) => {
-        e.preventDefault()
-        const emailInput = form.querySelector<HTMLInputElement>('.input-in[type="email"]')
-        const email = emailInput?.value.trim()
-        if (!email) { alert('Informe um email.'); return }
-
-        const candidato = candidatoService.listarCandidatos().find((c) => c.email === email)
-        if (candidato) {
-            localStorage.setItem('candidato_atual', JSON.stringify(candidato))
-            candidatoDashPage()
+    const form = document.querySelector<HTMLFormElement>('.signIn-content form')
+    form?.addEventListener('submit', (event) => {
+        event.preventDefault()
+        const email = form.querySelector<HTMLInputElement>('input[type="email"]')?.value.trim() ?? ''
+        const password = form.querySelector<HTMLInputElement>('input[type="password"]')?.value ?? ''
+        if (!email || !password) {
+            alert('Informe e-mail e senha.')
             return
         }
 
-        const empresa = empresaService.listarEmpresas().find((emp) => emp.email === email)
-        if (empresa) {
-            localStorage.setItem('empresa_atual', JSON.stringify(empresa))
-            empresaDashPage()
-            return
-        }
+        void (async () => {
+            clearApiCredentials()
+            setApiCredentials(email, password)
 
-        alert('Usuário nao encontrado! Verifique o e-mail ou cadastre-se.')
+            try {
+                await carregarCandidato()
+                candidatoDashPage()
+                return
+            } catch (error) {
+                if (!(error instanceof ApiError) || error.status !== 403) throw error
+            }
+
+            try {
+                await carregarEmpresa()
+                empresaDashPage()
+                return
+            } catch (error) {
+                if (!(error instanceof ApiError) || error.status !== 403) throw error
+            }
+
+            try {
+                await atualizaSidebarRecrutador()
+                recrutadorDashPage()
+                return
+            } catch (error) {
+                if (!(error instanceof ApiError) || error.status !== 403) throw error
+            }
+
+            throw new ApiError('Usuário não encontrado ou tipo de conta não reconhecido.', 403)
+        })().catch((error: unknown) => {
+            clearApiCredentials()
+            mostrarErro(error)
+        })
     })
 }
 
 function signUpPageCandidato(): void {
     app.innerHTML = signUpCandidato()
-    configCandSkills(document)
-    const form = document.querySelector('form')
-    document.querySelector('.cancel')?.addEventListener('click', (e) => {
-        e.preventDefault(); signInPage()
+    void configCandSkills(document).catch(mostrarErro)
+    const form = document.querySelector<HTMLFormElement>('.signUpCandidato-content form')
+    document.querySelector('.cancel')?.addEventListener('click', (event) => {
+        event.preventDefault()
+        signInPage()
     })
 
-    form?.addEventListener('submit', (e) => {
-        e.preventDefault()
-        const inputs = form.querySelectorAll<HTMLInputElement>('.input-data')
-        const selects = form.querySelectorAll<HTMLSelectElement>('select')
-        const textarea = form.querySelector('textarea')
-        const skillsElements = form.querySelectorAll('.info-professional .skill')
+    form?.addEventListener('submit', (event) => {
+        event.preventDefault()
+        void (async () => {
+            const selects = form.querySelectorAll<HTMLSelectElement>('.info-location select')
+            const payload: CandidatoPayload = {
+                nome: campo(form, 'nome').value.trim(),
+                cpf: campo(form, 'cpf').value.trim(),
+                dataNascimento: campo(form, 'dataNascimento').value,
+                email: campo(form, 'email').value.trim(),
+                senha: campo(form, 'senha').value,
+                pais: selects[0].value,
+                estado: selects[1].value,
+                cidade: campo(form, 'cidade').value.trim(),
+                cep: campo(form, 'cep').value.trim(),
+                descricao: form.querySelector<HTMLTextAreaElement>('textarea')?.value.trim() ?? ''
+            }
+            if (!payload.nome || !payload.dataNascimento || !payload.senha || !payload.cidade) {
+                throw new Error('Preencha todos os campos obrigatórios.')
+            }
+            if (!validarEmail(payload.email)) throw new Error('E-mail inválido.')
+            if (!validarCpf(payload.cpf)) throw new Error('CPF inválido.')
+            if (!validarCep(payload.cep)) throw new Error('CEP inválido. Use o formato 00000-000.')
 
-        const nome = inputs[0].value.trim()
-        const cpf = inputs[1].value.trim()
-        const idade = Number(inputs[2].value)
-        const email = inputs[3].value.trim()
-        const cep = inputs[5].value.trim()
+            const skills = skillsDoFormulario(form)
+            const catalogo = await competenciaService.listarTodas()
+            const skillsDisponiveis = new Set(
+                catalogo.map((competencia) => competencia.nome.trim().toLowerCase())
+            )
+            const skillInvalida = skills.find(
+                (skill) => !skillsDisponiveis.has(skill.trim().toLowerCase())
+            )
+            if (skillInvalida) {
+                throw new Error(`A competência "${skillInvalida}" não existe no catálogo da API.`)
+            }
 
-        if (!nome || !cpf || !email) {
-            alert('Preencha os campos obrigatórios!')
-            return
-        }
-
-        if (!validarEmail(email)) { alert('E-mail inválido!'); return }
-        if (!validarCpf(cpf)) { alert('CPF inválido! Use o formato 000.000.000-00'); return }
-        if (!validarCep(cep)) { alert('CEP inválido! Use o formato 00000-000'); return }
-
-        const emailExisteCand = candidatoService.listarCandidatos().some((c) => c.email === email)
-        const emailExisteEmp = empresaService.listarEmpresas().some((e) => e.email === email)
-        if (emailExisteCand || emailExisteEmp) {
-            alert('Este E-mail já está em uso!')
-            return
-        }
-
-        const cpfExiste = candidatoService.listarCandidatos().some((c) => c.cpf === cpf)
-        if (cpfExiste) { alert('Este CPF já está cadastrado!'); return }
-
-        const novoCandidato: Candidato = {
-            nome, cpf, idade, email, cep,
-            pais: selects[0].value,
-            estado: selects[1].value,
-            descricao: textarea?.value || '',
-            competencias: Array.from(skillsElements).map((s) => s.textContent || '')
-        }
-
-        candidatoService.salvarCandidato(novoCandidato)
-        localStorage.setItem('candidato_atual', JSON.stringify(novoCandidato))
-        candidatoDashPage()
+            const id = await candidatoService.cadastrar(payload)
+            setApiCredentials(payload.email, payload.senha)
+            await competenciaService.substituirDoCandidato(id, skills)
+            await carregarCandidato()
+            candidatoDashPage()
+        })().catch(mostrarErro)
     })
 }
 
 function signUpPageEmpresa(): void {
     app.innerHTML = signUpEmpresa()
-    configEmpSkills(document)
-    const form = document.querySelector('form')
-    document.querySelector('.cancel')?.addEventListener('click', (e) => {
-        e.preventDefault(); signInPage()
+    void configEmpSkills(document).catch(mostrarErro)
+    const form = document.querySelector<HTMLFormElement>('.signUpEmpresa-content form')
+    document.querySelector('.cancel')?.addEventListener('click', (event) => {
+        event.preventDefault()
+        signInPage()
     })
 
-    form?.addEventListener('submit', (e) => {
-        e.preventDefault()
-        const inputs = form.querySelectorAll<HTMLInputElement>('.input-data')
-        const selects = form.querySelectorAll<HTMLSelectElement>('select')
-        const textarea = form.querySelector('textarea')
-        const skillsElements = form.querySelectorAll('.info-professional .skill')
+    form?.addEventListener('submit', (event) => {
+        event.preventDefault()
+        void (async () => {
+            const selects = form.querySelectorAll<HTMLSelectElement>('.info-location select')
+            const payload: EmpresaPayload = {
+                nome: campo(form, 'nome').value.trim(),
+                cnpj: campo(form, 'cnpj').value.trim(),
+                email: campo(form, 'email').value.trim(),
+                senha: campo(form, 'senha').value,
+                pais: selects[0].value,
+                estado: selects[1].value,
+                cidade: campo(form, 'cidade').value.trim(),
+                cep: campo(form, 'cep').value.trim(),
+                descricao: form.querySelector<HTMLTextAreaElement>('textarea')?.value.trim() ?? ''
+            }
+            if (!payload.nome || !payload.senha || !payload.cidade) {
+                throw new Error('Preencha todos os campos obrigatórios.')
+            }
+            if (!validarEmail(payload.email)) throw new Error('E-mail inválido.')
+            if (!validarCnpj(payload.cnpj)) throw new Error('CNPJ inválido.')
+            if (!validarCep(payload.cep)) throw new Error('CEP inválido. Use o formato 00000-000.')
 
-        const nome = inputs[0].value.trim()
-        const cpnj = inputs[1].value.trim()
-        const email = inputs[2].value.trim()
-        const cep = inputs[4].value.trim()
-
-        if (!nome || !cpnj || !email) {
-            alert('Preencha os campos obrigatórios!')
-            return
-        }
-
-        if (!validarEmail(email)) { alert('E-mail inválido!'); return }
-        if (!validarCnpj(cpnj)) { alert('CNPJ inválido! Use o formato 00.000.000/0001-00'); return }
-        if (!validarCep(cep)) { alert('CEP inválido! Use o formato 00000-000'); return }
-
-        const emailExisteCand = candidatoService.listarCandidatos().some((c) => c.email === email)
-        const emailExisteEmp = empresaService.listarEmpresas().some((e) => e.email === email)
-        if (emailExisteCand || emailExisteEmp) {
-            alert('Este E-mail já está em uso!')
-            return
-        }
-
-        const cnpjExiste = empresaService.listarEmpresas().some((e) => e.cpnj === cpnj)
-        if (cnpjExiste) { alert('Este CNPJ já está cadastrado!'); return }
-
-        const novaEmpresa: Empresa = {
-            nome, cpnj, email, cep,
-            pais: selects[0].value,
-            estado: selects[1].value,
-            descricao: textarea?.value || '',
-            competencias: Array.from(skillsElements).map((s) => s.textContent || '')
-        }
-
-        empresaService.salvarEmpresa(novaEmpresa)
-        localStorage.setItem('empresa_atual', JSON.stringify(novaEmpresa))
-        empresaDashPage()
+            await empresaService.cadastrar(payload)
+            setApiCredentials(payload.email, payload.senha)
+            await carregarEmpresa()
+            empresaDashPage()
+        })().catch(mostrarErro)
     })
 }
 
-export function atualizaSidebarCandidato(): void {
-    const candLogado = candidatoService.candidatoAtual()
-    if (!candLogado) return
-    const nameEl = document.querySelector('.candidato-profile .name')
-    const locEl = document.querySelector('.candidato-profile .profile-content div')
-    const aboutEl = document.querySelector('.candidato-profile .about p:last-child')
-    const skillsEl = document.querySelector('.candidato-profile .skills div')
-
-    if (nameEl) nameEl.textContent = candLogado.nome
-    if (locEl) locEl.innerHTML = `<p>${candLogado.estado}</p><p>-</p><p>${candLogado.pais}</p>`
-    if (aboutEl) aboutEl.textContent = candLogado.descricao
-    if (skillsEl) skillsEl.innerHTML = candLogado.competencias.map((s) => `<p class="skill">${s}</p>`).join('')
+export async function atualizaSidebarCandidato(): Promise<void> {
+    const candidato = await carregarCandidato()
+    const root = document.querySelector<HTMLElement>('.candidato-profile')
+    const name = root?.querySelector<HTMLElement>('.profile-content .name')
+    const location = root?.querySelector<HTMLElement>('.profile-content div')
+    const about = root?.querySelector<HTMLElement>('.about p:last-child')
+    const skills = root?.querySelector<HTMLElement>('.skills div')
+    if (name) name.textContent = candidato.nome
+    if (location) {
+        const state = document.createElement('p')
+        state.textContent = candidato.estado
+        const separator = document.createElement('p')
+        separator.textContent = '-'
+        const country = document.createElement('p')
+        country.textContent = candidato.pais
+        location.replaceChildren(state, separator, country)
+    }
+    if (about) about.textContent = candidato.descricao
+    if (skills) {
+        skills.replaceChildren(...candidato.competencias.map((name) => {
+            const skill = document.createElement('p')
+            skill.className = 'skill'
+            skill.textContent = name
+            return skill
+        }))
+    }
 }
 
-export function atualizaSidebarEmpresa(): void {
-    const empresaLogada = empresaService.empresaAtual()
-    if (!empresaLogada) return
-    const nameEl = document.querySelector('.empresa-profile .name')
-    const locEl = document.querySelector('.empresa-profile .profile-content div')
-    const aboutEl = document.querySelector('.empresa-profile .about p:last-child')
-    const skillsEl = document.querySelector('.empresa-profile .skills div')
+export async function atualizaSidebarEmpresa(): Promise<void> {
+    const empresa = await carregarEmpresa()
+    const vagas = await vagaService.listarDaEmpresa(empresa.id)
+    const root = document.querySelector<HTMLElement>('.empresa-profile')
+    const name = root?.querySelector<HTMLElement>('.profile-content .name')
+    const location = root?.querySelector<HTMLElement>('.profile-content div')
+    const about = root?.querySelector<HTMLElement>('.about p:last-child')
+    const skills = root?.querySelector<HTMLElement>('.skills div')
+    if (name) name.textContent = empresa.nome
+    if (location) {
+        const state = document.createElement('p')
+        state.textContent = empresa.estado
+        const separator = document.createElement('p')
+        separator.textContent = '-'
+        const country = document.createElement('p')
+        country.textContent = empresa.pais
+        location.replaceChildren(state, separator, country)
+    }
+    if (about) about.textContent = empresa.descricao
+    if (skills) {
+        const competencias = [...new Set(vagas.flatMap((vaga) => vaga.competencias))]
+        skills.replaceChildren(...competencias.map((name) => {
+            const skill = document.createElement('p')
+            skill.className = 'skill'
+            skill.textContent = name
+            return skill
+        }))
+    }
+}
 
-    if (nameEl) nameEl.textContent = empresaLogada.nome
-    if (locEl) locEl.innerHTML = `<p>${empresaLogada.estado}</p><p>-</p><p>${empresaLogada.pais}</p>`
-    if (aboutEl) aboutEl.textContent = empresaLogada.descricao
-    if (skillsEl) skillsEl.innerHTML = empresaLogada.competencias.map((s) => `<p class="skill">${s}</p>`).join('')
+function sair(): void {
+    clearApiCredentials()
+    signInPage()
 }
 
 function candidatoDashPage(): void {
     app.innerHTML = candidatoDash()
     editCandPanel()
-    vagaPanel()
-    candPointSkills()
     candFindMatch()
     candFindVaga()
-
-    atualizaSidebarCandidato()
+    void atualizaSidebarCandidato().catch(mostrarErro)
     document.querySelector<HTMLElement>('.find-vaga')?.click()
-
-    document.querySelector('.btn-out')?.addEventListener('click', () => {
-        localStorage.removeItem('candidato_atual')
-        signInPage()
-    })
+    document.querySelector('.btn-out')?.addEventListener('click', sair)
 }
 
 function empresaDashPage(): void {
     app.innerHTML = empresaDash()
     editEmpPanel()
     addVagaPanel()
-    empCardPanel()
-    empPointSkills()
     graphCand()
     findCand()
     empFindMatch()
     empFindVaga()
-
-    atualizaSidebarEmpresa()
+    void atualizaSidebarEmpresa().catch(mostrarErro)
     document.querySelector<HTMLElement>('.find-cand')?.click()
+    document.querySelector('.btn-out')?.addEventListener('click', sair)
+}
 
-    document.querySelector('.btn-out')?.addEventListener('click', () => {
-        localStorage.removeItem('empresa_atual')
-        signInPage()
-    })
+function recrutadorDashPage(): void {
+    app.innerHTML = recrutadorDash()
+    recrutadorFindVaga()
+    recrutadorHistorico()
+    void atualizaSidebarRecrutador().catch(mostrarErro)
+    document.querySelector<HTMLElement>('.find-vaga')?.click()
+    document.querySelector('.btn-out')?.addEventListener('click', sair)
 }
 
 signInPage()

@@ -5,9 +5,10 @@ import com.zg.linketinder.api.ServletIdentity
 import com.zg.linketinder.dto.AvaliacaoRecrutadorRequestDTO
 import com.zg.linketinder.dto.AvaliacaoRecrutadorDTO
 import com.zg.linketinder.dto.CandidatoAnonimoDTO
+import com.zg.linketinder.dto.EmpresaCnpjDTO
 import com.zg.linketinder.dto.RecrutadorDTO
 import com.zg.linketinder.dto.RecrutadorResumoDTO
-import com.zg.linketinder.dto.VagaResumoDTO
+import com.zg.linketinder.dto.VagaTriagemDTO
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Recrutador
 import com.zg.linketinder.service.CandidatoService
@@ -150,7 +151,7 @@ class RecrutadorController extends HttpServlet {
         Recrutador recrutador = recrutadorAutenticado(req, resp)
         if (recrutador == null) return
         try {
-            List<VagaResumoDTO> vagas = recrutadorService.listarVagasDaArea(recrutador.id)
+            List<VagaTriagemDTO> vagas = recrutadorService.listarVagasDaArea(recrutador.id)
             JsonHelper.respond(resp, 200, vagas)
         } catch (Exception e) {
             JsonHelper.internalError(resp, e)
@@ -272,7 +273,10 @@ class RecrutadorController extends HttpServlet {
                 area: recrutador.area,
                 descricao: recrutador.descricao,
                 email: recrutador.email?.valor,
-                ativo: recrutador.ativo
+                ativo: recrutador.ativo,
+                empresa: recrutador.empresa?.cnpj?.valor == null
+                        ? null
+                        : new EmpresaCnpjDTO(cnpj: recrutador.empresa.cnpj.valor)
         )
     }
 

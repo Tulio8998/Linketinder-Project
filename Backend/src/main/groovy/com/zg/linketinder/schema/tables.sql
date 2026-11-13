@@ -100,6 +100,9 @@ ALTER TABLE vagas ADD COLUMN area VARCHAR(100);
 -- 3. Atualiza as vagas legadas do seu banco para 'TI' para não quebrar a restrição NOT NULL
 UPDATE vagas SET area = 'TI' WHERE area IS NULL;
 
+UPDATE recrutadores SET ativo = TRUE WHERE id = 1;
+SELECT * FROM recrutadores;
+
 -- 4. Torna a coluna area obrigatória
 ALTER TABLE vagas ALTER COLUMN area SET NOT NULL;
 

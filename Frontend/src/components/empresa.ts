@@ -2,10 +2,13 @@ import ApexCharts from 'apexcharts'
 import { addVaga, editEmpProfile, editVaga, deleteEmpresaProfile } from '../pages/empresaDash'
 import { VagaService } from '../ts/services/VagaService'
 import { EmpresaService } from '../ts/services/EmpresaService'
-import { CandidatoService } from '../ts/services/CandidatoService'
 import { CurtidaService } from '../ts/services/CurtidaService'
-import type { Vaga } from '../ts/models/Vaga'
+import { RecrutadorService } from '../ts/services/RecrutadorService'
 import { atualizaSidebarEmpresa } from '../main'
+import type { Vaga } from '../ts/models/Vaga'
+import type { NovoRecrutador } from '../ts/models/Recrutador'
+import { validarCpf, validarEmail } from '../ts/util/validators'
+import { escapeHtml } from '../ts/util/html'
 import {
     abrirPainelCard,
     coletarSkillsDoPainel,
@@ -15,66 +18,86 @@ import {
 } from './shared'
 
 export { configSkills as configEmpSkills, pointSkills as empPointSkills }
-export { abrirPainelCard as cadidatoPanel }
-export { findMatch as empFindMatch, findVaga as empFindVaga }
 
-const empresaService = new EmpresaService(localStorage)
-const vagaService = new VagaService(localStorage)
-const candidatoService = new CandidatoService(localStorage)
-const curtidaService = new CurtidaService(localStorage)
+const empresaService = new EmpresaService()
+const vagaService = new VagaService()
+const curtidaService = new CurtidaService()
+const recrutadorService = new RecrutadorService()
+
+function mostrarErro(error: unknown): void {
+    alert(error instanceof Error ? error.message : 'Não foi possível concluir a operação.')
+}
+
+function campo(panel: HTMLElement, nome: string): HTMLInputElement {
+    const input = panel.querySelector<HTMLInputElement>(`[data-field="${nome}"]`)
+    if (!input) throw new Error(`Campo ${nome} não encontrado.`)
+    return input
+}
+
+function payloadVaga(panel: HTMLElement, empresaId: number): {
+    nome: string
+    descricao: string
+    area: string
+    pais: string
+    estado: string
+    cidade: string
+    empresa: { id: number }
+} {
+    const selects = panel.querySelectorAll<HTMLSelectElement>('.info-location select')
+    return {
+        nome: campo(panel, 'nome').value.trim(),
+        area: campo(panel, 'area').value.trim(),
+        descricao: panel.querySelector('textarea')?.value.trim() ?? '',
+        pais: selects[0].value,
+        estado: selects[1].value,
+        cidade: campo(panel, 'cidade').value.trim(),
+        empresa: { id: empresaId }
+    }
+}
 
 export function editEmpPanel(): void {
-    const editButton = document.querySelector('.btn-edit')
-    editButton?.addEventListener('click', () => {
-        const panel = document.createElement('div')
-        panel.className = 'edit-panel'
-        panel.innerHTML = editEmpProfile()
-        document.body.appendChild(panel)
-        configSkills(panel)
-
-        const empresa = empresaService.empresaAtual()
-        const inputs = panel.querySelectorAll<HTMLInputElement>('.input-data')
-        const selects = panel.querySelectorAll<HTMLSelectElement>('select')
-        const textarea = panel.querySelector('textarea')
-
-        if (empresa) {
-            inputs[0].value = empresa.nome
-            inputs[1].value = empresa.cpnj
+    document.querySelector('.btn-edit')?.addEventListener('click', () => {
+        void (async () => {
+            const empresa = await empresaService.obterPerfil()
+            const panel = document.createElement('div')
+            panel.className = 'edit-panel'
+            panel.innerHTML = editEmpProfile()
+            document.body.appendChild(panel)
+            void configSkills(panel).catch(mostrarErro)
+            campo(panel, 'nome').value = empresa.nome
+            campo(panel, 'cnpj').value = empresa.cnpj
+            campo(panel, 'cidade').value = empresa.cidade
+            campo(panel, 'cep').value = empresa.cep
+            const selects = panel.querySelectorAll<HTMLSelectElement>('.info-location select')
             selects[0].value = empresa.pais
             selects[1].value = empresa.estado
-            inputs[2].value = empresa.cep
+            const textarea = panel.querySelector('textarea')
             if (textarea) textarea.value = empresa.descricao
-            renderizarSkillsExistentes(panel, empresa.competencias)
-        }
 
-        panel.querySelector('.btn-cancel')?.addEventListener('click', (e) => {
-            e.preventDefault()
-            panel.remove()
-        })
-
-        panel.querySelector('.btn-delete')?.addEventListener('click', (e) => {
-            e.preventDefault()
-            deleteEmpresa()
-        })
-
-        panel.querySelector('form')?.addEventListener('submit', (e) => {
-            e.preventDefault()
-            if (empresa) {
-                empresa.nome = inputs[0].value
-                empresa.cpnj = inputs[1].value
-                empresa.pais = selects[0].value
-                empresa.estado = selects[1].value
-                empresa.cep = inputs[2].value
-                empresa.descricao = textarea?.value || ''
-                empresa.competencias = coletarSkillsDoPainel(panel)
-
-                empresaService.salvarEmpresa(empresa)
-                localStorage.setItem('empresa_atual', JSON.stringify(empresa))
-
-                atualizaSidebarEmpresa()
-            }
-            panel.remove()
-        })
+            panel.querySelector('.btn-cancel')?.addEventListener('click', (event) => {
+                event.preventDefault()
+                panel.remove()
+            })
+            panel.querySelector('.btn-delete')?.addEventListener('click', (event) => {
+                event.preventDefault()
+                deleteEmpresa()
+            })
+            panel.querySelector('form')?.addEventListener('submit', (event) => {
+                event.preventDefault()
+                void empresaService.atualizar(empresa.id, {
+                    nome: campo(panel, 'nome').value.trim(),
+                    cnpj: campo(panel, 'cnpj').value.trim(),
+                    email: empresa.email,
+                    pais: selects[0].value,
+                    estado: selects[1].value,
+                    cidade: campo(panel, 'cidade').value.trim(),
+                    cep: campo(panel, 'cep').value.trim(),
+                    descricao: textarea?.value.trim() ?? ''
+                }).then(() => atualizaSidebarEmpresa())
+                    .then(() => panel.remove())
+                    .catch(mostrarErro)
+            })
+        })().catch(mostrarErro)
     })
 }
 
@@ -83,324 +106,284 @@ export function deleteEmpresa(): void {
     panel.className = 'delete-panel'
     panel.innerHTML = deleteEmpresaProfile()
     document.body.appendChild(panel)
-
-    panel.querySelector('.cancel-delete')?.addEventListener('click', (e) => {
-        e.preventDefault()
+    panel.querySelector('.cancel-delete')?.addEventListener('click', (event) => {
+        event.preventDefault()
         panel.remove()
     })
-
-    panel.querySelector('.confirm-delete')?.addEventListener('click', (e) => {
-        e.preventDefault()
-        const empLogada = empresaService.empresaAtual()
-        if (empLogada) empresaService.excluirEmpresa(empLogada.cpnj)
-        localStorage.removeItem('empresa_atual')
-        window.location.reload()
+    panel.querySelector('.confirm-delete')?.addEventListener('click', (event) => {
+        event.preventDefault()
+        if (!window.confirm('Tem certeza que deseja desativar a conta? Essa ação é irreversível.')) {
+            return
+        }
+        void empresaService.obterPerfil()
+            .then((empresa) => empresaService.excluir(empresa.id))
+            .then(() => window.location.reload())
+            .catch(mostrarErro)
     })
 }
 
 export function addVagaPanel(): void {
-    const addNav = document.querySelector('.add-vaga')
-    addNav?.addEventListener('click', () => {
+    document.querySelector('.add-vaga')?.addEventListener('click', () => {
         const panel = document.createElement('div')
-        panel.className = 'add-panel'
+        panel.className = 'add-panel modal-overlay'
+        panel.setAttribute('role', 'dialog')
+        panel.setAttribute('aria-modal', 'true')
+        panel.setAttribute('aria-label', 'Adicionar vaga')
         panel.innerHTML = addVaga()
         document.body.appendChild(panel)
-        configSkills(panel)
-
-        panel.querySelector('.cancel')?.addEventListener('click', (e) => {
-            e.preventDefault()
+        void configSkills(panel).catch(mostrarErro)
+        panel.addEventListener('click', (event) => {
+            if (event.target === panel) panel.remove()
+        })
+        panel.querySelector('.cancel')?.addEventListener('click', (event) => {
+            event.preventDefault()
             panel.remove()
         })
-
-        const form = panel.querySelector('form')
-        form?.addEventListener('submit', (e) => {
-            e.preventDefault()
-
-            const inputs = form.querySelectorAll<HTMLInputElement>('.input-data')
-            const selects = form.querySelectorAll<HTMLSelectElement>('select')
-            const textarea = form.querySelector('textarea')
-
-            const empresaLogada = empresaService.empresaAtual() ?? {
-                nome: '', email: '', pais: '', estado: '', cep: '',
-                descricao: '', competencias: [], cpnj: ''
-            }
-
-            const novaVaga: Vaga = {
-                nome: inputs[0].value,
-                pais: selects[0].value,
-                estado: selects[1].value,
-                cidade: selects[2].value,
-                descricao: textarea?.value || '',
-                competencias: coletarSkillsDoPainel(panel),
-                empresa: empresaLogada
-            }
-
-            vagaService.salvarVaga(novaVaga)
-            panel.remove()
-            document.querySelector<HTMLElement>('.view-vaga')?.click()
+        panel.querySelector('form')?.addEventListener('submit', (event) => {
+            event.preventDefault()
+            void (async () => {
+                const empresa = await empresaService.obterPerfil()
+                const payload = payloadVaga(panel, empresa.id)
+                if (!payload.nome || !payload.area) {
+                    alert('Informe o nome e a área da vaga.')
+                    return
+                }
+                await vagaService.salvarVaga(payload, coletarSkillsDoPainel(panel))
+                panel.remove()
+                await findVagaConteudo()
+            })().catch(mostrarErro)
         })
     })
 }
 
-export function editVagaPanel(index: number): void {
-    const vagaAtual = vagaService.listarVagas()[index]
-    if (!vagaAtual) return
-
+export async function editVagaPanel(vagaAtual: Vaga): Promise<void> {
+    const empresa = await empresaService.obterPerfil()
     const panel = document.createElement('div')
     panel.className = 'edit-panel'
     panel.innerHTML = editVaga()
     document.body.appendChild(panel)
-    configSkills(panel)
-
-    const inputs = panel.querySelectorAll<HTMLInputElement>('.input-data')
-    const selects = panel.querySelectorAll<HTMLSelectElement>('select')
-    const textarea = panel.querySelector('textarea')
-
-    inputs[0].value = vagaAtual.nome
-    selects[0].value = vagaAtual.pais
-    selects[1].value = vagaAtual.estado
-    selects[2].value = vagaAtual.cidade
-    if (textarea) textarea.value = vagaAtual.descricao
+    void configSkills(panel).catch(mostrarErro)
+    campo(panel, 'nome').value = vagaAtual.nome
+    campo(panel, 'area').value = vagaAtual.area
+    campo(panel, 'cidade').value = vagaAtual.cidade ?? ''
+    const selects = panel.querySelectorAll<HTMLSelectElement>('.info-location select')
+    selects[0].value = vagaAtual.pais ?? ''
+    selects[1].value = vagaAtual.estado ?? ''
+    if (panel.querySelector('textarea')) {
+        panel.querySelector<HTMLTextAreaElement>('textarea')!.value = vagaAtual.descricao
+    }
     renderizarSkillsExistentes(panel, vagaAtual.competencias)
 
-    panel.querySelector('.btn-cancel')?.addEventListener('click', (e) => {
-        e.preventDefault()
+    panel.querySelector('.btn-cancel')?.addEventListener('click', (event) => {
+        event.preventDefault()
         panel.remove()
     })
-
-    panel.querySelector('.btn-delete')?.addEventListener('click', (e) => {
-        e.preventDefault()
-        vagaService.excluirVaga(index)
-        panel.remove()
-        document.querySelector<HTMLElement>('.view-vaga')?.click()
+    panel.querySelector('.btn-delete')?.addEventListener('click', (event) => {
+        event.preventDefault()
+        void vagaService.excluirVaga(vagaAtual.id)
+            .then(() => panel.remove())
+            .then(() => findVagaConteudo())
+            .catch(mostrarErro)
     })
-
-    panel.querySelector('form')?.addEventListener('submit', (e) => {
-        e.preventDefault()
-        const vagaAtualizada: Vaga = {
-            ...vagaAtual,
-            nome: inputs[0].value,
-            pais: selects[0].value,
-            estado: selects[1].value,
-            cidade: selects[2].value,
-            descricao: textarea?.value || '',
-            competencias: coletarSkillsDoPainel(panel)
-        }
-        vagaService.atualizarVaga(index, vagaAtualizada)
-        panel.remove()
-        document.querySelector<HTMLElement>('.view-vaga')?.click()
+    panel.querySelector('form')?.addEventListener('submit', (event) => {
+        event.preventDefault()
+        void (async () => {
+            const payload = payloadVaga(panel, empresa.id)
+            if (!payload.nome || !payload.area) {
+                alert('Informe o nome e a área da vaga.')
+                return
+            }
+            await vagaService.atualizarVaga(
+                vagaAtual.id,
+                payload,
+                coletarSkillsDoPainel(panel)
+            )
+            panel.remove()
+            await findVagaConteudo()
+        })().catch(mostrarErro)
     })
 }
 
 export function graphCand(): void {
-    const empresaLogada = empresaService.empresaAtual()
-    const todosCandidatos = candidatoService.listarCandidatos()
-    const avaliacoesFeitas = curtidaService
-        .listarMatchs()
-        .filter((m) => m.empresa.cpnj === empresaLogada?.cpnj)
-    const candidatosNaoAvaliados = todosCandidatos.filter(
-        (cand) => !avaliacoesFeitas.some((a) => a.candidato.cpf === cand.cpf)
-    )
-
-    const competencias = new Map<string, number>()
-    candidatosNaoAvaliados.forEach((cand) => {
-        cand.competencias.forEach((comp) => {
-            competencias.set(comp, (competencias.get(comp) ?? 0) + 1)
+    void empresaService.obterPerfil()
+        .then((empresa) => vagaService.listarDaEmpresa(empresa.id))
+        .then((vagas) => {
+            const counts = new Map<string, number>()
+            vagas.forEach((vaga) => counts.set(vaga.area, (counts.get(vaga.area) ?? 0) + 1))
+            const graph = document.querySelector<HTMLElement>('#graph')
+            if (!graph) return
+            graph.innerHTML = ''
+            const chart = new ApexCharts(graph, {
+                chart: { type: 'bar', height: 300, toolbar: { show: false } },
+                colors: ['#22C55E'],
+                series: [{ name: 'Vagas', data: [...counts.values()] }],
+                xaxis: { categories: [...counts.keys()], title: { text: 'Áreas' } },
+                yaxis: { min: 0, title: { text: 'Número de vagas' } }
+            })
+            return chart.render()
         })
-    })
-
-    const options: ApexCharts.ApexOptions = {
-        chart: { type: 'bar', height: 400, toolbar: { show: false } },
-        colors: ['#22C55E'],
-        grid: { padding: { bottom: 20 } },
-        series: [{ name: 'Quantidade de candidatos', data: Array.from(competencias.values()) }],
-        xaxis: { categories: Array.from(competencias.keys()), title: { text: 'Competências' } },
-        yaxis: { min: 0, tickAmount: 5, title: { text: 'Número de candidatos' } },
-        tooltip: { y: { formatter: (value) => `${value} candidatos` } }
-    }
-
-    const graph = document.querySelector('#graph') as HTMLElement
-    if (graph) {
-        graph.innerHTML = ''
-        new ApexCharts(graph, options).render()
-    }
+        .catch(mostrarErro)
 }
 
-let dashOriginalHTML: string = ''
+function formCadastroRecrutador(): string {
+    return `
+        <form class="input-form recruiter-form">
+            <div class="info-personal">
+                <p class="title-personal">CADASTRAR RECRUTADOR</p>
+                <div><p class="input-name">Nome</p><input class="input-data" data-field="nome" required></div>
+                <div><p class="input-name">Área</p><input class="input-data" data-field="area" required></div>
+                <div><p class="input-name">Descrição</p><textarea data-field="descricao" required></textarea></div>
+                <div><p class="input-name">E-mail</p><input class="input-data" data-field="email" type="email" required></div>
+                <div><p class="input-name">CPF</p><input class="input-data" data-field="cpf" required></div>
+                <div><p class="input-name">Data de nascimento</p><input class="input-data" data-field="dataNascimento" type="date" required></div>
+                <div><p class="input-name">Senha</p><input class="input-data" data-field="senha" type="password" required></div>
+                <button class="create" type="submit">Cadastrar recrutador</button>
+            </div>
+        </form>
+    `
+}
+
+async function renderizarRecrutadores(dashboard: HTMLElement): Promise<void> {
+    const recrutadores = await recrutadorService.listarDaEmpresa()
+    const list = dashboard.querySelector<HTMLElement>('.recruiter-list')
+    if (!list) return
+    if (recrutadores.length === 0) {
+        list.innerHTML = '<p class="none-vaga">Ainda não há recrutadores cadastrados.</p>'
+        return
+    }
+    list.innerHTML = recrutadores.map((recrutador, index) => `
+        <div class="card" data-index="${index}">
+            <div class="info-job">
+                <p class="name">${escapeHtml(recrutador.nome)}</p>
+                <p class="address">${escapeHtml(recrutador.area)} — ${escapeHtml(recrutador.email)}</p>
+                <p class="description">${escapeHtml(recrutador.descricao)}</p>
+                <p>${recrutador.ativo ? 'Ativo' : 'Desativado'}</p>
+                ${recrutador.ativo ? '<button class="pass deactivate-recruiter">Desativar</button>' : ''}
+            </div>
+        </div>
+    `).join('')
+    list.querySelectorAll<HTMLButtonElement>('.deactivate-recruiter').forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.stopPropagation()
+            const card = button.closest<HTMLElement>('.card')
+            const recrutador = recrutadores[Number(card?.dataset.index)]
+            if (!recrutador) return
+            if (!window.confirm('Tem certeza que deseja desativar a conta? Essa ação é irreversível.')) {
+                return
+            }
+            void recrutadorService.desativar(recrutador.id)
+                .then(() => renderizarRecrutadores(dashboard))
+                .catch(mostrarErro)
+        })
+    })
+}
 
 export function findCand(): void {
-    const findCandBtn = document.querySelector('.find-cand')
-    const dash = document.querySelector('.match-cards') as HTMLElement
-    const graphDash = document.querySelector('.graph-class') as HTMLElement
-    const empresaLogada = empresaService.empresaAtual()
-
-    if (!dashOriginalHTML && dash) dashOriginalHTML = dash.innerHTML
-
-    findCandBtn?.addEventListener('click', () => {
-        dash.style.display = 'grid'
-        graphDash.style.display = 'flex'
-        if (!empresaLogada) return
-
-        const candidaturas = curtidaService
-            .listarCurtidas()
-            .filter((c) => c.vaga.empresa.cpnj === empresaLogada.cpnj && c.like === true)
-        const avaliacoesFeitas = curtidaService
-            .listarMatchs()
-            .filter((m) => m.empresa.cpnj === empresaLogada.cpnj)
-
-        const candidaturasDisponiveis = candidaturas.filter(
-            (c) =>
-                !avaliacoesFeitas.some(
-                    (a) => a.candidato.cpf === c.candidato.cpf && a.vaga.nome === c.vaga.nome
-                )
-        )
-
-        if (candidaturasDisponiveis.length === 0) {
-            dash.innerHTML =
-                '<p style="padding: 2rem; color: #64748B;">Nenhum novo candidato para avaliar</p>'
-            return
-        }
-
-        dash.innerHTML = candidaturasDisponiveis
-            .map((curtida, index) => {
-                const afinidade = curtidaService.calcularAfinidade(curtida.candidato, curtida.vaga)
-                return `
-                <div class="card" data-index="${index}">
-                    <div class="info-job">
-                        <p class="porcent-match">MATCH: ${afinidade.toFixed(0)}%</p>
-                        <p class="name">Vaga: ${curtida.vaga.nome}</p>
-                        <p class="address">${curtida.candidato.estado}, ${curtida.candidato.pais}</p>
-                        <p class="description">${curtida.candidato.descricao}</p>
-                        <div class="skills-class">
-                            ${curtida.candidato.competencias.map((s) => `<p class="skill">${s}</p>`).join('')}
-                        </div>
-                    </div>
-                    <div class="pointers"></div>
-                    <div class="choice">
-                        <button class="pass btn-passar">Passar</button>
-                        <button class="like btn-curtir">Dar Match</button>
-                    </div>
-                </div>`
-            })
-            .join('')
-
-        const registrarCurtida = (seletor: string, like: boolean) => {
-            dash.querySelectorAll(seletor).forEach((btn) => {
-                btn.addEventListener('click', (e) => {
-                    const card = (e.target as HTMLElement).closest('.card')
-                    const ref = candidaturasDisponiveis[Number(card?.getAttribute('data-index'))]
-                    curtidaService.salvarCurtidaEmpresa(empresaLogada, like, ref)
-                    card?.remove()
-                })
-            })
-        }
-
-        registrarCurtida('.btn-curtir', true)
-        registrarCurtida('.btn-passar', false)
-
-        abrirPainelCard()
-        pointSkills()
+    const button = document.querySelector('.find-cand')
+    const dashboard = document.querySelector<HTMLElement>('.match-cards')
+    const graph = document.querySelector<HTMLElement>('.graph-class')
+    button?.addEventListener('click', () => {
+        if (!dashboard) return
+        if (graph) graph.style.display = 'none'
+        dashboard.innerHTML = `
+            ${formCadastroRecrutador()}
+            <div class="recruiter-list"></div>
+        `
+        const form = dashboard.querySelector<HTMLFormElement>('.recruiter-form')
+        form?.addEventListener('submit', (event) => {
+            event.preventDefault()
+            void (async () => {
+                const payload: NovoRecrutador = {
+                    nome: campo(form, 'nome').value.trim(),
+                    area: campo(form, 'area').value.trim(),
+                    descricao: form.querySelector<HTMLTextAreaElement>('[data-field="descricao"]')?.value.trim() ?? '',
+                    email: campo(form, 'email').value.trim(),
+                    cpf: campo(form, 'cpf').value.trim(),
+                    dataNascimento: campo(form, 'dataNascimento').value,
+                    senha: campo(form, 'senha').value
+                }
+                if (!validarEmail(payload.email)) throw new Error('E-mail inválido.')
+                if (!validarCpf(payload.cpf)) throw new Error('CPF inválido.')
+                await recrutadorService.cadastrar(payload)
+                form.reset()
+                await renderizarRecrutadores(dashboard)
+            })().catch(mostrarErro)
+        })
+        void renderizarRecrutadores(dashboard).catch(mostrarErro)
     })
 }
 
 export function findMatch(): void {
-    const matchCandBtn = document.querySelector('.match-cand')
-    const dash = document.querySelector('.match-cards') as HTMLElement
-    const graphDash = document.querySelector('.graph-class') as HTMLElement
-    const empresaLogada = empresaService.empresaAtual()
-
-    if (!dashOriginalHTML && dash) dashOriginalHTML = dash.innerHTML
-
-    matchCandBtn?.addEventListener('click', () => {
-        dash.style.display = 'grid'
-        graphDash.style.display = 'none'
-
-        const matchsConfirmados = curtidaService
-            .listarMatchs()
-            .filter((m) => m.empresa.cpnj === empresaLogada?.cpnj && m.like === true)
-
-        if (matchsConfirmados.length === 0) {
-            dash.innerHTML =
-                '<p style="padding: 2rem; color: #64748B;">Nenhum match confirmado</p>'
-            return
-        }
-
-        dash.innerHTML = matchsConfirmados
-            .map(
-                (match) => `
-                <div class="card">
-                    <div class="info-job">
-                        <p class="name">${match.candidato.nome} - Vaga: ${match.vaga.nome}</p>
-                        <p class="address">${match.candidato.estado}, ${match.candidato.pais}</p>
-                        <p class="description">${match.candidato.descricao}</p>
-                        <div class="skills-class">
-                            ${match.candidato.competencias.map((s) => `<p class="skill">${s}</p>`).join('')}
+    const button = document.querySelector('.match-cand')
+    const dashboard = document.querySelector<HTMLElement>('.match-cards')
+    const graph = document.querySelector<HTMLElement>('.graph-class')
+    button?.addEventListener('click', () => {
+        if (!dashboard) return
+        if (graph) graph.style.display = 'none'
+        void empresaService.obterPerfil()
+            .then((empresa) => curtidaService.listarMatchesEmpresa(empresa.id))
+            .then((received) => {
+                const matches = Array.isArray(received) ? received : []
+                const validMatches = matches.filter(
+                    (match) => match?.candidato && match?.vaga
+                )
+                if (validMatches.length === 0) {
+                    dashboard.innerHTML = '<p class="none-vaga">Nenhum match confirmado.</p>'
+                    return
+                }
+                dashboard.innerHTML = validMatches.map((match) => `
+                    <div class="card">
+                        <div class="info-job">
+                            <p class="name">${escapeHtml(match.candidato.nome)} — ${escapeHtml(match.vaga.nome)}</p>
+                            <p class="address">${escapeHtml(match.candidato.email)}</p>
+                            <p class="description">${escapeHtml(match.candidato.descricao)}</p>
                         </div>
                     </div>
-                    <div class="pointers"></div>
-                    <div class="choice">
-                        <button class="pass">Deletar</button>
-                        <button class="like">Conversar</button>
-                    </div>
-                </div>`
-            )
-            .join('')
-
-        abrirPainelCard()
-        pointSkills()
+                `).join('')
+                abrirPainelCard()
+                pointSkills()
+            })
+            .catch(mostrarErro)
     })
 }
 
-export function findVaga(): void {
-    const viewVagaBtn = document.querySelector('.view-vaga')
-    const dash = document.querySelector('.match-cards') as HTMLElement
-    const graphDash = document.querySelector('.graph-class') as HTMLElement
-    const empresaLogada = empresaService.empresaAtual()
-
-    if (!dashOriginalHTML && dash) dashOriginalHTML = dash.innerHTML
-
-    viewVagaBtn?.addEventListener('click', () => {
-        dash.style.display = 'grid'
-        graphDash.style.display = 'none'
-
-        const vagas = vagaService
-            .listarVagas()
-            .filter((v) => v.empresa.cpnj === empresaLogada?.cpnj)
-
-        if (vagas.length === 0) {
-            dash.innerHTML =
-                '<p style="padding: 2rem; color: #64748B;">Sua empresa nao possui vagas cadastradas</p>'
-            return
-        }
-
-        dash.innerHTML = vagas
-            .map(
-                (vaga) => `
-                <div class="card">
-                    <div class="info-job">
-                        <p class="name">${vaga.nome}</p>
-                        <p class="address">${vaga.cidade}, ${vaga.estado} - ${vaga.pais}</p>
-                        <p class="description">${vaga.descricao}</p>
-                        <div class="skills-class">
-                            ${vaga.competencias.map((s) => `<p class="skill">${s}</p>`).join('')}
-                        </div>
-                    </div>
-                    <div class="pointers"></div>
-                    <div class="choice" style="visibility: hidden;">
-                        <button class="pass">Passar</button>
-                        <button class="like">Curtir</button>
-                    </div>
-                </div>`
-            )
-            .join('')
-
-        dash.querySelectorAll('.card').forEach((card, index) => {
-            card.addEventListener('click', (e) => {
-                if ((e.target as HTMLElement).tagName === 'BUTTON') return
-                editVagaPanel(index)
-            })
+async function findVagaConteudo(): Promise<void> {
+    const dashboard = document.querySelector<HTMLElement>('.match-cards')
+    const graph = document.querySelector<HTMLElement>('.graph-class')
+    if (!dashboard) return
+    if (graph) graph.style.display = 'none'
+    const vagas = await vagaService.listarDaEmpresa((await empresaService.obterPerfil()).id)
+    if (!vagas.length) {
+        dashboard.innerHTML = '<p class="none-vaga">Você ainda não cadastrou vagas.</p>'
+        return
+    }
+    dashboard.innerHTML = vagas.map((vaga, index) => `
+        <div class="card" data-index="${index}">
+            <div class="info-job">
+                <p class="name">${escapeHtml(vaga.nome)}</p>
+                <p class="address">${escapeHtml(vaga.area)} — ${escapeHtml(vaga.cidade ?? '')}</p>
+                <p class="description">${escapeHtml(vaga.descricao)}</p>
+                <div class="skills-class">
+                    ${vaga.competencias.map((skill) => `<p class="skill">${escapeHtml(skill)}</p>`).join('')}
+                </div>
+                <div class="choice">
+                    <button class="like edit-vaga">Editar</button>
+                </div>
+            </div>
+        </div>
+    `).join('')
+    dashboard.querySelectorAll<HTMLButtonElement>('.edit-vaga').forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.stopPropagation()
+            const vaga = vagas[Number(button.closest<HTMLElement>('.card')?.dataset.index)]
+            if (vaga) void editVagaPanel(vaga).catch(mostrarErro)
         })
+    })
+    pointSkills()
+}
 
-        pointSkills()
+export function findVaga(): void {
+    document.querySelector('.view-vaga')?.addEventListener('click', () => {
+        void findVagaConteudo().catch(mostrarErro)
     })
 }

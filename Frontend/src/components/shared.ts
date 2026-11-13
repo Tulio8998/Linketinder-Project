@@ -1,21 +1,68 @@
 import { viewPanel } from '../pages/candidatoDash'
+import { CompetenciaService } from '../ts/services/CompetenciaService'
 
-export function configSkills(container: HTMLElement | Document = document): void {
+const competenciaService = new CompetenciaService()
+let nextDataListId = 0
+
+export async function configSkills(container: HTMLElement | Document = document): Promise<void> {
     const novaSkill = container.querySelector('#input-skill') as HTMLInputElement
     const skillsClass = container.querySelector('.info-professional .skills-class')
+    if (!novaSkill || !skillsClass) return
+
+    novaSkill.disabled = true
+    const formButtons = Array.from(container.querySelectorAll<HTMLButtonElement>(
+        'form button[type="submit"]'
+    ))
+    formButtons.forEach((button) => { button.disabled = true })
+    let catalogo
+    try {
+        catalogo = await competenciaService.listarTodas()
+    } catch (error) {
+        formButtons.forEach((button) => { button.disabled = false })
+        throw error
+    }
+
+    const datalist = document.createElement('datalist')
+    datalist.id = `competencias-catalogo-${nextDataListId++}`
+    catalogo.forEach((competencia) => {
+        const option = document.createElement('option')
+        option.value = competencia.nome
+        datalist.appendChild(option)
+    })
+    novaSkill.setAttribute('list', datalist.id)
+    novaSkill.insertAdjacentElement('afterend', datalist)
+    novaSkill.disabled = false
+    formButtons.forEach((button) => { button.disabled = false })
 
     novaSkill?.addEventListener('keydown', (event) => {
         if (event.key !== 'Enter') return
         event.preventDefault()
-        const valorSkill = novaSkill.value.trim()
-        if (!valorSkill) return
+        const enteredSkill = novaSkill.value.trim()
+        if (!enteredSkill) return
+        const competencia = catalogo.find(
+            (item) => item.nome.trim().toLowerCase() === enteredSkill.toLowerCase()
+        )
+        if (!competencia) {
+            alert('Selecione uma competência existente no catálogo.')
+            novaSkill.value = ''
+            return
+        }
+        const alreadySelected = Array.from(skillsClass.querySelectorAll('.skill'))
+            .some((skill) => skill.textContent?.trim().toLowerCase() === competencia.nome.toLowerCase())
+        if (alreadySelected) {
+            novaSkill.value = ''
+            return
+        }
 
         const skillDiv = document.createElement('div')
         skillDiv.className = 'skill-div'
-        skillDiv.innerHTML = `
-            <p class="skill">${valorSkill}</p>
-            <p class="remove-skill">x</p>
-        `
+        const skill = document.createElement('p')
+        skill.className = 'skill'
+        skill.textContent = competencia.nome
+        const remove = document.createElement('p')
+        remove.className = 'remove-skill'
+        remove.textContent = 'x'
+        skillDiv.append(skill, remove)
         skillDiv.querySelector('.remove-skill')?.addEventListener('click', () => skillDiv.remove())
         skillsClass?.appendChild(skillDiv)
         novaSkill.value = ''
@@ -30,10 +77,13 @@ export function renderizarSkillsExistentes(
     skills.forEach((skill) => {
         const skillDiv = document.createElement('div')
         skillDiv.className = 'skill-div'
-        skillDiv.innerHTML = `
-            <p class="skill">${skill}</p>
-            <p class="remove-skill">x</p>
-        `
+        const skillText = document.createElement('p')
+        skillText.className = 'skill'
+        skillText.textContent = skill
+        const remove = document.createElement('p')
+        remove.className = 'remove-skill'
+        remove.textContent = 'x'
+        skillDiv.append(skillText, remove)
         skillDiv.querySelector('.remove-skill')?.addEventListener('click', () => skillDiv.remove())
         skillsClass?.appendChild(skillDiv)
     })

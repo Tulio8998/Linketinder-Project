@@ -3,13 +3,15 @@ package com.zg.linketinder.dao
 import com.zg.linketinder.dao.interfaces.RecrutadorDAO
 import com.zg.linketinder.dto.AvaliacaoRecrutadorDTO
 import com.zg.linketinder.dto.CandidatoAnonimoDTO
+import com.zg.linketinder.dto.EmpresaCnpjDTO
 import com.zg.linketinder.dto.MatchRecrutadorDTO
-import com.zg.linketinder.dto.VagaResumoDTO
+import com.zg.linketinder.dto.VagaTriagemDTO
 import com.zg.linketinder.factory.ConexaoDB
 import com.zg.linketinder.model.Empresa
 import com.zg.linketinder.model.Recrutador
 import com.zg.linketinder.sql.RecrutadorSql
 import com.zg.linketinder.vo.CpfVO
+import com.zg.linketinder.vo.CnpjVO
 import com.zg.linketinder.vo.EmailVO
 
 class RecrutadorDAOImpl implements RecrutadorDAO {
@@ -75,9 +77,9 @@ class RecrutadorDAOImpl implements RecrutadorDAO {
     }
 
     @Override
-    List<VagaResumoDTO> listarVagasDaArea(Integer recrutadorId) {
+    List<VagaTriagemDTO> listarVagasDaArea(Integer recrutadorId) {
         return ConexaoDB.consultar { sql ->
-            agruparResumosVaga(sql.rows(RecrutadorSql.LISTAR_VAGAS_DA_AREA, [recrutadorId]))
+            agruparVagasTriagem(sql.rows(RecrutadorSql.LISTAR_VAGAS_DA_AREA, [recrutadorId]))
         }
     }
 
@@ -160,7 +162,10 @@ class RecrutadorDAOImpl implements RecrutadorDAO {
     private Recrutador mapearRecrutador(def row) {
         return new Recrutador(
                 id: row.id as Integer,
-                empresa: new Empresa(id: row.id_empresa as Integer),
+                empresa: new Empresa(
+                        id: row.id_empresa as Integer,
+                        cnpj: row.empresa_cnpj == null ? null : new CnpjVO(row.empresa_cnpj as String)
+                ),
                 nome: row.nome,
                 area: row.area,
                 descricao: row.descricao,
@@ -172,17 +177,18 @@ class RecrutadorDAOImpl implements RecrutadorDAO {
         )
     }
 
-    private List<VagaResumoDTO> agruparResumosVaga(List rows) {
-        Map<Integer, VagaResumoDTO> vagas = [:]
+    private List<VagaTriagemDTO> agruparVagasTriagem(List rows) {
+        Map<Integer, VagaTriagemDTO> vagas = [:]
         rows.each { row ->
             Integer id = row.id as Integer
             if (!vagas.containsKey(id)) {
-                vagas[id] = new VagaResumoDTO(
+                vagas[id] = new VagaTriagemDTO(
                         id: id,
                         nome: row.nome,
                         descricao: row.descricao,
                         area: row.area,
-                        competencias: []
+                        competencias: [],
+                        empresa: new EmpresaCnpjDTO(cnpj: row.empresa_cnpj as String)
                 )
             }
             if (row.nome_competencia != null) {

@@ -1,71 +1,63 @@
 import { ESTADOS, PAISES } from '../ts/util/constants'
 import { viewPanel } from './candidatoDash'
+import { escapeHtml } from '../ts/util/html'
 
 export { viewPanel }
 
 function renderizarOpcoes(colecao: string[]): string {
-    return colecao.map((e) => `<option value="${e}">${e}</option>`).join('')
+    return colecao.map((item) => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`).join('')
 }
 
 function templateEditavel(titulo: string, subtitulo: string, dados: {
-    tituloPerfil: string,
+    tituloPerfil: string
     botoes: 'salvar-deletar' | 'cancelar-salvar'
 }): string {
     const botoes = dados.botoes === 'salvar-deletar'
-        ? `<button class="btn-cancel" type="submit">Cancelar</button>
-           <button class="btn-delete" type="submit">Excluir</button>
-           <button class="btn-create" type="submit">Salvar</button>`
-        : `<button class="cancel" type="submit">Cancelar</button>
-           <button class="create" type="submit">Salvar</button>`
+        ? `<button class="btn-cancel" type="button">Cancelar</button>
+           <button class="btn-delete" type="button">Excluir vaga</button>
+           <button class="btn-create" type="submit">Salvar alterações</button>`
+        : `<button class="cancel" type="button">Cancelar</button>
+           <button class="create" type="submit">Publicar vaga</button>`
 
     return `
         <section class="edit-class">
             <div class="container">
-                <div class="editVaga-content">
-                    <div class="title-class">
-                        <p class="title">${titulo}</p>
-                        <p class="subtitle">${subtitulo}</p>
-                    </div>
+                <div class="editVaga-content profile-form-card">
+                    <header class="title-class">
+                        <p class="eyebrow">Gestão de oportunidades</p>
+                        <h1 class="title">${escapeHtml(titulo)}</h1>
+                        <p class="subtitle">${escapeHtml(subtitulo)}</p>
+                    </header>
                     <form>
                         <div class="input-form">
-                            <div class="info-personal">
-                                <p class="title-personal">${dados.tituloPerfil}</p>
+                            <section class="info-personal form-section">
+                                <h2 class="title-personal">${escapeHtml(dados.tituloPerfil)}</h2>
                                 <div>
-                                    <p class="input-name">Tipo de vaga</p>
-                                    <input class="input-data" type="text" placeholder="Desenvolvedor...">
-                                </div>
-                            </div>
-                            <div class="info-location">
-                                <p class="title-personal">LOCALIZAÇÃO</p>
-                                <div class="div-row">
-                                    <div>
-                                        <p class="input-name">País</p>
-                                        <select>${renderizarOpcoes(PAISES)}</select>
-                                    </div>
-                                    <div>
-                                        <p class="input-name">Estado</p>
-                                        <select>${renderizarOpcoes(ESTADOS)}</select>
-                                    </div>
-                                    <div>
-                                        <p class="input-name">Cidade</p>
-                                        <select>${renderizarOpcoes(ESTADOS)}</select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="info-professional">
-                                <p class="title-personal">PERFIL DA EMPRESA</p>
-                                <div class="div-row">
-                                    <div>
-                                        <p class="input-name">Bio / Descrição</p>
-                                        <textarea placeholder="Escreva mais sobre a empresa, cultura, valores, etc..."></textarea>
-                                    </div>
+                                    <label class="input-name">Título da vaga</label>
+                                    <input class="input-data" data-field="nome" type="text" placeholder="Ex.: Pessoa desenvolvedora" required>
                                 </div>
                                 <div>
-                                    <p class="input-name">Habilidades requeridas</p>
+                                    <label class="input-name">Área de atuação</label>
+                                    <input class="input-data" data-field="area" type="text" placeholder="Ex.: Tecnologia" required>
+                                </div>
+                            </section>
+                            <section class="info-location form-section">
+                                <h2 class="title-personal">Localização</h2>
+                                <div class="div-row">
+                                    <div><label class="input-name">País</label><select>${renderizarOpcoes(PAISES)}</select></div>
+                                    <div><label class="input-name">Estado</label><select>${renderizarOpcoes(ESTADOS)}</select></div>
+                                    <div><label class="input-name">Cidade</label><input class="input-data" data-field="cidade" type="text" placeholder="Cidade" required></div>
+                                </div>
+                            </section>
+                            <section class="info-professional form-section">
+                                <h2 class="title-personal">Sobre a oportunidade</h2>
+                                <div><label class="input-name">Descrição</label><textarea placeholder="Responsabilidades, desafios e contexto da vaga..." required></textarea></div>
+                                <div>
+                                    <label class="input-name" for="input-skill">Competências desejadas</label>
                                     <div class="skills-class"></div>
-                                    <input id="input-skill" class="input-data" type="text" placeholder="Digite e aperte Enter">
+                                    <input id="input-skill" class="input-data" type="text" placeholder="Busque uma competência e pressione Enter">
                                 </div>
-                            </div>
+                            </section>
                             <div class="button-class">${botoes}</div>
                         </div>
                     </form>
@@ -76,15 +68,15 @@ function templateEditavel(titulo: string, subtitulo: string, dados: {
 }
 
 export function addVaga(): string {
-    return templateEditavel('Vaga Linketinder', 'Adicione suas vagas', {
-        tituloPerfil: 'INFORMAÇÃO VAGA',
+    return templateEditavel('Nova vaga', 'Apresente uma oportunidade para novos talentos.', {
+        tituloPerfil: 'Informações da vaga',
         botoes: 'cancelar-salvar'
     })
 }
 
 export function editVaga(): string {
-    return templateEditavel('Editar Vaga Linketinder', 'Edite sua vaga', {
-        tituloPerfil: 'INFORMAÇÃO VAGA',
+    return templateEditavel('Editar vaga', 'Mantenha os detalhes da oportunidade atualizados.', {
+        tituloPerfil: 'Informações da vaga',
         botoes: 'salvar-deletar'
     })
 }
@@ -93,59 +85,49 @@ export function editEmpProfile(): string {
     return `
         <section class="edit-class">
             <div class="container">
-                <div class="editempresa-content">
-                    <div class="title-class">
-                        <p class="title">Edição Linketinder</p>
-                        <p class="subtitle">Edite aqui suas informações</p>
-                    </div>
+                <div class="editempresa-content profile-form-card">
+                    <header class="title-class">
+                        <p class="eyebrow">Configurações da organização</p>
+                        <h1 class="title">Editar perfil da empresa</h1>
+                        <p class="subtitle">Mantenha as informações institucionais atualizadas.</p>
+                    </header>
                     <form>
                         <div class="input-form">
-                            <div class="info-personal">
-                                <p class="title-personal">INFORMAÇÃO EMPRESARIAL</p>
+                            <section class="info-personal form-section">
+                                <h2 class="title-personal">Informações da empresa</h2>
                                 <div>
-                                    <p class="input-name">Nome da empresa</p>
-                                    <input class="input-data" type="text" placeholder="nome">
+                                    <label class="input-name">Nome da empresa</label>
+                                    <input class="input-data" data-field="nome" type="text" required>
                                 </div>
                                 <div>
-                                    <p class="input-name">CNPJ</p>
-                                    <input class="input-data" type="text" placeholder="00.000.000/0001-00">
+                                    <label class="input-name">CNPJ</label>
+                                    <input class="input-data" data-field="cnpj" type="text" required>
                                 </div>
-                            </div>
-                            <div class="info-location">
-                                <p class="title-personal">LOCALIZAÇÃO</p>
+                            </section>
+                            <section class="info-location form-section">
+                                <h2 class="title-personal">Localização</h2>
                                 <div class="div-row">
-                                    <div>
-                                        <p class="input-name">País</p>
-                                        <select>${renderizarOpcoes(PAISES)}</select>
-                                    </div>
-                                    <div>
-                                        <p class="input-name">Estado</p>
-                                        <select>${renderizarOpcoes(ESTADOS)}</select>
-                                    </div>
-                                    <div>
-                                        <p class="input-name">CEP</p>
-                                        <input class="input-data" type="text" placeholder="00000-00">
-                                    </div>
+                                    <div><label class="input-name">País</label><select>${renderizarOpcoes(PAISES)}</select></div>
+                                    <div><label class="input-name">Estado</label><select>${renderizarOpcoes(ESTADOS)}</select></div>
                                 </div>
-                            </div>
-                            <div class="info-professional">
-                                <p class="title-personal">PERFIL DA EMPRESA</p>
                                 <div class="div-row">
-                                    <div>
-                                        <p class="input-name">Bio / Descrição</p>
-                                        <textarea placeholder="Escreva mais sobre a empresa, cultura, valores, etc..."></textarea>
-                                    </div>
+                                    <div><label class="input-name">Cidade</label><input class="input-data" data-field="cidade" type="text" required></div>
+                                    <div><label class="input-name">CEP</label><input class="input-data" data-field="cep" type="text" required></div>
                                 </div>
+                            </section>
+                            <section class="info-professional form-section">
+                                <h2 class="title-personal">Sobre a empresa</h2>
+                                <div><label class="input-name">Descrição</label><textarea placeholder="Conte sobre a cultura e a atuação da empresa..." required></textarea></div>
                                 <div>
-                                    <p class="input-name">Habilidades requeridas</p>
+                                    <label class="input-name" for="input-skill">Competências valorizadas</label>
                                     <div class="skills-class"></div>
-                                    <input id="input-skill" class="input-data" type="text" placeholder="Digite e aperte Enter">
+                                    <input id="input-skill" class="input-data" type="text" placeholder="Busque uma competência e pressione Enter">
                                 </div>
-                            </div>
+                            </section>
                             <div class="button-class">
-                                <button class="btn-cancel" type="submit">Cancelar</button>
-                                <button class="btn-delete" type="submit">Excluir</button>
-                                <button class="btn-create" type="submit">Salvar</button>
+                                <button class="btn-cancel" type="button">Cancelar</button>
+                                <button class="btn-delete" type="button">Excluir conta</button>
+                                <button class="btn-create" type="submit">Salvar alterações</button>
                             </div>
                         </div>
                     </form>
@@ -159,11 +141,13 @@ export function deleteEmpresaProfile(): string {
     return `
         <section class="delete-class">
             <div class="container">
-                <div class="deleteEmpresa-content">
-                    <p class="delete-title">Deseja deletar a conta?</p>
+                <div class="deleteEmpresa-content delete-dialog">
+                    <p class="eyebrow">Atenção</p>
+                    <h2 class="delete-title">Desativar conta da empresa?</h2>
+                    <p>Esta ação não poderá ser desfeita.</p>
                     <form>
-                        <button class="cancel-delete">Não</button>
-                        <button class="confirm-delete">Sim</button>
+                        <button class="cancel-delete" type="button">Manter conta</button>
+                        <button class="confirm-delete" type="button">Desativar</button>
                     </form>
                 </div>
             </div>
@@ -177,48 +161,54 @@ export function viewVagaEmp(): string { return '' }
 export function empresaDash(): string {
     return `
         <section class="empresaDash-class">
-            <div class="empresa-profile">
-                <h2>Linketinder</h2>
+            <aside class="empresa-profile">
+                <a class="dashboard-brand" href="#"><span class="brand-mark">LT</span><span>Linketinder</span></a>
                 <div class="profile">
                     <div class="profile-content">
                         <p class="name"></p>
-                        <div><p>Estado</p><p>-</p><p>País</p></div>
+                        <div><p>Estado</p><p class="location-separator">·</p><p>País</p></div>
                     </div>
-                    <p class="line"></p>
-                    <div class="about">
+                    <div class="sidebar-section about">
                         <p class="about-title">Sobre a empresa</p>
                         <p></p>
                     </div>
-                    <div class="skills">
-                        <p class="skill-title">Habilidades requeridas</p>
+                    <div class="sidebar-section skills">
+                        <p class="skill-title">Competências das vagas</p>
                         <div></div>
                     </div>
-                    <div class="nav-dash">
-                        <p class="nav-title">Dashboard</p>
-                        <nav class="find-cand">Encontrar candidatos</nav>
-                        <nav class="match-cand">Matches</nav>
-                        <nav class="add-vaga">Adicionar Vaga</nav>
-                        <nav class="view-vaga">Ver Vagas</nav>
-                    </div>
+                    <nav class="nav-dash" aria-label="Menu da empresa">
+                        <p class="nav-title">Gestão</p>
+                        <button class="find-cand" type="button">Recrutadores</button>
+                        <button class="match-cand" type="button">Matches</button>
+                        <button class="add-vaga" type="button">Adicionar vaga</button>
+                        <button class="view-vaga" type="button">Ver vagas</button>
+                    </nav>
                     <div class="log-out">
-                        <p class="line"></p>
-                        <div>
-                            <button class="btn-out">Sair</button>
-                            <button class="btn-edit">Editar</button>
-                        </div>
+                        <button class="btn-out" type="button">Sair da conta</button>
+                        <button class="btn-edit" type="button">Editar perfil</button>
                     </div>
                 </div>
-            </div>
-            <div class="dash-content">
-                <div class="search-bar">
-                    <div><input class="input-search" type="text" placeholder="Pesquise por competência"></div>
-                </div>
-                <div class="graph-class">
-                    <p class="graph-title">Candidatos por competência</p>
+            </aside>
+            <main class="dash-content">
+                <header class="search-bar">
+                    <div class="dashboard-heading">
+                        <p class="eyebrow">Área da empresa</p>
+                        <h1>Encontre talentos para sua equipe</h1>
+                    </div>
+                    <label class="search-control">
+                        <span class="visually-hidden">Pesquisar por competência</span>
+                        <input class="input-search" type="search" placeholder="Pesquise por competência">
+                    </label>
+                </header>
+                <section class="graph-class">
+                    <div class="graph-heading">
+                        <p class="eyebrow">Visão geral</p>
+                        <h2 class="graph-title">Vagas por área</h2>
+                    </div>
                     <div class="graph" id="graph"></div>
-                </div>
+                </section>
                 <div class="match-cards"></div>
-            </div>
+            </main>
         </section>
     `
 }

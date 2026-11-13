@@ -10,16 +10,20 @@ class RecrutadorSql {
     '''
 
     static final String BUSCAR_POR_ID = '''
-        SELECT r.id, r.id_empresa, r.nome, r.area, r.descricao, r.email, r.cpf,
+        SELECT r.id, r.id_empresa, e.cnpj AS empresa_cnpj,
+               r.nome, r.area, r.descricao, r.email, r.cpf,
                r.data_nascimento, r.senha, r.ativo
         FROM recrutadores r
+        INNER JOIN empresas e ON e.id = r.id_empresa
         WHERE r.id = ?
     '''
 
     static final String BUSCAR_POR_EMAIL = '''
-        SELECT r.id, r.id_empresa, r.nome, r.area, r.descricao, r.email, r.cpf,
+        SELECT r.id, r.id_empresa, e.cnpj AS empresa_cnpj,
+               r.nome, r.area, r.descricao, r.email, r.cpf,
                r.data_nascimento, r.senha, r.ativo
         FROM recrutadores r
+        INNER JOIN empresas e ON e.id = r.id_empresa
         WHERE LOWER(r.email) = LOWER(?)
     '''
 
@@ -43,11 +47,12 @@ class RecrutadorSql {
     '''
 
     static final String LISTAR_VAGAS_DA_AREA = '''
-        SELECT v.id, v.nome, v.descricao, v.area,
+        SELECT v.id, v.nome, v.descricao, v.area, e.cnpj AS empresa_cnpj,
                cm.nome AS nome_competencia
         FROM recrutadores r
         INNER JOIN vagas v
             ON v.id_empresa = r.id_empresa AND v.area = r.area
+        INNER JOIN empresas e ON e.id = v.id_empresa
         LEFT JOIN vagas_competencias vc ON vc.id_vaga = v.id
         LEFT JOIN competencias cm ON cm.id = vc.id_competencia
         WHERE r.id = ? AND r.ativo = TRUE

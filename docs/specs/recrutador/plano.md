@@ -249,11 +249,12 @@ HTTP, este fluxo é destinado somente ao desenvolvimento local sem TLS.
   login, vagas, triagem, avaliações e matches; enviar credenciais Basic Auth
   apenas em memória e tratar erros HTTP explicitamente.
 - **Arquivos afetados:**
-  - `Frontend/src/ts/services/ApiClient.ts` (novo)
+  - `Frontend/src/api/api.ts` (novo)
   - `Frontend/src/ts/services/CandidatoService.ts`
   - `Frontend/src/ts/services/EmpresaService.ts`
   - `Frontend/src/ts/services/RecrutadorService.ts`
   - `Frontend/src/ts/services/VagaService.ts`
+  - `Frontend/src/ts/services/CompetenciaService.ts` (novo)
   - `Frontend/src/ts/services/CurtidaService.ts`
 - **Teste executado:** `cd Frontend && npm run build`.
 - **Checklist de anonimato:**
@@ -269,7 +270,8 @@ HTTP, este fluxo é destinado somente ao desenvolvimento local sem TLS.
   autenticada; não substituir exclusão lógica por remoção física.
 - **Arquivos afetados:**
   - `Frontend/src/main.ts`
-  - `Frontend/src/styles/apiApp.css` (novo)
+  - `Frontend/src/components/empresa.ts`
+  - `Frontend/src/pages/empresaDash.ts`
   - `Frontend/src/ts/services/EmpresaService.ts`
 - **Teste executado:** `cd Frontend && npm run build`; backend Spock verifica
   os contratos e a persistência lógica.
@@ -285,8 +287,10 @@ HTTP, este fluxo é destinado somente ao desenvolvimento local sem TLS.
   oferecer criação, edição ou exclusão de vagas.
 - **Arquivos afetados:**
   - `Frontend/src/main.ts`
-  - `Frontend/src/ts/services/ApiClient.ts`
+  - `Frontend/src/api/api.ts`
   - `Frontend/src/ts/services/RecrutadorService.ts`
+  - `Frontend/src/components/recrutador.ts` (novo)
+  - `Frontend/src/pages/recrutadorDash.ts` (novo)
   - `Backend/src/main/groovy/com/zg/linketinder/api/AuthFilter.groovy`
   - `Backend/src/main/groovy/com/zg/linketinder/controller/ServeletController/RecrutadorController.groovy`
 - **Teste executado:** `cd Backend && ./gradlew test --rerun-tasks` e

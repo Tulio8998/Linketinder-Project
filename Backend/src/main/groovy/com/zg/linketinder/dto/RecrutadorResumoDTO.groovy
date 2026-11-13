@@ -7,4 +7,5 @@ class RecrutadorResumoDTO {
     String descricao
     String email
     Boolean ativo
+    EmpresaCnpjDTO empresa
 }

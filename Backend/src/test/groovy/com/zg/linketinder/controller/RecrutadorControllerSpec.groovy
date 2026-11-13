@@ -4,6 +4,8 @@ import com.zg.linketinder.dto.MatchRecrutadorDTO
 import com.zg.linketinder.dto.AvaliacaoRecrutadorDTO
 import com.zg.linketinder.dto.CandidatoAnonimoDTO
 import com.zg.linketinder.dto.VagaResumoDTO
+import com.zg.linketinder.dto.VagaTriagemDTO
+import com.zg.linketinder.dto.EmpresaCnpjDTO
 import com.zg.linketinder.model.Candidato
 import com.zg.linketinder.model.Competencia
 import com.zg.linketinder.model.Empresa
@@ -42,7 +44,10 @@ class RecrutadorControllerSpec extends Specification {
         1 * recrutadorService.buscarPorEmail('recrutadora@example.com') >>
                 new Recrutador(
                         id: 8,
-                        empresa: new Empresa(id: 9),
+                        empresa: new Empresa(
+                                id: 9,
+                                cnpj: new com.zg.linketinder.vo.CnpjVO('12.345.678/0001-90')
+                        ),
                         nome: 'Recrutadora',
                         area: 'TI',
                         descricao: 'Seleção de tecnologia',
@@ -54,6 +59,7 @@ class RecrutadorControllerSpec extends Specification {
         captured.status == 200
         captured.body().contains('Recrutadora')
         captured.body().contains('TI')
+        captured.body().contains('"empresa":{"cnpj":"12.345.678/0001-90"}')
         !captured.body().contains('123.456.789-09')
         !captured.body().contains('segredo')
     }
@@ -86,8 +92,9 @@ class RecrutadorControllerSpec extends Specification {
         then:
         1 * recrutadorService.buscarPorEmail('recrutadora@example.com') >> recrutador
         1 * recrutadorService.listarVagasDaArea(8) >> [
-                new VagaResumoDTO(id: 727, nome: 'Engenheira de Software',
-                        descricao: 'Criar serviços', area: 'TI', competencias: ['Groovy'])
+                new VagaTriagemDTO(id: 727, nome: 'Engenheira de Software',
+                        descricao: 'Criar serviços', area: 'TI', competencias: ['Groovy'],
+                        empresa: new EmpresaCnpjDTO(cnpj: '12.345.678/0001-90'))
         ]
         captured.status == 200
         String json = captured.body()

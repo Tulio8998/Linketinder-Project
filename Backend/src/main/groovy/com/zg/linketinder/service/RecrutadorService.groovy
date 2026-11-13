@@ -6,6 +6,7 @@ import com.zg.linketinder.dto.AvaliacaoRecrutadorDTO
 import com.zg.linketinder.dto.CandidatoAnonimoDTO
 import com.zg.linketinder.dto.MatchRecrutadorDTO
 import com.zg.linketinder.dto.VagaResumoDTO
+import com.zg.linketinder.dto.VagaTriagemDTO
 import com.zg.linketinder.model.Recrutador
 import com.zg.linketinder.util.AreaAtuacao
 import com.zg.linketinder.vo.CpfVO
@@ -54,7 +55,7 @@ class RecrutadorService {
         }
     }
 
-    List<VagaResumoDTO> listarVagasDaArea(Integer recrutadorId) {
+    List<VagaTriagemDTO> listarVagasDaArea(Integer recrutadorId) {
         validarId(recrutadorId, 'Recrutador')
         return recrutadorDAO.listarVagasDaArea(recrutadorId)
     }

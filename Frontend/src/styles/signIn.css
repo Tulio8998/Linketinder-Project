@@ -1,83 +1,258 @@
 .main-content {
+    min-height: 100vh;
+    padding: clamp(1.25rem, 4vw, 3.5rem) 0;
+}
+
+.auth-layout {
+    display: grid;
+    min-height: calc(100vh - clamp(2.5rem, 8vw, 7rem));
+    grid-template-columns: minmax(0, 1fr) minmax(390px, 0.85fr);
+    overflow: hidden;
+    border: 1px solid rgba(226, 232, 242, 0.88);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-md);
+}
+
+.login-brand {
+    position: relative;
     display: flex;
-    width: 100%;
-    height: 100%;
-    margin-top: 10rem;
-    margin-bottom: 10rem;
+    min-height: 620px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    overflow: hidden;
+    padding: clamp(2rem, 6vw, 5.5rem);
+    color: #fff;
+    background:
+        radial-gradient(circle at 85% 20%, rgba(152, 145, 255, 0.42), transparent 18rem),
+        linear-gradient(145deg, #292568 0%, #4740a5 52%, #7069d8 100%);
+}
+
+.login-brand::after {
+    position: absolute;
+    right: -9rem;
+    bottom: -11rem;
+    width: 32rem;
+    aspect-ratio: 1;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 50%;
+    box-shadow: 0 0 0 2.5rem rgba(255, 255, 255, 0.035), 0 0 0 5rem rgba(255, 255, 255, 0.025);
+    content: '';
+}
+
+.login-brand .brand-mark {
+    position: absolute;
+    top: clamp(2rem, 5vw, 4rem);
+    left: clamp(2rem, 6vw, 5.5rem);
+    color: #514bb1;
+    background: #fff;
+    box-shadow: 0 10px 24px rgba(23, 21, 78, 0.16);
+}
+
+.login-brand .eyebrow {
+    margin-bottom: 1.2rem;
+    color: #c9c7ff;
+}
+
+.login-brand h1 {
+    max-width: 590px;
+    font-size: clamp(2.5rem, 5vw, 4.4rem);
+    font-weight: 800;
+    letter-spacing: -0.065em;
+    line-height: 1.08;
+}
+
+.brand-copy {
+    max-width: 430px;
+    margin-top: 1.5rem;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 1.05rem;
+    line-height: 1.75;
+}
+
+.brand-highlights {
+    display: grid;
+    gap: 0.8rem;
+    margin-top: 3rem;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.9rem;
+}
+
+.brand-highlights span {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.brand-highlights span::first-letter {
+    color: #c9c7ff;
+}
+
+.brand-highlights b {
+    color: #fff;
 }
 
 .signIn-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 13rem;
+    display: grid;
+    place-items: center;
+    padding: clamp(1.5rem, 5vw, 4.5rem);
 }
 
 .form-content {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    width: min(100%, 390px);
     flex-direction: column;
-    background: #FCFCFC;
-    padding: 3rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.452);
-    gap: 3rem;
-}
-
-.form-content h2{
-    padding: 1rem;
-    color: #000000;
-    font-weight: 600;
-    font-size: 2rem;
-}
-
-.form-content form{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    align-items: flex-start;
     gap: 2rem;
-    color: #000000;
 }
 
-form .input-data {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    
+.form-content .brand-home {
+    display: none;
 }
 
-.input-data .input-in {
-    border: 1px solid #FDFDFD;
-    border-radius: 3px;
-    box-shadow: 0 2px 5px rgba(185, 185, 185, 0.452);
-    margin: 0.5rem 0.5rem 0.5rem 0;
-    padding: 0.7rem 0.7rem 0.7rem 0.2rem;
-    width: 18rem;
+.form-content .title-class {
+    display: grid;
+    gap: 0.55rem;
 }
 
-form button {
-    background-color: #2A2A31;
-    color: #FFFFFF;
-    border-radius: 5px;
-    padding: 0.5rem;
-    font-size: 20px;
-    width: 80%;
+.form-content h2 {
+    color: var(--ink);
+    font-size: clamp(1.8rem, 3vw, 2.35rem);
+    font-weight: 800;
+    letter-spacing: -0.06em;
+    line-height: 1.18;
 }
 
-form button:hover {
-    cursor: pointer;
-    background-color: #4c4c55
+.form-content .subtitle {
+    color: var(--muted);
 }
 
-.form-content .signUp-link {
-    color: #6091ad;
+.form-content form {
+    display: grid;
+    width: 100%;
+    gap: 1.25rem;
 }
 
-.form-content .signUp-link:hover {
+.auth-field {
+    display: grid;
+    gap: 0.5rem;
+    color: #3a465b;
+    font-size: 0.87rem;
+    font-weight: 600;
+}
+
+.auth-field input {
+    width: 100%;
+    min-height: 3.25rem;
+    padding: 0.8rem 0.95rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    background: var(--surface-soft);
+    transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.auth-field input::placeholder {
+    color: #a4adbc;
+}
+
+.auth-field input:focus {
+    border-color: var(--brand);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.09);
+    outline: 0;
+}
+
+.primary-button,
+.form-content form button {
+    min-height: 3.25rem;
+    margin-top: 0.35rem;
+    border: 0;
+    border-radius: var(--radius-sm);
+    color: #fff;
+    background: var(--brand);
+    font-weight: 700;
+    transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.primary-button:hover,
+.form-content form button:hover {
+    transform: translateY(-1px);
+    background: var(--brand-strong);
+    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+}
+
+.signup-options {
+    display: grid;
+    width: 100%;
+    gap: 0.75rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.signup-options .signUp-link {
+    color: var(--brand);
+    font-weight: 700;
+}
+
+.signup-options .signUp-link:hover {
+    color: var(--brand-strong);
     text-decoration: underline;
-    transition: 0.1s;
-    transform: scale(1.01)
+    text-underline-offset: 3px;
+}
+
+@media (max-width: 850px) {
+    .auth-layout {
+        grid-template-columns: minmax(0, 0.9fr) minmax(340px, 1fr);
+    }
+
+    .login-brand {
+        padding-inline: 2.5rem;
+    }
+
+    .login-brand .brand-mark {
+        left: 2.5rem;
+    }
+}
+
+@media (max-width: 680px) {
+    .main-content {
+        padding: 0;
+    }
+
+    .auth-layout {
+        width: 100%;
+        min-height: 100vh;
+        grid-template-columns: minmax(0, 1fr);
+        border: 0;
+        border-radius: 0;
+    }
+
+    .login-brand {
+        min-height: 250px;
+        padding: 5.5rem 1.5rem 2rem;
+    }
+
+    .login-brand .brand-mark {
+        top: 1.5rem;
+        left: 1.5rem;
+    }
+
+    .login-brand h1 {
+        font-size: 2rem;
+    }
+
+    .brand-copy,
+    .brand-highlights {
+        display: none;
+    }
+
+    .signIn-content {
+        padding: 2.5rem 1.5rem;
+    }
+
+    .form-content .brand-home {
+        display: inline-block;
+    }
 }
