@@ -18,11 +18,11 @@
     --green-soft: #e7f8f2;
     --danger: #dc5364;
     --danger-soft: #fff0f2;
-    --shadow-sm: 0 8px 24px rgba(27, 39, 67, 0.06);
-    --shadow-md: 0 18px 50px rgba(27, 39, 67, 0.12);
+    --shadow-sm: 0 4px 15px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 16px 40px rgba(27, 39, 67, 0.1);
     --radius-sm: 12px;
-    --radius-md: 20px;
-    --radius-lg: 28px;
+    --radius-md: 12px;
+    --radius-lg: 24px;
 }
 
 * {

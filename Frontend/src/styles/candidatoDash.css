@@ -15,8 +15,10 @@
     min-height: 620px;
     flex-direction: column;
     padding: 1.65rem 1.25rem 1.25rem;
-    border-right: 1px solid var(--line);
+    border-right: 0;
+    border-radius: 0 12px 12px 0;
     background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .dashboard-brand {
@@ -247,7 +249,7 @@
 .match-cards {
     display: grid;
     width: 100%;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     align-items: stretch;
     gap: 1.1rem;
     padding: clamp(1rem, 2.5vw, 2rem);
@@ -262,9 +264,9 @@
     gap: 1.2rem;
     padding: 1.35rem;
     border: 1px solid #e7ebf3;
-    border-radius: var(--radius-md);
+    border-radius: 12px;
     background: var(--surface);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     cursor: pointer;
     transition: transform 170ms ease, border-color 170ms ease, box-shadow 170ms ease;
 }
@@ -272,7 +274,7 @@
 .match-cards > .card:hover {
     transform: translateY(-3px);
     border-color: #d8d9ff;
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 10px 24px rgba(27, 39, 67, 0.1);
 }
 
 .match-cards > .card .info-job {
@@ -297,19 +299,27 @@
 }
 
 .info-job .name {
+    display: -webkit-box;
     max-width: 100%;
+    overflow: hidden;
     color: var(--ink);
     font: 800 1.08rem/1.35 'Manrope', sans-serif;
     letter-spacing: -0.04em;
     overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 }
 
 .info-job .address {
+    display: -webkit-box;
     max-width: 100%;
+    overflow: hidden;
     color: #77839a;
     font-size: 0.8rem;
     font-weight: 600;
     overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
 }
 
 .info-job .description {
@@ -339,7 +349,7 @@
     border-radius: 999px;
     color: #5550c6;
     background: #f3f3ff;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 600;
     overflow-wrap: anywhere;
 }
@@ -382,15 +392,16 @@
 
 .choice .pass,
 .info-job .pass {
-    border-color: var(--line);
-    color: #637087;
-    background: #fff;
+    border-color: #f3d9dd;
+    color: #b74355;
+    background: var(--danger-soft);
 }
 
 .choice .pass:hover,
 .info-job .pass:hover {
-    border-color: #cdd5e2;
-    background: #f7f9fc;
+    border-color: var(--danger);
+    color: #fff;
+    background: var(--danger);
 }
 
 .choice .like,
@@ -484,6 +495,12 @@
     width: min(100% - 1.5rem, 900px);
 }
 
+.edit-panel .profile-form-card,
+.delete-dialog {
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
 @media (max-width: 900px) {
     .candidatoDash-class,
     .empresaDash-class {
@@ -513,6 +530,7 @@
         min-height: auto;
         padding: 1rem;
         border-right: 0;
+        border-radius: 0;
         border-bottom: 1px solid var(--line);
     }
 
@@ -555,7 +573,7 @@
     }
 
     .match-cards {
-        grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
         padding: 1rem;
     }
 }
